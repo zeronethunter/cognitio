@@ -1,18 +1,28 @@
-# Memory, address, undefined and thread sanitizers
-message(ENABLE_SANITIZERS = ${ENABLE_SANITIZERS})
-if (ENABLE_SANITIZERS)
+function(add_sanitizer FLAG)
+  message(STATUS "Adding -fsanitize=${FLAG}")
+  add_compile_options(-fsanitize=${FLAG} -fno-omit-frame-pointer)
+  add_link_options(-fsanitize=${FLAG} -fno-omit-frame-pointer)
+endfunction()
 
-  target_compile_options(${PROJECT_NAME} PUBLIC -lasan)
-  target_compile_options(${PROJECT_NAME} PUBLIC -fsanitize=leak)
-  target_compile_options(${PROJECT_NAME} PUBLIC -fsanitize=undefined)
-  target_compile_options(${PROJECT_NAME} PUBLIC -fno-omit-frame-pointer -fsanitize=address)
+# According to the GNU GCC docs:
+# * address cannot be combined with thread
+# * thread - address, leak
+# * leak - thread
+# * undefined - can be with all
+# * memory - UNAVAILABLE in GCC (!!!)
 
-  target_link_options(${PROJECT_NAME} PUBLIC -lasan)
-  target_link_options(${PROJECT_NAME} PUBLIC -fsanitize=leak)
-  target_link_options(${PROJECT_NAME} PUBLIC -fsanitize=undefined)
-  target_link_options(${PROJECT_NAME} PUBLIC -fno-omit-frame-pointer -fsanitize=address)
+if(ENABLE_ASAN)
+  add_sanitizer(address)
+endif()
 
-  message(STATUS "Sanitizers are enabled")
-elseif(NOT ENABLE_COVERAGE AND NOT ENABLE_CHECK_TOOLS)
-  target_compile_options(${PROJECT_NAME} PUBLIC "-O2")
+if(ENABLE_LSAN)
+  add_sanitizer(leak)
+endif()
+
+if(ENABLE_TSAN)
+  add_sanitizer(thread)
+endif()
+
+if(ENABLE_UBSAN)
+  add_sanitizer(undefined)
 endif()

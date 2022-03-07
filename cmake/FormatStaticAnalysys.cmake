@@ -1,20 +1,7 @@
 # Clang-format, clang-tidy, cpplint, cppcheck, scan-build, fbinfer
-message(ENABLE_CHECK_TOOLS = ${ENABLE_CHECK_TOOLS})
 if (ENABLE_CHECK_TOOLS)
-
-  # All files var for convenient checking
-  set(${PROJECT_NAME}_ALL_FILES
-    ${${PROJECT_NAME}_HEADERS}
-  )
-
-  if (BUILD_EXECUTABLE)
-    list(APPEND ${PROJECT_NAME}_ALL_FILES
-      ${${PROJECT_NAME}_EXE_SOURCES})
-  else()
-    list(APPEND ${PROJECT_NAME}_ALL_FILES
-      ${${PROJECT_NAME}_SOURCES})
-  endif()
-
+  message(ENABLE_CHECK_TOOLS = ${ENABLE_CHECK_TOOLS})
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
   set(${PROJECT_NAME}_TEST_DIR ${CMAKE_SOURCE_DIR}/test)
 
   # Clang-format configuring

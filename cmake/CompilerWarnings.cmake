@@ -21,19 +21,11 @@ endif()
 set(GCC_WARNINGS
     ${CLANG_WARNINGS}
     -Wmisleading-indentation  # warn if indentation implies blocks where blocks do not exist
-    -Wduplicated-cond         # warn if if / else chain has duplicated conditions
-    -Wduplicated-branches     # warn if if / else branches have duplicated code
-    -Wlogical-op              # warn about logical operations being used where bitwise were
-                              # probably wanted
+
+    $<$<CONFIG:DEBUG>:-ggdb3> # debug symbols
+    $<$<CONFIG:DEBUG>:-O0>    # no optimization
+    $<$<CONFIG:RELEASE>:-O3>  # maximum safe optimization
 )
 
-if(CMAKE_C_COMPILER_ID MATCHES ".*Clang")
-  set(PROJECT_WARNINGS ${CLANG_WARNINGS})
-elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-  set(PROJECT_WARNINGS ${GCC_WARNINGS})
-else()
-  message(WARNING "No compiler warnings set for '${CMAKE_C_COMPILER_ID}' compiler.")
-endif()
-
 # Setting warnings
-target_compile_options(${PROJECT_NAME} PUBLIC ${PROJECT_WARNINGS})
+add_compile_options(${GCC_WARNINGS})

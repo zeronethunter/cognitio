@@ -8,12 +8,16 @@ project(
 
 message(STATUS "Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 
-find_program(VALGRIND valgrind)
-if (NOT VALGRIND)
-  message(AUTHOR_WARNING "Valgrind wasn't found. Tests will be launched without it")
+if (ENBALE_VALGRIND)
+  find_program(VALGRIND valgrind)
+  if (NOT VALGRIND)
+    message(AUTHOR_WARNING "Valgrind wasn't found. Tests will be launched without it")
+  endif()
+else()
+  message(STATUS "Tests will be launched without valgrind")
 endif()
 
-find_package(CMOCKA_LIB NAMES cmocka)
+find_library(CMOCKA_LIB NAMES cmocka)
 if (NOT CMOCKA_LIB)
   message(STATUS "CMocka not found. Fetching...")
   include(${CMAKE_SOURCE_DIR}/cmake/FetchCMocka.cmake)
@@ -21,40 +25,38 @@ if (NOT CMOCKA_LIB)
 endif()
 
 # Setup code coverage if enabled
-if (ENABLE_CODE_COVERAGE)
-  target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC -O0 -g -fprofile-arcs -ftest-coverage)
-  target_link_options(${CMAKE_PROJECT_NAME} PUBLIC -fprofile-arcs -ftest-coverage)
-  message(STATUS "Code coverage is enabled and provided with GCC.")
-elseif(VAGRIND)
-  target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC -O0 -g)
+include(${CMAKE_SOURCE_DIR}/cmake/Coverage.cmake)
+if (ENABLE_COVERAGE)
+  set(${CMAKE_PROJECT_NAME}_TEST_LIB ${CMAKE_PROJECT_NAME}_MATH_LIB)
+  foreach(TARGET_FOR_COVERAGE ${${CMAKE_PROJECT_NAME}_TEST_LIB})
+    target_coverage(${TARGET_FOR_COVERAGE})
+  endforeach()
 endif()
 
-foreach(file ${${CMAKE_PROJECT_NAME}_TEST_SOURCES})
-  string(REGEX REPLACE "(.*/)([a-zA-Z0-9_ ]+)(\.c)" "\\2" test_name ${file})
-  add_executable(${test_name}_Tests ${file})
-  target_compile_features(${test_name}_Tests PUBLIC c_std_99)
+# Adding all test under valgrind if available
+foreach(FILE ${${CMAKE_PROJECT_NAME}_TEST_SOURCES})
+  string(REGEX REPLACE "(.*/)([a-zA-Z0-9_ ]+)(\.c)" "\\2" TEST_NAME ${FILE})
+  add_executable(${TEST_NAME}_Tests ${FILE})
+  target_compile_features(${TEST_NAME}_Tests PUBLIC c_std_99)
 
-
-  if(BUILD_EXECUTABLE)
-    set(${CMAKE_PROJECT_NAME}_TEST_LIB ${CMAKE_PROJECT_NAME}_LIB)
-  else()
-    set(${CMAKE_PROJECT_NAME}_TEST_LIB ${CMAKE_PROJECT_NAME})
-  endif()
-
-  target_link_libraries( ${test_name}_Tests
+  target_link_libraries( ${TEST_NAME}_Tests
     PUBLIC ${CMOCKA_LIB} ${${CMAKE_PROJECT_NAME}_TEST_LIB})
+
+  target_include_directories(${TEST_NAME}_Tests
+    PUBLIC $<INSTALL_INTERFACE:include>
+           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
   # Add the unit tests
   if (VALGRIND)
     add_test(
-      NAME ${test_name}_valgrind
+      NAME ${TEST_NAME}_valgrind
       COMMAND ${VALGRIND} --error-exitcode=1 --read-var-info=yes
-        --leak-check=full --show-leak-kinds=all ./${test_name}_Tests)
-
+      --leak-check=full --show-leak-kinds=all ./${TEST_NAME}_Tests)
   else()
     add_test(
-      NAME ${test_name}
-      COMMAND ${test_name}_Tests)
+      NAME ${TEST_NAME}
+      COMMAND ./${TEST_NAME}_Tests)
   endif()
 
 endforeach()
