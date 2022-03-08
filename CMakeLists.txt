@@ -23,17 +23,18 @@ if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
   option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
   option(ENABLE_TESTING "Enable unit tests for the project" ON)
   option(ENABLE_COVERAGE "Enable code coverage through GCC" ON)
-  option(ENABLE_VALGRIND "Launch all tests under valgrind" ON)
+  option(ENABLE_VALGRIND "Launch all tests under valgrind" OFF)
 
   # ENABLE_CHECK_TOOLS turns on the default analyzers and formatters
   # The default layout can be changed in this file:
   include(cmake/CheckToolsOptions.cmake)
 
   # Sanitizers options
+  # It's not a great idea to use sanitizers under Valgrind !!!
   # (The ones which are ON can be combined with each other)
+  option(ENABLE_LSAN "Build with LeakSanitizer" ON)
   option(ENABLE_ASAN "Build with AdressSanitizer" ON)
   option(ENABLE_TSAN "Build with ThreadSanitizer" OFF)
-  option(ENABLE_LSAN "Build with LeakSanitizer" ON)
   option(ENABLE_UBSAN "Build with UndefinedBehavior" ON)
 endif()
 
@@ -43,7 +44,8 @@ set(${PROJECT_NAME}_MATH_LIB_HEADERS ${CMAKE_SOURCE_DIR}/include/math.h)
 set(${PROJECT_NAME}_TEST_SOURCES ${CMAKE_SOURCE_DIR}/test/src/math_test.c)
 set(${PROJECT_NAME}_EXE_SOURCES ${CMAKE_SOURCE_DIR}/src/main.c)
 
-# All files var for convenient checking
+# Don't forget to set this variable
+# It is used for format and static analysis tools!
 set(${PROJECT_NAME}_ALL_FILES
   ${${PROJECT_NAME}_EXE_SOURCES}
   ${${PROJECT_NAME}_MATH_LIB_HEADERS}

@@ -1,7 +1,7 @@
-#ifndef INCLUDE_ADD_H_
-#define INCLUDE_ADD_H_
+#ifndef INCLUDE_MATH_H_
+#define INCLUDE_MATH_H_
 
 int add(int first, int second);
 int sub(int first, int second);
 
-#endif  // INCLUDE_ADD_H_
+#endif  // INCLUDE_MATH_H_

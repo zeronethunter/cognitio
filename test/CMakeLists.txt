@@ -8,7 +8,7 @@ project(
 
 message(STATUS "Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 
-if (ENBALE_VALGRIND)
+if (ENABLE_VALGRIND)
   find_program(VALGRIND valgrind)
   if (NOT VALGRIND)
     message(AUTHOR_WARNING "Valgrind wasn't found. Tests will be launched without it")

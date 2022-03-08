@@ -2,7 +2,7 @@
 if (ENABLE_CHECK_TOOLS)
   message(ENABLE_CHECK_TOOLS = ${ENABLE_CHECK_TOOLS})
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-  set(${PROJECT_NAME}_TEST_DIR ${CMAKE_SOURCE_DIR}/test)
+  # set(${PROJECT_NAME}_TEST_DIR ${CMAKE_SOURCE_DIR}/test)
 
   # Clang-format configuring
   if (ENABLE_CLANG_FORMAT)
@@ -11,9 +11,18 @@ if (ENABLE_CHECK_TOOLS)
       set(CLANG_FORMAT_OPTS ${CLANG_FORMAT_EXE}
         -style=file)
 
-      add_custom_target(clang-format
+      # Checking if the format is correct
+      # The command doesn't work properly inside CMake. That's why we create this shell script
+      set(CLANG_FORMAT_CHECK_SCRIPT formatcheck_script.sh)
+      file(GENERATE OUTPUT ${CLANG_FORMAT_CHECK_SCRIPT} CONTENT "echo '${${PROJECT_NAME}_ALL_FILES}' |
+              xargs -d ';' -I {} bash -c 'diff -u <(cat {}) <(${CLANG_FORMAT_EXE} {})'")
+      add_custom_target(formatcheck
+        COMMAND bash ${CLANG_FORMAT_CHECK_SCRIPT}
+        COMMENT "Check the formatting of all files with clang-format")
+
+      # Formatting code
+      add_custom_target(formatcode
         COMMAND ${CLANG_FORMAT_OPTS} -i ${${PROJECT_NAME}_ALL_FILES}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Format all files with clang-format")
 
       message(STATUS "Clang-format is available")
@@ -69,7 +78,7 @@ if (ENABLE_CHECK_TOOLS)
     find_program(CMAKE_C_CLANG_TIDY clang-tidy)
     if (CMAKE_C_CLANG_TIDY)
       list(APPEND CMAKE_C_CLANG_TIDY
-        "-checks=*,-llvm*"
+        "-checks=*,-llvm*,-clang-diagnostic*"
         "-p=${CMAKE_SOURCE_DIR}/build" "--format-style=file")
 
       add_custom_target(clang-tidy

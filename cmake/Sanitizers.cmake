@@ -1,7 +1,7 @@
 function(add_sanitizer FLAG)
   message(STATUS "Adding -fsanitize=${FLAG}")
-  add_compile_options(-fsanitize=${FLAG} -fno-omit-frame-pointer)
-  add_link_options(-fsanitize=${FLAG} -fno-omit-frame-pointer)
+  add_compile_options(-fsanitize=${FLAG} -fno-omit-frame-pointer -lasan)
+  add_link_options(-fsanitize=${FLAG} -fno-omit-frame-pointer -lasan)
 endfunction()
 
 # According to the GNU GCC docs:

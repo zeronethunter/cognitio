@@ -20,14 +20,18 @@ coverage: test
 test: debug
 	make -C ${BUILD_DIR} test
 
-debug: clean
+debug: 
 	cmake -B ${BUILD_DIR} -DCMAKE_BUILD_TYPE=DEBUG ${CMAKE_DEBUG_FLAGS}
 	make -j${THREADS_NUM} -C ${BUILD_DIR} all
 
-release: clean
+release: 
 	cmake -B ${BUILD_DIR} -DCMAKE_BUILD_TYPE=RELEASE
 	make -j${THREADS_NUM} -C ${BUILD_DIR}
 
 .PHONY: clean
 clean:
 	rm -rf ${BUILD_DIR}
+
+docker:
+	# docker build -t serpentian/c_project .
+	sudo docker run -v $(shell pwd):/home/project -it serpentian/c_project:latest
