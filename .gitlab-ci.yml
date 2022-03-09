@@ -1,7 +1,7 @@
 workflow:
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "push"'
-        - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+        - if: $CI_PIPELINE_SOURCE == "push"
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 stages:
     - Static
@@ -10,7 +10,7 @@ stages:
 
 variables:
     BUILD_DIR: build
-    MAKE_CMD: make -j$(nproc) -C ${BUILD_DIR}
+    MAKE_CMD: make -C ${BUILD_DIR}
     COVERAGE_REPORT_DIR: ${BUILD_DIR}/lcov_html
     CMAKE_DEBUG_TESTING_FLAGS: -DENABLE_TESTING=ON -DENABLE_COVERAGE=ON
     CMAKE_DEBUG_DEFAULT_FLAGS: -DCMAKE_BUILD_TYPE=DEBUG -DENABLE_CHECK_TOOLS=ON -DENABLE_CLANG_FORMAT=ON \
@@ -20,8 +20,10 @@ variables:
     CMAKE_VALGRIND_FLAGS: -DENABLE_VALGRIND=ON -DENABLE_LSAN=OFF -DENABLE_ASAN=OFF -DENABLE_UBSAN=OFF -DENABLE_TSAN=OFF
 
 default:
-    image: serpentian/c_project:latest
-    timeout: 30 minutes
+    image:
+      name: serpentian/c_project:latest
+      entrypoint: [""]
+    timeout: 1 hour
     # It's not a good idea to rely on cache. There's several cases when it 
     # will not be available (check https://docs.gitlab.com/ee/ci/caching)
     # So, it's a good practice to recompile the project every time
@@ -29,15 +31,15 @@ default:
         when: on_success
         key: default_build_cache
         paths:
-            - ${BUILD_DIR/
+            - ${BUILD_DIR}/
 
 # Anchors for scripts
 .default_cmake: &default_cmake
-    - cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_DEFAULT_SANITIZERS_FLAGS}
+    - cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_DEFAULT_SANITIZERS_FLAGS} .
 .valgrind_cmake: &valgrind_cmake
-    - cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_VALGRIND_FLAGS}
+    - cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_VALGRIND_FLAGS} .
 .tsan_cmake: &tsan_cmake
-    - cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_TSAN_FLAGS}
+    - cmake -B ${BUILD_DIR} $(pwd) ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_TSAN_FLAGS} .
 
 # ===================================== #
 # Static analysis and format check jobs #
@@ -98,7 +100,7 @@ default_sanitizers:
     stage: Test
     script:
         - *default_cmake
-        - ${MAKE_CMD} test
+        - ${MAKE_CMD} all test
         - lcov --capture --directory ${BUILD_DIR} --exclude '*_test*' --output-file ${BUILD_DIR}/lcov_test.info
         - genhtml ${BUILD_DIR}/lcov_test.info --output-directory ${COVERAGE_REPORT_DIR} --demangle-cpp --legend
 
@@ -110,7 +112,7 @@ valgrind_test:
     stage: Test
     script:
         - *valgrind_cmake
-        - ${MAKE_CMD} test
+        - ${MAKE_CMD} all test
     cache:
         key: valgrind_build_cache
 
@@ -118,7 +120,7 @@ tsan_test:
     stage: Test
     script:
         - *tsan_cmake
-        - ${MAKE_CMD} test
+        - ${MAKE_CMD} all test
     cache:
         key: no_cache
 

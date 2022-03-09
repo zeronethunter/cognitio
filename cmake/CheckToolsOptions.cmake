@@ -1,9 +1,7 @@
-option(ENABLE_CPPCHECK "")
 option(ENABLE_CLANG_FORMAT "")
+option(ENABLE_CPPCHECK "")
 option(ENABLE_CPPLINT "")
 option(ENABLE_CLANG_TIDY "")
-option(ENABLE_SCAN_BUILD "")
-option(ENABLE_FBINFER "")
 
 # You can confure what you need
 if (ENABLE_CHECK_TOOLS)
