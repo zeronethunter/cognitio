@@ -10,11 +10,18 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(FATAL_ERROR "In-source builds are not allowed")
 endif()
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE debug)
+endif()
+
 # Default settings
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_compile_definitions($<$<CONFIG:DEBUG>:DEBUG>)
+
+option(USE_ALT_NAMES "Use alternative names for the project" ON)
+option(GIT_SUBMODULE "Check submodules during build" OFF)
 
 if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
   # Default options
@@ -58,6 +65,9 @@ include(cmake/FormatStaticAnalysys.cmake)
 include(cmake/CompilerWarnings.cmake)
 include(cmake/Sanitizers.cmake)
 
+# Updating submodules
+include(cmake/GitSubmodule.cmake)
+
 # Project building
 add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_EXE_SOURCES})
 add_library(${PROJECT_NAME}_MATH_LIB ${${PROJECT_NAME}_MATH_LIB_HEADERS}
@@ -70,20 +80,9 @@ target_link_libraries(
   PUBLIC ${PROJECT_NAME}_MATH_LIB)
 
 # Including directories
-target_include_directories(
-  ${PROJECT_NAME}
+include_directories(
   PUBLIC $<INSTALL_INTERFACE:include>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-if(BUILD_EXECUTABLE AND ENABLE_TESTING)
-  target_include_directories(
-    ${PROJECT_NAME}_LIB
-    PUBLIC $<INSTALL_INTERFACE:include>
-           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-endif()
-
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
 # Installing project
 # Setup alternative names
