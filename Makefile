@@ -1,9 +1,9 @@
 # Template project
-
 BUILD_DIR=build
 THREADS_NUM=$(shell nproc)
 COVERAGE_REPORT_DIR=${BUILD_DIR}/lcov_html
-CMAKE_DEBUG_FLAGS=
+CMAKE_DEBUG_FLAGS=-DCMAKE_BUILD_TYPE=DEBUG
+CMAKE_RELEASE_FLAGS=-DCMAKE_BUILD_TYPE=RELEASE
 
 .PHONY: all
 all: coverage
@@ -18,14 +18,14 @@ coverage: test
 		--demangle-cpp --legend
 
 test: debug
-	make -C ${BUILD_DIR} test
+	make -C ${BUILD_DIR} test ARGS="-VV"
 
-debug: 
-	cmake -B ${BUILD_DIR} -DCMAKE_BUILD_TYPE=DEBUG ${CMAKE_DEBUG_FLAGS}
-	make -j${THREADS_NUM} -C ${BUILD_DIR} all
+debug:
+	cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_FLAGS}
+	scan-build make -j${THREADS_NUM} -C ${BUILD_DIR} all
 
-release: 
-	cmake -B ${BUILD_DIR} -DCMAKE_BUILD_TYPE=RELEASE
+release:
+	cmake -B ${BUILD_DIR} ${CMAKE_RELEASE_FLAGS}
 	make -j${THREADS_NUM} -C ${BUILD_DIR}
 
 .PHONY: clean
@@ -33,5 +33,5 @@ clean:
 	rm -rf ${BUILD_DIR}
 
 docker:
-	# docker build -t serpentian/c_project .
+    # docker build -t serpentian/c_project .
 	sudo docker run -v $(shell pwd):/home/project -it serpentian/c_project:latest

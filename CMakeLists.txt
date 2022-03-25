@@ -11,7 +11,7 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE debug)
+  set(CMAKE_BUILD_TYPE DEBUG)
 endif()
 
 # Default settings

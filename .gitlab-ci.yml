@@ -1,6 +1,6 @@
 workflow:
     rules:
-        - if: $CI_PIPELINE_SOURCE == "push"
+#         - if: $CI_PIPELINE_SOURCE == "push"
         - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 stages:
@@ -24,7 +24,7 @@ default:
       name: serpentian/c_project:latest
       entrypoint: [""]
     timeout: 1 hour
-    # It's not a good idea to rely on cache. There's several cases when it 
+    # It's not a good idea to rely on cache. There's several cases when it
     # will not be available (check https://docs.gitlab.com/ee/ci/caching)
     # So, it's a good practice to recompile the project every time
     cache:
@@ -96,11 +96,14 @@ fbinfer:
 # ===================================== #
 #               Test jobs               #
 # ===================================== #
+.make_test: &make_test
+  - ${MAKE_CMD} all test ARGS="-VV"
+
 default_sanitizers:
     stage: Test
     script:
         - *default_cmake
-        - ${MAKE_CMD} all test
+        - *make_test
         - lcov --capture --directory ${BUILD_DIR} --exclude '*_test*' --output-file ${BUILD_DIR}/lcov_test.info
         - genhtml ${BUILD_DIR}/lcov_test.info --output-directory ${COVERAGE_REPORT_DIR} --demangle-cpp --legend
 
@@ -112,7 +115,7 @@ valgrind_test:
     stage: Test
     script:
         - *valgrind_cmake
-        - ${MAKE_CMD} all test
+        - *make_test
     cache:
         key: valgrind_build_cache
 
@@ -120,7 +123,6 @@ tsan_test:
     stage: Test
     script:
         - *tsan_cmake
-        - ${MAKE_CMD} all test
+        - *make_test
     cache:
         key: no_cache
-
