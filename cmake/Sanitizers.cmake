@@ -19,18 +19,18 @@ endfunction()
 # * undefined - can be with all
 # * memory - UNAVAILABLE in GCC (!!!)
 
-if(ENABLE_ASAN)
+if(ENABLE_ASAN MATCHES ON)
   add_sanitizer(address)
 endif()
 
-if(ENABLE_LSAN)
+if(ENABLE_LSAN MATCHES ON)
   add_sanitizer(leak)
 endif()
 
-if(ENABLE_TSAN)
+if(ENABLE_TSAN MATCHES ON)
   add_sanitizer(thread)
 endif()
 
-if(ENABLE_UBSAN)
+if(ENABLE_UBSAN MATCHES ON)
   add_sanitizer(undefined)
 endif()

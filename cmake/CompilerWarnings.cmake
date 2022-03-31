@@ -14,7 +14,7 @@ set(CLANG_WARNINGS
                               # (ie printf)
 )
 
-if (WARNINGS_AS_ERRORS)
+if (WARNINGS_AS_ERRORS MATCHES ON)
   list(APPEND CLANG_WARNINGS -Werror)
 endif()
 

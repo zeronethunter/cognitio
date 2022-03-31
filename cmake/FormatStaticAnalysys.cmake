@@ -1,11 +1,11 @@
 # Clang-format, clang-tidy, cpplint, cppcheck, scan-build, fbinfer
-if (ENABLE_CHECK_TOOLS)
+if (ENABLE_CHECK_TOOLS MATCHES ON)
   message(ENABLE_CHECK_TOOLS = ${ENABLE_CHECK_TOOLS})
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
   # set(${PROJECT_NAME}_TEST_DIR ${CMAKE_SOURCE_DIR}/test)
 
   # Clang-format configuring
-  if (ENABLE_CLANG_FORMAT)
+  if (ENABLE_CLANG_FORMAT MATCHES ON)
     find_program(CLANG_FORMAT_EXE clang-format)
     if (CLANG_FORMAT_EXE)
       set(CLANG_FORMAT_OPTS ${CLANG_FORMAT_EXE}
@@ -32,7 +32,7 @@ if (ENABLE_CHECK_TOOLS)
   endif()
 
   # CppCheck configuring
-  if (ENABLE_CPPCHECK)
+  if (ENABLE_CPPCHECK MATCHES ON)
     find_program(CMAKE_C_CPPCHECK cppcheck)
     if(CMAKE_C_CPPCHECK)
       list(APPEND CMAKE_C_CPPCHECK
@@ -51,7 +51,7 @@ if (ENABLE_CHECK_TOOLS)
   endif()
 
   # Cpplint configuring
-  if (ENABLE_CPPLINT)
+  if (ENABLE_CPPLINT MATCHES ON)
     find_program(CMAKE_C_CPPLINT cpplint)
     if (CMAKE_C_CPPLINT)
 
@@ -74,7 +74,7 @@ if (ENABLE_CHECK_TOOLS)
     endif()
   endif()
 
-  if (ENABLE_CLANG_TIDY)
+  if (ENABLE_CLANG_TIDY MATCHES ON)
     find_program(CMAKE_C_CLANG_TIDY clang-tidy)
     if (CMAKE_C_CLANG_TIDY)
       list(APPEND CMAKE_C_CLANG_TIDY
@@ -92,8 +92,4 @@ if (ENABLE_CHECK_TOOLS)
       message(AUTHOR_WARNING "Clang-tidy is requested but executable wasn't found.")
     endif()
   endif()
-
-  if (ENABLE_SCAN_BUILD)
-  endif()
-
 endif()

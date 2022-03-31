@@ -18,7 +18,6 @@ endif()
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-add_compile_definitions($<$<CONFIG:DEBUG>:DEBUG>)
 
 option(USE_ALT_NAMES "Use alternative names for the project" ON)
 option(GIT_SUBMODULE "Check submodules during build" OFF)
@@ -86,7 +85,7 @@ include_directories(
 
 # Installing project
 # Setup alternative names
-if(${PROJECT_NAME}_USE_ALT_NAMES)
+if(${PROJECT_NAME}_USE_ALT_NAMES MATCHES ON)
   string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWERCASE)
   string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPERCASE)
 else()
@@ -143,7 +142,7 @@ install(
 message(STATUS "Install targets succesfully build")
 
 # Unit testing setup
-if(ENABLE_TESTING)
+if(ENABLE_TESTING MATCHES ON)
   enable_testing()
   add_subdirectory(test)
 endif()

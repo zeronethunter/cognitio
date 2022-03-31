@@ -8,7 +8,7 @@ project(
 
 message(STATUS "Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 
-if (ENABLE_VALGRIND)
+if (ENABLE_VALGRIND MATCHES ON)
   find_program(VALGRIND valgrind)
   if (NOT VALGRIND)
     message(AUTHOR_WARNING "Valgrind wasn't found. Tests will be launched without it")
@@ -26,7 +26,7 @@ endif()
 
 # Setup code coverage if enabled
 include(${CMAKE_SOURCE_DIR}/cmake/Coverage.cmake)
-if (ENABLE_COVERAGE)
+if (ENABLE_COVERAGE MATCHES ON)
   set(${CMAKE_PROJECT_NAME}_TEST_LIB ${CMAKE_PROJECT_NAME}_MATH_LIB)
   foreach(TARGET_FOR_COVERAGE ${${CMAKE_PROJECT_NAME}_TEST_LIB})
     target_coverage(${TARGET_FOR_COVERAGE})

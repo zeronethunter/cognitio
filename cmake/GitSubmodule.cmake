@@ -1,4 +1,4 @@
-if(GIT_SUBMODULE)
+if(GIT_SUBMODULE MATCHES ON)
   find_package(Git QUIET)
   if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     message(STATUS "Submodule update")
