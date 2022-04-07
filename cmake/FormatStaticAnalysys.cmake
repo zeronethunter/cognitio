@@ -2,7 +2,6 @@
 if (ENABLE_CHECK_TOOLS MATCHES ON)
   message(ENABLE_CHECK_TOOLS = ${ENABLE_CHECK_TOOLS})
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-  # set(${PROJECT_NAME}_TEST_DIR ${CMAKE_SOURCE_DIR}/test)
 
   # Clang-format configuring
   if (ENABLE_CLANG_FORMAT MATCHES ON)
@@ -36,7 +35,7 @@ if (ENABLE_CHECK_TOOLS MATCHES ON)
     find_program(CMAKE_C_CPPCHECK cppcheck)
     if(CMAKE_C_CPPCHECK)
       list(APPEND CMAKE_C_CPPCHECK
-        "--enable=warning,style,performance,portability"
+        "--enable=warning,style,performance,portability,information,missingInclude"
         "--inconclusive" "--inline-suppr" "--force")
 
       add_custom_target(cppcheck
@@ -59,8 +58,8 @@ if (ENABLE_CHECK_TOOLS MATCHES ON)
       # are not scanned during the compilation process.
       # You need to use 'make cpplint' for that
       list(APPEND CMAKE_C_CPPLINT
-        "--recursive" "--extensions=c,cc,h,hh"
-        "--filter=-legal/copyright,-build/include_subdir")
+        "--recursive" "--extensions=c,cc,h,hh,cpp,hpp"
+        "--filter=-build/include_subdir,-build/header_guard")
 
       add_custom_target(cpplint
         COMMAND ${CMAKE_C_CPPLINT} ${${PROJECT_NAME}_ALL_FILES}

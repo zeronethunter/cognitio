@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.15)
 
 # Basic info
 project(
-  "Template"
+  "cognitio"
   VERSION 0.1.0
-  LANGUAGES C)
+  LANGUAGES CXX)
 
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(FATAL_ERROR "In-source builds are not allowed")
@@ -15,16 +15,15 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Default settings
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-option(USE_ALT_NAMES "Use alternative names for the project" ON)
+option(USE_ALT_NAMES "Use alternative names for the project" OFF)
 option(GIT_SUBMODULE "Check submodules during build" OFF)
 
 if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
   # Default options
-  option(USE_ALT_NAMES "Use alternative names for the project" ON)
   option(ENABLE_CHECK_TOOLS "Enable format and code analysis tools" ON)
   option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
   option(ENABLE_TESTING "Enable unit tests for the project" ON)
@@ -50,16 +49,6 @@ set(${PROJECT_NAME}_MATH_LIB_HEADERS ${CMAKE_SOURCE_DIR}/include/math.h)
 set(${PROJECT_NAME}_TEST_SOURCES ${CMAKE_SOURCE_DIR}/test/src/math_test.c)
 set(${PROJECT_NAME}_EXE_SOURCES ${CMAKE_SOURCE_DIR}/src/main.c)
 
-# Don't forget to set this variable
-# It is used for format and static analysis tools!
-set(${PROJECT_NAME}_ALL_FILES
-  ${${PROJECT_NAME}_EXE_SOURCES}
-  ${${PROJECT_NAME}_MATH_LIB_HEADERS}
-  ${${PROJECT_NAME}_MATH_LIB_SOURCES})
-
-# Clang-format, clang-tidy, cpplint and cppcheck configuration
-include(cmake/FormatStaticAnalysys.cmake)
-
 # Configuring GCC flags
 include(cmake/CompilerWarnings.cmake)
 include(cmake/Sanitizers.cmake)
@@ -67,21 +56,22 @@ include(cmake/Sanitizers.cmake)
 # Updating submodules
 include(cmake/GitSubmodule.cmake)
 
-# Project building
-add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_EXE_SOURCES})
-add_library(${PROJECT_NAME}_MATH_LIB ${${PROJECT_NAME}_MATH_LIB_HEADERS}
-  ${${PROJECT_NAME}_MATH_LIB_SOURCES})
+# Setting libraries to link with tests (it's used for tests setting too)
+include(cmake/GlobalVariables.cmake)
 
-# Identify and link with the specific "packages" or libs the project uses
-# find_package(package_name package_version REQUIRED package_type [other_options])
-target_link_libraries(
-  ${PROJECT_NAME}
-  PUBLIC ${PROJECT_NAME}_MATH_LIB)
+# Finding all files for the checking of static analyzers
+file(GLOB_RECURSE ${PROJECT_NAME}_ALL_FILES ${PROJECT_SOURCE_DIR} *.cpp *.hpp)
+list(FILTER ${PROJECT_NAME}_ALL_FILES EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/[Bb]uild|test/*")
 
-# Including directories
-include_directories(
-  PUBLIC $<INSTALL_INTERFACE:include>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+# Clang-format, clang-tidy, cpplint and cppcheck configuration
+include(cmake/FormatStaticAnalysys.cmake)
+
+add_subdirectory(src)
+
+###############################################
+# Install instructions will be written lately #
+###############################################
+#                 < ... >
 
 # Installing project
 # Setup alternative names
@@ -93,56 +83,9 @@ else()
   set(PROJECT_NAME_UPPERCASE ${PROJECT_NAME})
 endif()
 
-# Install library for easy downstream inclusion
-include(GNUInstallDirs)
-install(
-  TARGETS
-  ${PROJECT_NAME}
-  EXPORT
-  ${PROJECT_NAME}Targets
-  LIBRARY DESTINATION
-  ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION
-  ${CMAKE_INSTALL_BINDIR}
-  ARCHIVE DESTINATION
-  ${CMAKE_INSTALL_LIBDIR}
-  INCLUDES DESTINATION
-  include
-  PUBLIC_HEADER DESTINATION
-  include
-)
-
-install(
-  EXPORT
-  ${PROJECT_NAME}Targets
-  FILE
-  ${PROJECT_NAME}Targets.cmake
-  NAMESPACE
-  ${PROJECT_NAME}::
-  DESTINATION
-  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-)
-
-install(
-  FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME_LOWERCASE}/version.hpp
-  DESTINATION
-  include/${PROJECT_NAME_LOWERCASE}
-)
-
-# Install the `include` directory
-install(
-  DIRECTORY
-  include/${PROJECT_NAME_LOWERCASE}
-  DESTINATION
-  include
-)
-
-# Install with `cmake --build <build_directory> --target install --config <build_config>`
-message(STATUS "Install targets succesfully build")
 
 # Unit testing setup
 if(ENABLE_TESTING MATCHES ON)
   enable_testing()
-  add_subdirectory(test)
+  add_subdirectory(tests)
 endif()

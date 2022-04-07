@@ -1,4 +1,4 @@
-# Dockerfile for template project
+# This dockerfile will be changed in the future
 FROM gcc
 
 RUN echo "Installing dependencies..."
