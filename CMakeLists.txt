@@ -43,11 +43,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
   option(ENABLE_UBSAN "Build with UndefinedBehavior" ON)
 endif()
 
-# All headers and implementation files
-set(${PROJECT_NAME}_MATH_LIB_SOURCES ${CMAKE_SOURCE_DIR}/src/math.c)
-set(${PROJECT_NAME}_MATH_LIB_HEADERS ${CMAKE_SOURCE_DIR}/include/math.h)
-set(${PROJECT_NAME}_TEST_SOURCES ${CMAKE_SOURCE_DIR}/test/src/math_test.c)
-set(${PROJECT_NAME}_EXE_SOURCES ${CMAKE_SOURCE_DIR}/src/main.c)
 
 # Configuring GCC flags
 include(cmake/CompilerWarnings.cmake)
@@ -60,8 +55,8 @@ include(cmake/GitSubmodule.cmake)
 include(cmake/GlobalVariables.cmake)
 
 # Finding all files for the checking of static analyzers
-file(GLOB_RECURSE ${PROJECT_NAME}_ALL_FILES ${PROJECT_SOURCE_DIR} *.cpp *.hpp)
-list(FILTER ${PROJECT_NAME}_ALL_FILES EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/[Bb]uild|test/*")
+file(GLOB_RECURSE ${PROJECT_NAME}_ALL_FILES ${PROJECT_SOURCE_DIR}/src *.cpp *.hpp)
+list(FILTER ${PROJECT_NAME}_ALL_FILES EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/[Bb]uild|tests/*")
 
 # Clang-format, clang-tidy, cpplint and cppcheck configuration
 include(cmake/FormatStaticAnalysys.cmake)
@@ -69,7 +64,7 @@ include(cmake/FormatStaticAnalysys.cmake)
 add_subdirectory(src)
 
 ###############################################
-# Install instructions will be written lately #
+#  Install instructions will be added lately  #
 ###############################################
 #                 < ... >
 
@@ -82,7 +77,6 @@ else()
   set(PROJECT_NAME_LOWERCASE ${PROJECT_NAME})
   set(PROJECT_NAME_UPPERCASE ${PROJECT_NAME})
 endif()
-
 
 # Unit testing setup
 if(ENABLE_TESTING MATCHES ON)

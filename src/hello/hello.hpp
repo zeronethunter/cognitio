@@ -10,6 +10,6 @@
 #include <string>
 
 // some king of cool interface
-void hello(std::ostream &out, const std::string& str);
+void hello(std::ostream& out, const std::string& str);
 
 #endif

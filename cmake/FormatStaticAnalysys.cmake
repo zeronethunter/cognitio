@@ -35,7 +35,7 @@ if (ENABLE_CHECK_TOOLS MATCHES ON)
     find_program(CMAKE_C_CPPCHECK cppcheck)
     if(CMAKE_C_CPPCHECK)
       list(APPEND CMAKE_C_CPPCHECK
-        "--enable=warning,style,performance,portability,information,missingInclude"
+        "--enable=warning,style,performance,portability"
         "--inconclusive" "--inline-suppr" "--force")
 
       add_custom_target(cppcheck
@@ -77,7 +77,6 @@ if (ENABLE_CHECK_TOOLS MATCHES ON)
     find_program(CMAKE_C_CLANG_TIDY clang-tidy)
     if (CMAKE_C_CLANG_TIDY)
       list(APPEND CMAKE_C_CLANG_TIDY
-        "-checks=*,-llvm*,-clang-diagnostic*"
         "-p=${CMAKE_SOURCE_DIR}/build" "--format-style=file")
 
       add_custom_target(clang-tidy

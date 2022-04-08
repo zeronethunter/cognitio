@@ -83,3 +83,6 @@ _deps
 
 ## File-based project format:
 *.iws
+
+## Doxygen
+html_docs

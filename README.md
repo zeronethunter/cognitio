@@ -19,7 +19,6 @@ Writing code:
 1. Our style is [GoogleStyle](https://google.github.io/styleguide/cppguide.html)
 1. Write docs in comments ([Doxygen](https://www.doxygen.nl/manual/docblocks.html))
 
-TODO (for myself):
-   - Makefile & CI configuration
+TODO:
    - Build directories
    - Doxygen

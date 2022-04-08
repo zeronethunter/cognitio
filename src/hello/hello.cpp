@@ -5,6 +5,6 @@
 
 #include "hello/hello.hpp"
 
-void hello(std::ostream &out, const std::string& str) {
+void hello(std::ostream& out, const std::string& str) {
   out << str << std::endl;
 }

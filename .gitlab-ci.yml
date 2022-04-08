@@ -1,0 +1,128 @@
+workflow:
+    rules:
+        - if: $CI_PIPELINE_SOURCE == "push"
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+stages:
+    - Static
+    - Build
+    - Test
+
+variables:
+    BUILD_DIR: build
+    MAKE_CMD: make -C ${BUILD_DIR}
+    COVERAGE_REPORT_DIR: ${BUILD_DIR}/lcov_html
+    CMAKE_DEBUG_TESTING_FLAGS: -DENABLE_TESTING=ON -DENABLE_COVERAGE=ON
+    CMAKE_DEBUG_DEFAULT_FLAGS: -DCMAKE_BUILD_TYPE=DEBUG -DENABLE_CHECK_TOOLS=ON -DENABLE_CLANG_FORMAT=ON \
+                    -DENABLE_CPPCHECK=ON -DENABLE_CPPLINT=ON -DENABLE_CLANG_TIDY=ON -DWARNINGS_AS_ERRORS=ON
+    CMAKE_DEFAULT_SANITIZERS_FLAGS: -DENABLE_VALGRIND=OFF -DENABLE_LSAN=ON -DENABLE_ASAN=ON -DENABLE_UBSAN=ON -DENABLE_TSAN=OFF
+    CMAKE_TSAN_FLAGS: -DENABLE_VALGRIND=OFF -DENABLE_LSAN=OFF -DENABLE_ASAN=OFF -DENABLE_UBSAN=OFF -DENABLE_TSAN=ON
+    CMAKE_VALGRIND_FLAGS: -DENABLE_VALGRIND=ON -DENABLE_LSAN=OFF -DENABLE_ASAN=OFF -DENABLE_UBSAN=OFF -DENABLE_TSAN=OFF
+
+default:
+    image:
+      name: serpentian/cognitio:latest
+      entrypoint: [""]
+    timeout: 1 hour
+    # It's not a good idea to rely on cache. There's several cases when it
+    # will not be available (check https://docs.gitlab.com/ee/ci/caching)
+    # So, it's a good practice to recompile the project every time
+    cache:
+        when: on_success
+        key: default_build_cache
+        paths:
+            - ${BUILD_DIR}/
+
+# Anchors for scripts
+.default_cmake: &default_cmake
+    - cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_DEFAULT_SANITIZERS_FLAGS} .
+.valgrind_cmake: &valgrind_cmake
+    - cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_VALGRIND_FLAGS} .
+.tsan_cmake: &tsan_cmake
+    - cmake -B ${BUILD_DIR} $(pwd) ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_TSAN_FLAGS} .
+
+# ===================================== #
+# Static analysis and format check jobs #
+# ===================================== #
+.static_template: &static_template
+    stage: Static
+    cache:
+        key: no_caching
+
+clang-format:
+    <<: *static_template
+    script:
+        - *default_cmake
+        - ${MAKE_CMD} formatcheck
+
+clang-tidy:
+    <<: *static_template
+    script:
+        - *default_cmake
+        - ${MAKE_CMD} clang-tidy
+
+cpplint:
+    <<: *static_template
+    script:
+        - *default_cmake
+        - ${MAKE_CMD} cpplint
+
+cppcheck:
+    <<: *static_template
+    script:
+        - *default_cmake
+        - ${MAKE_CMD} cppcheck
+
+# ===================================== #
+#              Build jobs               #
+# ===================================== #
+scan-build:
+    stage: Build
+    script:
+        - *default_cmake
+        - scan-build ${MAKE_CMD}
+
+fbinfer:
+    stage: Build
+    script:
+        - *valgrind_cmake
+        - infer run -- make
+    cache:
+        key: valgrind_build_cache
+        paths:
+            - ${BUILD_DIR}/
+
+
+# ===================================== #
+#               Test jobs               #
+# ===================================== #
+.make_test: &make_test
+  - ${MAKE_CMD} all test ARGS="-VV"
+
+default_sanitizers:
+    stage: Test
+    script:
+        - *default_cmake
+        - *make_test
+        - lcov --capture --directory ${BUILD_DIR} --exclude '*_test*' --output-file ${BUILD_DIR}/lcov_test.info
+        - genhtml ${BUILD_DIR}/lcov_test.info --output-directory ${COVERAGE_REPORT_DIR} --demangle-cpp --legend
+
+    artifacts:
+        paths:
+            - ${COVERAGE_REPORT_DIR}
+
+valgrind_test:
+    stage: Test
+    script:
+        - *valgrind_cmake
+        - *make_test
+    cache:
+        key: valgrind_build_cache
+
+tsan_test:
+    stage: Test
+    script:
+        - *tsan_cmake
+        - *make_test
+    cache:
+        key: no_cache
