@@ -16,11 +16,9 @@ set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_hello)
 
 # Set headers and sources
 set(${SUBMODULE_NAME}_SOURCES hello.cpp)
-set(${SUBMODULE_NAME}_HEADERS hello.hpp)
 
 add_library(
-  ${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_HEADERS}
-  ${${SUBMODULE_NAME}_SOURCES}
+  ${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES}
 )
 
 # Identify and link with the specific libs the submodule uses
@@ -41,5 +39,5 @@ endif()
 # Including directories (IMPORTANT: path to includes is absolute)
 include_directories(
   PUBLIC $<INSTALL_INTERFACE:include>
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
 )

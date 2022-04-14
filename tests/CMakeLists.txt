@@ -44,7 +44,7 @@ if(ENABLE_COVERAGE MATCHES ON)
 endif()
 
 # Adding all test under valgrind if available
-include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 get_property(${CMAKE_PROJECT_NAME}_TEST_SOURCES GLOBAL PROPERTY TESTS_LIST)
 foreach(FILE ${${CMAKE_PROJECT_NAME}_TEST_SOURCES})
   string(REGEX REPLACE "(.*/)([a-zA-Z0-9_ ]+)(\.cpp)" "\\2" TEST_NAME ${FILE})
