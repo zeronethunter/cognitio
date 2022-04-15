@@ -4,7 +4,8 @@ cmake_minimum_required(VERSION 3.15)
 project(
   "cognitio"
   VERSION 0.1.0
-  LANGUAGES CXX)
+  LANGUAGES CXX
+)
 
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(FATAL_ERROR "In-source builds are not allowed")
@@ -22,7 +23,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 option(USE_ALT_NAMES "Use alternative names for the project" OFF)
 option(GIT_SUBMODULE "Check submodules during build" OFF)
 
-if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
   # Default options
   option(ENABLE_CHECK_TOOLS "Enable format and code analysis tools" ON)
   option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
@@ -42,7 +43,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
   option(ENABLE_TSAN "Build with ThreadSanitizer" OFF)
   option(ENABLE_UBSAN "Build with UndefinedBehavior" ON)
 endif()
-
 
 # Configuring GCC flags
 include(cmake/CompilerWarnings.cmake)

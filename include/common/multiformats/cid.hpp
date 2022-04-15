@@ -3,14 +3,15 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
+#ifndef CGNT_UTILS_MILTIFORMATS_CID_HPP_
+#define CGNT_UTILS_MILTIFORMATS_CID_HPP_
+
 #include "linked_data/node.hpp"
 
 #include <cstddef>
-#include <iostream>
+#include <cstdint>
 #include <vector>
-
-#ifndef CGNT_COMMON_MILTIFORMATS_CID_HPP
-#define CGNT_COMMON_MILTIFORMATS_CID_HPP
+#include <string>
 
 namespace cognitio {
 namespace cid {
@@ -89,13 +90,11 @@ class Cid {
 
   cognitio::cid::Prefix prefix_form_;  //! contains version, codec,
                                        //! mh-type and -length.
-
   cognitio::cid::CodeType content_type_;
 
-  
 };
 
 }  // namespace cid
 }  // namespace cognitio
 
-#endif  // CGNT_COMMON_MILTIFORMATS_CID_HPP
+#endif  // CGNT_UTILS_MILTIFORMATS_CID_HPP_
