@@ -87,3 +87,6 @@ _deps
 
 ## Doxygen
 html_docs
+
+## Protobuf
+*.pb.*
