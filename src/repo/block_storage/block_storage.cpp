@@ -11,33 +11,40 @@ namespace blockstorage {
 
 template <typename Key, typename CID, typename Value, typename Options>
 datastore::DsError Blockstorage<Key, CID, Value, Options>::Open() {}
+
 template <typename Key, typename CID, typename Value, typename Options>
 datastore::DsError Blockstorage<Key, CID, Value, Options>::Close() {}
+
 template <typename Key, typename CID, typename Value, typename Options>
 datastore::DsError Blockstorage<Key, CID, Value, Options>::Put(
     const CID& cid, const Value& value, const Options& options) {
   return storage_.Put(cid, value, options);
 }
+
 template <typename Key, typename CID, typename Value, typename Options>
 Value Blockstorage<Key, CID, Value, Options>::Get(const CID& cid,
                                                   const Options& options) {
   return storage_.Get(cid, options);
 }
+
 template <typename Key, typename CID, typename Value, typename Options>
 datastore::DsError Blockstorage<Key, CID, Value, Options>::Delete(
     const CID& cid, const Options& options) {
   return storage_.Delete(cid, options);
 }
+
 template <typename Key, typename CID, typename Value, typename Options>
 datastore::DsError Blockstorage<Key, CID, Value, Options>::PutMany(
     const std::set<std::pair<CID, Value>>& source, const Options& options) {
   return storage_.PutMany(source, options);
 }
+
 template <typename Key, typename CID, typename Value, typename Options>
 std::set<Value> Blockstorage<Key, CID, Value, Options>::GetMany(
     const std::set<CID>& source, const Options& options) {
   return storage_.GetMany(source, options);
 }
+
 template <typename Key, typename CID, typename Value, typename Options>
 datastore::DsError Blockstorage<Key, CID, Value, Options>::DeleteMany(
     const std::set<CID>& source, const Options& options) {

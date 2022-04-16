@@ -20,16 +20,19 @@ void Gc(
     const blockstorage::Blockstorage<Key, CID, Value, Options>& blockstorage,
     const datastore::Datastore<Key, Value, Options>&
         root);  //! Garbage Collector initialization
+
 template <typename Key, typename CID, typename Value, typename Options>
 std::set<CID> CreateMarkedSet(
     const pinner::PinManager<Key, CID, Value, Options>& pins,
     const blockstorage::Blockstorage<Key, CID, Value, Options>& blockstorage,
     const datastore::Datastore<Key, Value, Options>&
         root);  //! Pins set of blocks in datastore
+
 template <typename Key, typename CID, typename Value, typename Options>
 void RemoveBlock(const CID& cid,
                  const blockstorage::Blockstorage<Key, CID, Value, Options>&
                      blockstorage);  //! Remove block in block_storage
+
 template <typename Key, typename CID, typename Value, typename Options>
 void DeleteUnmarkedBlocks(
     blockstorage::Blockstorage<Key, CID, Value, Options> blockstorage,

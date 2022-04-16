@@ -3,13 +3,13 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
+#ifndef CGNT_DATASTORE_DATASTORE_HPP_
+#define CGNT_DATASTORE_DATASTORE_HPP_
+
 #include <filesystem>
 #include <set>
 
 #include "datastore/datastore_error.hpp"
-
-#ifndef CGNT_DATASTORE_DATASTORE_HPP_
-#define CGNT_DATASTORE_DATASTORE_HPP_
 
 namespace cognitio {
 namespace datastore {
