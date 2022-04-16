@@ -3,6 +3,9 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
+#ifndef CGNT_RPC_SERVER_DETAIL_ASYNC_RPC_HANDLER_INTERFACE_HPP_
+#define CGNT_RPC_SERVER_DETAIL_ASYNC_RPC_HANDLER_INTERFACE_HPP_
+
 #include <grpc++/completion_queue.h>
 #include <grpc++/server_context.h>
 
@@ -41,3 +44,5 @@ class AsyncRpcHandlerInterface {
 }  // namespace rpc
 
 }  // namespace cognitio
+
+#endif  // CGNT_RPC_SERVER_DETAIL_NON_STREAM_RPC_HANDLER_HPP_

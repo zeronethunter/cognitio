@@ -14,26 +14,26 @@ namespace rpc {
 namespace client {
 namespace detail {
 
-enum class GrpcClientState {
+enum class ClientState {
   not_connected,
   attempting_to_connect,
   connected,
 };
 
-inline std::string to_string(const GrpcClientState& state) {
+inline std::string to_string(const ClientState& state) {
   switch (state) {
-    case GrpcClientState::not_connected:
+    case ClientState::not_connected:
       return "not_connected";
-    case GrpcClientState::attempting_to_connect:
+    case ClientState::attempting_to_connect:
       return "attempting_to_connect";
-    case GrpcClientState::connected:
+    case ClientState::connected:
       return "connected";
   }
-  throw std::invalid_argument("Invalid GrpcClientState");
+  throw std::invalid_argument("Invalid ClientState");
 }
 
 inline std::ostream& operator<<(std::ostream& os,
-                                const GrpcClientState& state) {
+                                const ClientState& state) {
   return os << to_string(state);
 }
 

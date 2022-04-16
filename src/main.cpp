@@ -5,9 +5,6 @@
 
 #include <cstdlib>
 
-#include "hello/hello.hpp"
-
 int main() {
-  hello(std::cout, std::string("Hello, Friend"));
   return EXIT_SUCCESS;
 }

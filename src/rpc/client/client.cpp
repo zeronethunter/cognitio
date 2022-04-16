@@ -16,24 +16,23 @@ grpc::ChannelArguments default_channel_arguments() {
 }
 
 template <typename Service>
-GrpcClient<Service>::~GrpcClient() {
+Client<Service>::~Client() {
   Kill();
 }
 
 template <typename Service>
-void GrpcClient<Service>::ChangeServer(
+void Client<Service>::ChangeServer(
     const std::string& address,
     ConnectionChangeCallback connection_change_callback) {
   // Disconnect from the previous server
   Kill();
 
   // Set the non-shared data
-  using_in_process_server_ = false;
   server_address_ = address;
   queue_ = std::make_unique<grpc::CompletionQueue>();
 
   bool state_changed = false;
-  GrpcClientState cnc_client_state;
+  ClientState cnc_client_state;
 
   // Update the shared data
   shared_data_.use_safely([&](SharedData& data) {
@@ -64,16 +63,15 @@ void GrpcClient<Service>::ChangeServer(
 
   // Wait for state changes
   run_thread_ = std::make_unique<std::thread>(
-      &GrpcClient<Service>::Run, this, std::move(connection_change_callback));
+      &Client<Service>::run, this, std::move(connection_change_callback));
 }
 
 template <typename Service>
-void GrpcClient<Service>::ChangeServer(
+void Client<Service>::ChangeServer(
     std::shared_ptr<grpc::Channel> in_process_channel) {
   // Disconnect from the previous server
   Kill();
 
-  using_in_process_server_ = true;
   server_address_ = "In-Process";
 
   shared_data_.use_safely(
@@ -88,7 +86,7 @@ void GrpcClient<Service>::ChangeServer(
 }
 
 template <typename Service>
-void GrpcClient<Service>::Kill() {
+void Client<Service>::Kill() {
   shared_data_.use_safely([](SharedData& data) {
     // Delete the stub and channel first to trigger the shutdown events in the
     // channel. ('data.stub' has a shared pointer to channel so it needs to be
@@ -109,12 +107,12 @@ void GrpcClient<Service>::Kill() {
 }
 
 template <typename Service>
-const std::string& GrpcClient<Service>::GetServerAddress() const {
+const std::string& Client<Service>::GetServerAddress() const {
   return server_address_;
 }
 
 template <typename Service>
-detail::GrpcClientState GrpcClient<Service>::GetState() {
+detail::ClientState Client<Service>::GetState() {
   grpc_connectivity_state state_copy;
   shared_data_.use_safely(
       [&](const SharedData& data) { state_copy = data.connection_state; });
@@ -122,13 +120,8 @@ detail::GrpcClientState GrpcClient<Service>::GetState() {
 }
 
 template <typename Service>
-bool GrpcClient<Service>::IsUsingInProcessServer() const {
-  return using_in_process_server_;
-}
-
-template <typename Service>
 template <typename UsageFunc>
-bool GrpcClient<Service>::UseStub(const UsageFunc& usage_func) {
+bool Client<Service>::UseStub(const UsageFunc& usage_func) {
   bool stub_valid = false;
 
   shared_data_.use_safely([&](const SharedData& data) {
@@ -143,9 +136,9 @@ bool GrpcClient<Service>::UseStub(const UsageFunc& usage_func) {
 
 // This function is run from the 'run_thread_' thread
 template <typename Service>
-void GrpcClient<Service>::Run(const std::function<void(const GrpcClientState&)>&
+void Client<Service>::run(const std::function<void(const ClientState&)>&
                                   connection_change_callback) {
-  GrpcClientState cnc_client_state;
+  ClientState cnc_client_state;
 
   void* current_tag;  // A label so se can identify the current update
   bool result_ok;     // Set to false if the queue receives updates due to
@@ -188,7 +181,7 @@ void GrpcClient<Service>::Run(const std::function<void(const GrpcClientState&)>&
                                           queue_.get(), connection_change_tag);
 
       } else if (to_cnc_client_state(data.connection_state) !=
-                 detail::GrpcClientState::not_connected) {
+                 detail::ClientState::not_connected) {
         // The channel has been shutdown but the state is not set so do not
         // disconnected yet. Set it appropriately.
         data.connection_state = GRPC_CHANNEL_SHUTDOWN;

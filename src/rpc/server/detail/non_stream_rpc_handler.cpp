@@ -51,58 +51,6 @@ void NonStreamRpcHandler<Service, Request, Response, Callback>::ActivateNext() {
 
   // Add a new connection that is waiting to be activated
   connection_ = std::make_unique<NonStreamRpcConnection<Request, Response>>();
-
-  (service_.*stream_func_)(&connection_->context, &connection_->request,
-                           &connection_->responder, &queue_, &server_queue_,
-                           this);
-}
-template <typename Service, typename Request, typename Response,
-          typename Callback>
-NonStreamRpcHandler<Service, Request, Response, Callback>::NonStreamRpcHandler(
-    Service& service, grpc::ServerCompletionQueue& server_queue,
-    AsyncNoStreamFunc<Service, Request, Response> stream_func,
-    Callback callback)
-    : service_(service),
-      server_queue_(server_queue),
-      stream_func_(stream_func),
-      callback_(std::move(callback)) {
-}
-
-template <typename Service, typename Request, typename Response,
-          typename Callback>
-NonStreamRpcHandler<Service, Request, Response,
-                    Callback>::~NonStreamRpcHandler() {
-  queue_.Shutdown();
-
-  void* ignored_tag;
-  bool call_ok;
-  while (queue_.Next(&ignored_tag, &call_ok)) {
-    assert(not call_ok);
-  }
-}
-
-template <typename Service, typename Request, typename Response,
-          typename Callback>
-void NonStreamRpcHandler<Service, Request, Response, Callback>::ActivateNext() {
-  if (connection_) {
-    Response response;
-    grpc::Status status = callback_(connection_->request, &response);
-    connection_->responder.Finish(response, status, &response);
-
-    void* recv_tag;
-    bool call_ok;
-
-    if (queue_.Next(&recv_tag, &call_ok)) {
-      assert(call_ok);
-      assert(recv_tag == &response);
-    } else {
-      assert(false);
-    }
-  }
-
-  // Add a new connection that is waiting to be activated
-  connection_ = std::make_unique<NonStreamRpcConnection<Request, Response>>();
-
   (service_.*stream_func_)(&connection_->context, &connection_->request,
                            &connection_->responder, &queue_, &server_queue_,
                            this);

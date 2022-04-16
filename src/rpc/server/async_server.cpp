@@ -22,7 +22,7 @@ AsyncServer<Service>::AsyncServer(std::shared_ptr<Service> service,
     while (server_queue_->Next(&tag, &call_ok)) {
       if (call_ok) {
         rpc_handlers_.UseSafely([&](RpcMap& rpc_handlers) {
-          rpc_handlers.at(tag)->activate_next();
+          rpc_handlers.at(tag)->ActivateNext();
         });
       } else {
         rpc_handlers_.UseSafely(
@@ -56,6 +56,7 @@ void AsyncServer<Service>::RegisterAsync(
   rpc_handlers_.UseSafely([&](RpcMap& rpc_handlers) {
     rpc_handlers.emplace(tag, std::move(handler));
   });
+
   tag->activate_next();
 }
 

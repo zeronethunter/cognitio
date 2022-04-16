@@ -10,8 +10,8 @@
 #include <grpc++/server.h>
 #include <grpc++/server_builder.h>
 
-#include "rpc/server/detail/non_stream_rpc_handler.hpp"
 #include "common/atomic_data.hpp"
+#include "rpc/server/detail/non_stream_rpc_handler.hpp"
 
 namespace cognitio {
 namespace rpc {

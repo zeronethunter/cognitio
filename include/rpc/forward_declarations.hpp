@@ -12,19 +12,17 @@ namespace server {
 
 using ClientID = void*;
 
-class GrpcServer;
-
 template <typename Service>
-class GrpcAsyncServer;
+class AsyncServer;
 
 }  // namespace server
 
 namespace client {
 
 template <typename Service>
-class GrpcClient;
+class Client;
 
-enum class GrpcClientState;
+enum class ClientState;
 
 }  // namespace client
 }  // namespace rpc
