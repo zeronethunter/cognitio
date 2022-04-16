@@ -32,8 +32,7 @@ inline std::string to_string(const ClientState& state) {
   throw std::invalid_argument("Invalid ClientState");
 }
 
-inline std::ostream& operator<<(std::ostream& os,
-                                const ClientState& state) {
+inline std::ostream& operator<<(std::ostream& os, const ClientState& state) {
   return os << to_string(state);
 }
 

@@ -30,8 +30,7 @@ struct NonStreamRpcConnection {
   Request request;
   grpc::ServerAsyncResponseWriter<Response> responder;
 
-  NonStreamRpcConnection() : responder(&context) {
-  }
+  NonStreamRpcConnection() : responder(&context) {}
 };
 
 //! \brief Handles non-streaming gRPC responses for a single rpc call
@@ -69,7 +68,6 @@ class NonStreamRpcHandler : public AsyncRpcHandlerInterface {
   //! All the data needed to handle the RPC call when a client make a request
   std::unique_ptr<NonStreamRpcConnection<Request, Response>> connection_;
 };
-
 
 }  // namespace detail
 }  // namespace server

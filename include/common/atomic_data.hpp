@@ -66,13 +66,12 @@ class AtomicData {
 };
 
 template <typename T>
-AtomicData<T>::AtomicData(T&& data) : data_(std::forward<T>(data)) {
-}
+AtomicData<T>::AtomicData(T&& data) : data_(std::forward<T>(data)) {}
 
 template <typename T>
 template <typename... Args>
-AtomicData<T>::AtomicData(Args&&... args) : data_(std::forward<Args>(args)...) {
-}
+AtomicData<T>::AtomicData(Args&&... args)
+    : data_(std::forward<Args>(args)...) {}
 
 template <typename T>
 template <typename Func>

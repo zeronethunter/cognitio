@@ -13,16 +13,15 @@
 
 #include <thread>
 
+#include "common/atomic_data.hpp"
 #include "rpc/client/detail/client_state.hpp"
 #include "rpc/forward_declarations.hpp"
-#include "common/atomic_data.hpp"
 
 namespace cognitio {
 namespace rpc {
 namespace client {
 
-inline detail::ClientState to_cnc_client_state(
-    grpc_connectivity_state state) {
+inline detail::ClientState to_cnc_client_state(grpc_connectivity_state state) {
   switch (state) {
     case GRPC_CHANNEL_SHUTDOWN:
     case GRPC_CHANNEL_IDLE:
@@ -55,7 +54,7 @@ class Client {
   //!
   //! NOTE: The callback will be invoked from a separate thread.
   void ChangeServer(const std::string& address,
-                     ConnectionChangeCallback connection_change_callback);
+                    ConnectionChangeCallback connection_change_callback);
 
   //! \brief Create a direct channel to a server running in the same process.
   //!
