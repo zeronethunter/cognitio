@@ -2,6 +2,8 @@
 //
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
+#ifndef CGNT_COMMON_MILTIFORMATS_CID_HPP_
+#define CGNT_COMMON_MILTIFORMATS_CID_HPP_
 
 #ifndef CGNT_UTILS_MILTIFORMATS_CID_HPP_
 #define CGNT_UTILS_MILTIFORMATS_CID_HPP_
@@ -20,8 +22,6 @@ namespace cid {
 //! that is, the Version, the Codec, the Multihash type
 //! and the Multihash length. It does not contains
 //! any actual content information.
-//
-// FIXME: Default constructor!!!
 struct Prefix {
   uint64_t version_;
   uint64_t codec_;
