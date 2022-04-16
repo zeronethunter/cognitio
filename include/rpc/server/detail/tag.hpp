@@ -30,7 +30,7 @@ struct Tag {
 std::ostream& operator<<(::std::ostream& os, const Tag& tag);
 
 void* MakeTag(void* data, TagLabel label,
-               std::unordered_map<void*, std::unique_ptr<Tag>>* tags);
+              std::unordered_map<void*, std::unique_ptr<Tag>>* tags);
 Tag GetTag(void* key, std::unordered_map<void*, std::unique_ptr<Tag>>* tags);
 
 }  // namespace detail
