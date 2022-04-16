@@ -3,10 +3,7 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#include <cstdlib>
+#ifndef CONGITIO_CHUNKER_HPP
+#define CONGITIO_CHUNKER_HPP
 
-#include "hello/hello.hpp"
-
-int main() {
-  return 0;
-}
+#endif  // CONGITIO_CHUNKER_HPP

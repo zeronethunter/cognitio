@@ -92,6 +92,6 @@ clean:
 	rm -rf ${BUILD_DIR}
 
 docker:
-    # docker build -t ${DOCKER_IMAGE} .
-    # docker image pull serpentian/cognitio:latest
+	docker build -t ${DOCKER_IMAGE} .
+	docker image pull serpentian/cognitio:latest
 	docker run -v $(shell pwd):/home/project -it ${DOCKER_IMAGE}
