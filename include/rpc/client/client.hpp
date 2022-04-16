@@ -21,34 +21,31 @@ namespace cognitio {
 namespace rpc {
 namespace client {
 
-inline detail::GrpcClientState to_cnc_client_state(
+inline detail::ClientState to_cnc_client_state(
     grpc_connectivity_state state) {
   switch (state) {
     case GRPC_CHANNEL_SHUTDOWN:
     case GRPC_CHANNEL_IDLE:
-      return detail::GrpcClientState::not_connected;
+      return detail::ClientState::not_connected;
 
     case GRPC_CHANNEL_CONNECTING:
     case GRPC_CHANNEL_TRANSIENT_FAILURE:
-      return detail::GrpcClientState::attempting_to_connect;
+      return detail::ClientState::attempting_to_connect;
 
     case GRPC_CHANNEL_READY:
-      return detail::GrpcClientState::connected;
+      return detail::ClientState::connected;
   }
 
   throw std::invalid_argument("Invalid grpc_connectivity_state");
 }
 
 template <typename Service>
-class GrpcClient {
-  using ConnectionChangeCallback = std::function<void(GrpcClientState)>;
-
-  template <typename Result>
-  class GrpcClientStreamCallbackSetter;
+class Client {
+  using ConnectionChangeCallback = std::function<void(ClientState)>;
 
  public:
-  explicit GrpcClient() = default;
-  ~GrpcClient();
+  explicit Client() = default;
+  ~Client();
 
   //! \brief Attempt to connect to a host address in the form "server:port".
   //!
@@ -71,8 +68,7 @@ class GrpcClient {
   void Kill();
 
   const std::string& GetServerAddress() const;
-  detail::GrpcClientState GetState();
-  bool IsUsingInProcessServer() const;
+  detail::ClientState GetState();
 
   //! \brief Safely use the service stub to make RPC calls.
   //!
@@ -92,7 +88,6 @@ class GrpcClient {
   //! Using atomic access to manipulate the shared data
   common::AtomicData<SharedData> shared_data_;
 
-  bool using_in_process_server_ = false;
   std::string server_address_;
 
   //! Used as a label in 'queue_' so we know when the state changed.
@@ -103,7 +98,7 @@ class GrpcClient {
   std::unique_ptr<grpc::CompletionQueue> queue_;
   std::unique_ptr<std::thread> run_thread_;
 
-  void Run(const std::function<void(const GrpcClientState&)>&
+  void run(const std::function<void(const ClientState&)>&
                connection_change_callback);
 };
 

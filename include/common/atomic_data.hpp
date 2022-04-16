@@ -61,7 +61,7 @@ class AtomicData {
 
  private:
   mutable std::mutex lock_;  //!< mutable so it can be used with const functions
-  std::condition_variable condition_;
+  std::condition_variable cv_;
   T data_;
 };
 
@@ -92,7 +92,7 @@ template <typename T>
 template <typename Pred, typename Func>
 auto AtomicData<T>::WaitToUseSafely(const Pred& predicate, const Func& func) {
   std::unique_lock<std::mutex> unlockable_lock(lock_);
-  condition_.wait(unlockable_lock, [&] { return predicate(data_); });
+  cv_.wait(unlockable_lock, [&] { return predicate(data_); });
   return func(data_);
 }
 
@@ -101,18 +101,18 @@ template <typename Pred, typename Func>
 auto AtomicData<T>::WaitToUseSafely(const Pred& predicate,
                                     const Func& func) const {
   std::unique_lock<std::mutex> unlockable_lock(lock_);
-  condition_.wait(unlockable_lock, [&] { return predicate(data_); });
+  cv_.wait(unlockable_lock, [&] { return predicate(data_); });
   return func(data_);
 }
 
 template <typename T>
 void AtomicData<T>::NotifyOne() {
-  condition_.notify_one();
+  cv_.notify_one();
 }
 
 template <typename T>
 void AtomicData<T>::NotifyAll() {
-  condition_.notify_all();
+  cv_.notify_all();
 }
 
 }  // namespace common

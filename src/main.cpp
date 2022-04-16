@@ -5,8 +5,6 @@
 
 #include <cstdlib>
 
-#include "hello/hello.hpp"
-
 int main() {
-  return 0;
+  return EXIT_SUCCESS;
 }
