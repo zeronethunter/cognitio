@@ -6,12 +6,12 @@
 #ifndef CGNT_UTILS_MILTIFORMATS_CID_HPP_
 #define CGNT_UTILS_MILTIFORMATS_CID_HPP_
 
-#include "linked_data/node.hpp"
-
 #include <cstddef>
 #include <cstdint>
-#include <vector>
 #include <string>
+#include <vector>
+
+#include "linked_data/node.hpp"
 
 namespace cognitio {
 namespace cid {
@@ -20,20 +20,19 @@ namespace cid {
 //! that is, the Version, the Codec, the Multihash type
 //! and the Multihash length. It does not contains
 //! any actual content information.
+//
+// FIXME: Default constructor!!!
 struct Prefix {
   uint64_t version_;
   uint64_t codec_;
   uint64_t mh_type_;
   int mh_length_;
 
-  Prefix(uint64_t version, 
-         uint64_t codec,
-         uint64_t mh_type,
-         int mh_length) : version_(version), 
-                          codec_(codec), 
-                          mh_type_(mh_type), 
-                          mh_length_(mh_length) 
-                          {};
+  Prefix(uint64_t version, uint64_t codec, uint64_t mh_type, int mh_length)
+      : version_(version),
+        codec_(codec),
+        mh_type_(mh_type),
+        mh_length_(mh_length){};
 };
 
 enum CodeType {
@@ -57,7 +56,7 @@ enum CodeType {
 class Cid {
  public:
   Cid();
-  
+
   //! Creates a new Cid.
   Cid(const cognitio::linked_data::Node &node);
 
@@ -73,7 +72,7 @@ class Cid {
 
   //! GetBytes returns the byte representation of a Cid.
   std::vector<uint8_t> GetBytes() const;
-  
+
   //! GetPrefix returns prefix form of Cid.
   std::string GetPrefix() const;
 
@@ -85,13 +84,10 @@ class Cid {
 
  private:
   std::string str_cid_;                //! string view of cid.
-
-  std::vector<uint64_t> bytes_view_;    //! bytes array view of cid.
-
+  std::vector<uint64_t> bytes_view_;   //! bytes array view of cid.
   cognitio::cid::Prefix prefix_form_;  //! contains version, codec,
                                        //! mh-type and -length.
   cognitio::cid::CodeType content_type_;
-
 };
 
 }  // namespace cid
