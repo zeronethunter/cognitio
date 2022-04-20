@@ -28,11 +28,15 @@ struct Prefix {
   uint64_t mh_type_;
   int mh_length_;
 
+  Prefix() = default;
+
   Prefix(uint64_t version, uint64_t codec, uint64_t mh_type, int mh_length)
       : version_(version),
         codec_(codec),
         mh_type_(mh_type),
         mh_length_(mh_length){};
+
+  ~Prefix() = default;
 };
 
 enum CodeType {

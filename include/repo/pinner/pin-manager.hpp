@@ -21,7 +21,7 @@ template <typename Key, typename CID, typename Value, typename Options>
 class PinManager {
  public:
   PinManager() = default;
-  PinManager(const datastore::Filesystem<Key, Value, Options>& pinstore) {
+  PinManager(const datastore::Datastore<Key, Value, Options>& pinstore) {
     pinstore_ = pinstore;
   }
   void PinDirectly(
@@ -37,7 +37,7 @@ class PinManager {
   void IndirectKeys(const Options& options);
 
  private:
-  datastore::Filesystem<Key, Value, Options> pinstore_;
+  datastore::Datastore<Key, Value, Options> pinstore_;
   blockstorage::Blockstorage<Key, CID, Value, Options> blockstorage_;
   std::set<CID> direct_pins_;
   std::set<CID> recursive_pins_;

@@ -10,27 +10,20 @@ namespace repo {
 
 template <typename Key, typename CID, typename Value, typename Options>
 Repo<Key, CID, Value, Options>::Repo(
-    const std::filesystem::path& path,
-    const datastore::Filesystem<Key, Value, Options>& datastore) {
-}
+    const datastore::Datastore<Key, Value, Options>& datastore,
+    const Options& config) {}
 template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::Init() {
-}
+void Repo<Key, CID, Value, Options>::Init() {}
 template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::Open() {
-}
+void Repo<Key, CID, Value, Options>::Open() {}
 template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::Close() {
-}
+void Repo<Key, CID, Value, Options>::Close() {}
 template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::OpenRoot() {
-}
+void Repo<Key, CID, Value, Options>::OpenRoot() {}
 template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::OpenLock() {
-}
+void Repo<Key, CID, Value, Options>::OpenLock() {}
 template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::CloseLock() {
-}
+void Repo<Key, CID, Value, Options>::CloseLock() {}
 
 }  // namespace repo
 }  // namespace cognitio

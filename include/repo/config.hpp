@@ -14,4 +14,4 @@ class Config {};
 }  // namespace repo
 }  // namespace cognitio
 
-#endif  // CGNT_CORE_COMMANDS_CONTEXT_HPP_
+#endif  // CGNT_REPO_CONFIG_HPP_

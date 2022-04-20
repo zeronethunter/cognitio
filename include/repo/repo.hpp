@@ -22,19 +22,19 @@ namespace repo {
 template <typename Key, typename CID, typename Value, typename Options>
 class Repo {
  public:
-  explicit Repo(const std::filesystem::path& path,
-                const datastore::Filesystem<Key, Value, Options>& datastore);
+  explicit Repo(datastore::Datastore<Key, Value, Options> const& datastore,
+                Options const& config);
   void
   Init();  //! Initializing the repository, namely starting gc and creating pins
-  void Open(); //! Open the repository
-  void Close(); //! Close the repository, clean it up
+  void Open();   //! Open the repository
+  void Close();  //! Close the repository, clean it up
 
  private:
   bool closed_ = true;
-  std::filesystem::path path_;
-  datastore::Filesystem<Key, Value, Options> root_;
-  datastore::Filesystem<Key, Value, Options> datastore_;
-  datastore::Filesystem<Key, Value, Options> key_;
+  Options config_;
+  datastore::Datastore<Key, Value, Options> root_;
+  datastore::Datastore<Key, Value, Options> datastore_;
+  datastore::Datastore<Key, Value, Options> key_;
   pinner::PinManager<Key, CID, Value, Options> pins_;
   blockstorage::Blockstorage<Key, CID, Value, Options> pinned_block_storage_;
   void OpenRoot();
