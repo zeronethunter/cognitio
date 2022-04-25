@@ -6,8 +6,11 @@
 #ifndef CGNT_CLI_COMMANDS_COMMAND_HPP_
 #define CGNT_CLI_COMMANDS_COMMAND_HPP_
 
+#include <algorithm>
 #include <memory>
 #include <string>
+#include <tuple>
+#include <type_traits>
 #include <vector>
 
 #include "common/status.hpp"
@@ -19,35 +22,45 @@ namespace cognitio {
 namespace cli {
 namespace commands {
 
-struct CmdEnv {
-  std::vector<std::string> options;
-  std::vector<std::string> arguments;
-};
-
+// Composite patterns
 template <class Context>
 class Command {
  public:
+  class CmdMeta {
+   public:
+    CmdMeta() = default;
+    std::string GetName() const noexcept { return name_; }
+    bool IsNoRemote() const noexcept { return no_remote_; }
+    bool IsNoLocal() const noexcept { return no_local_; }
+
+   private:
+    std::string name_;
+    std::vector<std::string> possible_options_;
+    bool options_required_ = false;
+    bool no_remote_ = false;
+    bool no_local_ = false;
+  };
+
+  struct CmdEnv {
+    std::vector<std::string> options;
+    std::vector<std::string> arguments;
+  };
+
+  struct CmdWrapper {
+    std::unique_ptr<Command> cmd;
+    CmdEnv env;
+  };
+
   Command() = default;
   virtual ~Command() = default;
-
-  std::string GetName() const noexcept { return cmd_name_; }
-  bool isRunnable() const noexcept { return is_runnable_; }
-  bool isNoRemote() const noexcept { return no_remote_; }
-  bool isNoLocal() const noexcept { return no_local_; }
-
+  CmdMeta& GetMeta() const noexcept { return meta_; }
+  void AddSubCmd(std::unique_ptr<Command> cmd) { sub_commands_.push_back(cmd); }
   virtual Status Run(Context& ctx, const CmdEnv& env, ResponseEmitter& re) = 0;
-  std::vector<std::unique_ptr<Command<Context>>> GetSubCommands() noexcept {
-    return sub_commands_;
-  }
+  // std::tuple<Status, CmdWrapper> Interpret(std::vector<std::string>& args);
 
  private:
-  std::string cmd_name_;
-  std::vector<std::string> options_;
+  CmdMeta meta_;
   std::vector<std::unique_ptr<Command<Context>>> sub_commands_;
-
-  bool is_runnable_ = false;
-  bool no_remote_ = false;
-  bool no_local_ = false;
 };
 
 }  // namespace commands

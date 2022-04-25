@@ -13,7 +13,7 @@
 #include "repo/config.hpp"
 
 namespace cognitio {
-namespace cli {
+namespace core {
 namespace commands {
 class Context {
  public:
@@ -21,7 +21,7 @@ class Context {
   ~Context() = default;
 
   void SetConfig(repo::config::Config& conf);
-  void SetCoreAPI(core::core_api::CoreAPI& api);
+  void SetAPI(core::core_api::CoreAPI& api);
   repo::config::Config& GetConfig() noexcept;
   core::core_api::CoreAPI& GetAPI() noexcept;
   core::Core& GetCore() noexcept;
@@ -31,7 +31,7 @@ class Context {
   core::core_api::CoreAPI core_api_;
 };
 }  // namespace commands
-}  // namespace cli
+}  // namespace core
 }  // namespace cognitio
 
 #endif  // CGNT_CORE_COMMANDS_CONTEXT_HPP_

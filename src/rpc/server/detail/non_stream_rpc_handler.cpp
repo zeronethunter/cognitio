@@ -14,8 +14,7 @@ NonStreamRpcHandler<Service, Request, Response, Callback>::NonStreamRpcHandler(
     : service_(service),
       server_queue_(server_queue),
       stream_func_(stream_func),
-      callback_(std::move(callback)) {
-}
+      callback_(std::move(callback)) {}
 
 template <typename Service, typename Request, typename Response,
           typename Callback>
