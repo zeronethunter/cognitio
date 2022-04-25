@@ -56,7 +56,6 @@ class Command {
   CmdMeta& GetMeta() const noexcept { return meta_; }
   void AddSubCmd(std::unique_ptr<Command> cmd) { sub_commands_.push_back(cmd); }
   virtual Status Run(Context& ctx, const CmdEnv& env, ResponseEmitter& re) = 0;
-  // std::tuple<Status, CmdWrapper> Interpret(std::vector<std::string>& args);
 
  private:
   CmdMeta meta_;

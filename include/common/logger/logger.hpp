@@ -6,16 +6,19 @@
 #ifndef CGNT_COMMON_LOGGER_LOGGER_HPP_
 #define CGNT_COMMON_LOGGER_LOGGER_HPP_
 
-#include <glog/logging.h>
+#include <spdlog/spdlog.h>
 
 namespace cognitio {
 namespace common {
 namespace logger {
 
-void LogInit();
-void LogSetSeverity(int argc, char *argv[]);
+using Logger = std::shared_ptr<spdlog::logger>;
+//! \brief Provide logger object
+//! \param tag - tagging name for identifying logger
+//! \return logger object
+Logger createLogger(const std::string& tag);
 
-}
+}  // namespace logger
 }  // namespace common
 }  // namespace cognitio
 

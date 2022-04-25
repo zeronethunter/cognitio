@@ -5,9 +5,6 @@
 #ifndef CGNT_COMMON_MILTIFORMATS_CID_HPP_
 #define CGNT_COMMON_MILTIFORMATS_CID_HPP_
 
-#ifndef CGNT_UTILS_MILTIFORMATS_CID_HPP_
-#define CGNT_UTILS_MILTIFORMATS_CID_HPP_
-
 #include <cstddef>
 #include <cstdint>
 #include <string>
