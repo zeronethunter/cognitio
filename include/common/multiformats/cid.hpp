@@ -35,14 +35,34 @@ struct Prefix {
                           {};
 };
 
+enum CodeType {
+  IDENTITY = 0x00,
+  SHA1 = 0x11,
+  SHA2_256 = 0x12,
+  SHA2_512 = 0x13,
+  SHA3_512 = 0x14,
+  SHA3_384 = 0x15,
+  SHA3_256 = 0x16,
+  SHA3_224 = 0x17,
+  RAW = 0x55,
+  DAG_PB = 0x70,
+  DAG_CBOR = 0x71,
+  FILECOIN_COMMITMENT_UNSEALED = 0xf101,
+  FILECOIN_COMMITMENT_SEALED = 0xf102,
+};
+
 //! Content identifier.
 //! View: <multicodec><multihash-algorithm><multihash-length><multihash-hash>
 class Cid {
  public:
-  Cid() = default;
+  Cid();
   
   //! Creates a new Cid.
   Cid(const cognitio::linked_data::Node &node);
+
+  Cid(const Cid &cid) = default;
+
+  Cid(Cid &&cid);
 
   //! Equals operator checks that two Cids are the same.
   bool operator==(const cognitio::cid::Cid &other);
@@ -57,7 +77,7 @@ class Cid {
   std::string GetPrefix() const;
 
   //! ToString returns the default string representation of a Cid.
-  std::string ToString() const;
+  std::string ToString() const { return str_cid_; };
 
   //! Type returns the multicodec-packed content type of a Cid.
   uint64_t GetType() const;
@@ -69,6 +89,10 @@ class Cid {
 
   cognitio::cid::Prefix prefix_form_;  //! contains version, codec,
                                        //! mh-type and -length.
+
+  cognitio::cid::CodeType content_type_;
+
+  
 };
 
 }  // namespace cid
