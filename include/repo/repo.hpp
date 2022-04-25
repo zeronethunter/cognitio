@@ -19,10 +19,10 @@ namespace repo {
 //! Creates Garbage Collector, Config File and Storages.
 //! And also manages Pins.
 
-template <typename Key, typename CID, typename Value, typename Options>
+template <typename Key, typename Value, typename Options>
 class Repo {
  public:
-  static Repo<Key, CID, Value, Options> CreateRepo(
+  static Repo<Key, Value, Options> CreateRepo(
       std::filesystem::path path,
       const Options& options);  //! Create repository
   explicit Repo(datastore::Datastore<Key, Value, Options> const& datastore,
@@ -36,10 +36,8 @@ class Repo {
   bool closed_ = true;
   Options config_;
   datastore::Datastore<Key, Value, Options> root_;
-  datastore::Datastore<Key, Value, Options> datastore_;
-  datastore::Datastore<Key, Value, Options> key_;
-  pinner::PinManager<Key, CID, Value, Options> pins_;
-  blockstorage::Blockstorage<Key, CID, Value, Options> pinned_block_storage_;
+  pinner::PinManager<Key, Value, Options> pins_;
+  blockstorage::Blockstorage<Key, Value, Options> pinned_block_storage_;
   void OpenRoot();
   void OpenLock();
   void CloseLock();
