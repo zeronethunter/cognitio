@@ -22,6 +22,9 @@ namespace repo {
 template <typename Key, typename CID, typename Value, typename Options>
 class Repo {
  public:
+  static Repo<Key, CID, Value, Options> CreateRepo(
+      std::filesystem::path path,
+      const Options& options);  //! Create repository
   explicit Repo(datastore::Datastore<Key, Value, Options> const& datastore,
                 Options const& config);
   void

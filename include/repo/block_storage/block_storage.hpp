@@ -17,7 +17,7 @@ namespace blockstorage {
 //! This is special wrapper for datastore
 //! Used to work with blocks localy (CIDs)
 template <typename Key, typename CID, typename Value, typename Options>
-class Blockstorage : public datastore::Datastore<Key, Value, Options> {
+class Blockstorage {
  public:
   datastore::DsError Open();   //! Open Blockstorage
   datastore::DsError Close();  //! Close Blockstorage

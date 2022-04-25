@@ -9,8 +9,10 @@ namespace cognitio {
 namespace repo {
 namespace blockstorage {
 
-void Open();
-void Close();
+template <typename Key, typename CID, typename Value, typename Options>
+datastore::DsError Blockstorage<Key, CID, Value, Options>::Open() {}
+template <typename Key, typename CID, typename Value, typename Options>
+datastore::DsError Blockstorage<Key, CID, Value, Options>::Close() {}
 template <typename Key, typename CID, typename Value, typename Options>
 datastore::DsError Blockstorage<Key, CID, Value, Options>::Put(
     const CID& cid, const Value& value, const Options& options) {
