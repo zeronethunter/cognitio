@@ -8,9 +8,9 @@
 
 #include <filesystem>
 
+#include "common/multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "datastore/datastore.hpp"
-#include "common/multiformats/cid.hpp"
 
 namespace cognitio {
 namespace datastore {
@@ -20,14 +20,17 @@ namespace datastore {
 template <typename Value>
 class Filesystem : public Datastore<cid::Cid, Value, Status> {
  public:
-  Status Open() override;
+  Status Open(const std::filesystem::path& path) override;
   Status Close() override;
+  std::filesystem::path Root() { return path_; }
   Status Put(const cid::Cid& key, const Value& value) override;
-  Value Get(const cid::Cid& key) override;
+  std::pair<Status, Value> Get(const cid::Cid& key) override;
   Status Delete(const cid::Cid& key) override;
   Status PutMany(const std::set<std::pair<cid::Cid, Value>>& source) override;
-  std::set<Value> GetMany(const std::set<cid::Cid>& source) override;
+  std::pair<Status, std::set<Value>> GetMany(
+      const std::set<cid::Cid>& source) override;
   Status DeleteMany(const std::set<cid::Cid>& source) override;
+
  private:
   std::filesystem::path path_;
 };

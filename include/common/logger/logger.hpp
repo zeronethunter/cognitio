@@ -16,7 +16,7 @@ using Logger = std::shared_ptr<spdlog::logger>;
 //! \brief Provide logger object
 //! \param tag - tagging name for identifying logger
 //! \return logger object
-Logger createLogger(const std::string& tag);
+Logger createLogger(const std::string& tag, bool debug_mode = true);
 
 }  // namespace logger
 }  // namespace common

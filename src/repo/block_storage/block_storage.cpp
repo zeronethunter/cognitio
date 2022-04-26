@@ -9,48 +9,39 @@ namespace cognitio {
 namespace repo {
 namespace blockstorage {
 
-template <typename Key, typename Value, typename Options>
-Status Blockstorage<Key, Value, Options>::Open() {
-  if ()
+Status blockstorage::Blockstorage::Open(const std::filesystem::path& path) {
+  return storage_.Open(path);
 }
 
-template <typename Key, typename Value, typename Options>
-Status Blockstorage<Key, Value, Options>::Close() {}
+Status blockstorage::Blockstorage::Close() { return storage_.Close(); }
 
-template <typename Key, typename Value, typename Options>
-Status Blockstorage<Key, Value, Options>::Put(
-    const Key& key, const Value& value, const Options& options) {
-  return storage_.Put(key, value, options);
+Status blockstorage::Blockstorage::Put(const cid::Cid& key,
+                                       const std::vector<uint8_t>& value) {
+  return storage_.Put(key, value);
 }
 
-template <typename Key, typename Value, typename Options>
-Value Blockstorage<Key, Value, Options>::Get(const Key& key,
-                                                  const Options& options) {
-  return storage_.Get(key, options);
+std::pair<Status, std::vector<uint8_t>> blockstorage::Blockstorage::Get(
+    const cid::Cid& key) {
+  return storage_.Get(key);
 }
 
-template <typename Key, typename Value, typename Options>
-Status Blockstorage<Key, Value, Options>::Delete(
-    const Key& key, const Options& options) {
-  return storage_.Delete(key, options);
+Status blockstorage::Blockstorage::Delete(const cid::Cid& key) {
+  return storage_.Delete(key);
 }
 
-template <typename Key, typename Value, typename Options>
-Status Blockstorage<Key, Value, Options>::PutMany(
-    const std::set<std::pair<Key, Value>>& source, const Options& options) {
-  return storage_.PutMany(source, options);
+Status blockstorage::Blockstorage::PutMany(
+    const std::set<std::pair<cid::Cid, std::vector<uint8_t>>>& source) {
+  return storage_.PutMany(source);
 }
 
-template <typename Key, typename Value, typename Options>
-std::set<Value> Blockstorage<Key, Value, Options>::GetMany(
-    const std::set<Key>& source, const Options& options) {
-  return storage_.GetMany(source, options);
+std::pair<Status, std::set<std::vector<uint8_t>>>
+blockstorage::Blockstorage::GetMany(const std::set<cid::Cid>& source) {
+  return storage_.GetMany(source);
 }
 
-template <typename Key, typename Value, typename Options>
-Status Blockstorage<Key, Value, Options>::DeleteMany(
-    const std::set<Key>& source, const Options& options) {
-  return storage_.DeleteMany(source, options);
+Status blockstorage::Blockstorage::DeleteMany(
+    const std::set<cid::Cid>& source) {
+  return storage_.DeleteMany(source);
 }
 
 }  // namespace blockstorage

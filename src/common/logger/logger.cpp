@@ -17,7 +17,7 @@ void setDebugPattern(spdlog::logger& logger) {
 }
 
 std::shared_ptr<spdlog::logger> createLogger(const std::string& tag,
-                                             bool debug_mode = true) {
+                                             bool debug_mode) {
   auto logger = spdlog::stdout_color_mt(tag);
   if (debug_mode) {
     setDebugPattern(*logger);
@@ -38,7 +38,7 @@ Logger createLogger(const std::string& tag) {
   std::lock_guard<std::mutex> lock(mutex);
   auto logger = spdlog::get(tag);
   if (logger == nullptr) {
-    logger = ::createLogger(tag);
+    logger = ::createLogger(tag, true);
   }
 
   return logger;

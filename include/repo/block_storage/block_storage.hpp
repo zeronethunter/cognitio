@@ -8,6 +8,8 @@
 
 #include <set>
 
+#include "common/block/block.hpp"
+#include "common/multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "datastore/ds_fs.hpp"
 
@@ -17,24 +19,27 @@ namespace blockstorage {
 
 //! This is special wrapper for datastore
 //! Used to work with blocks localy (CIDs)
-template <typename Key, typename Value>
 class Blockstorage {
  public:
-  Status Open();   //! Open Blockstorage
+  Status Open(const std::filesystem::path& path);  //! Open Blockstorage
+  std::filesystem::path Root() { return storage_.Root(); }
   Status Close();  //! Close Blockstorage
-  Status Put(const Key& key,
-             const Value& value);  //! Put Value by CID in storage
-  Value Get(const Key& key);       //! Get Value by CID from storage
-  Status Delete(const Key& key);   //! Delete Value by CID from storage
-  Status PutMany(const std::set<std::pair<Key, Value>>&
+  Status Put(
+      const cid::Cid& key,
+      const std::vector<uint8_t>& value);  //! Put Value by CID in storage
+  std::pair<Status, std::vector<uint8_t>> Get(
+      const cid::Cid& key);            //! Get Value by CID from storage
+  Status Delete(const cid::Cid& key);  //! Delete Value by CID from storage
+  Status PutMany(const std::set<std::pair<cid::Cid, std::vector<uint8_t>>>&
                      source);  //! Put many Values by their CIDs in storage
-  std::set<Value> GetMany(
-      const std::set<Key>&
+  std::pair<Status, std::set<std::vector<uint8_t>>> GetMany(
+      const std::set<cid::Cid>&
           source);  //! Get many Value by their CIDs from storage
-  Status DeleteMany(const std::set<Key>& source);  //! Delete many Values by
-                                                   //! their CIDs in storage
+  Status DeleteMany(
+      const std::set<cid::Cid>& source);  //! Delete many Values by
+                                          //! their CIDs in storage
  private:
-  datastore::Filesystem<Key, Value> storage_;  //! FS datastorage
+  datastore::Filesystem<std::vector<uint8_t>> storage_;  //! FS datastorage
 };
 
 }  // namespace blockstorage
