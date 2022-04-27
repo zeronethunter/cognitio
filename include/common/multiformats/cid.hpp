@@ -2,11 +2,9 @@
 //
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
+
 #ifndef CGNT_COMMON_MILTIFORMATS_CID_HPP_
 #define CGNT_COMMON_MILTIFORMATS_CID_HPP_
-
-#ifndef CGNT_UTILS_MILTIFORMATS_CID_HPP_
-#define CGNT_UTILS_MILTIFORMATS_CID_HPP_
 
 #include <cstddef>
 #include <cstdint>
@@ -54,8 +52,8 @@ enum CodeType {
   FILECOIN_COMMITMENT_SEALED = 0xf102,
 };
 
-//! Content identifier.
-//! View: <multicodec><multihash-algorithm><multihash-length><multihash-hash>
+//* Content identifier.
+//* View: <multicodec><multihash-algorithm><multihash-length><multihash-hash>
 class Cid {
  public:
   Cid();

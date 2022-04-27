@@ -16,6 +16,7 @@ target_link_libraries(
         ${CMAKE_PROJECT_NAME}_gc
         ${CMAKE_PROJECT_NAME}_block_storage
         ${CMAKE_PROJECT_NAME}_pin-manager
+        ${CMAKE_PROJECT_NAME}_common_utils
 )
 
 include_directories(

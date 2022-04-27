@@ -2,7 +2,7 @@ set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_utils_multiformats)
 set({SUBMODULE_NAME}_SOURCES cid.cpp multiaddr.cpp)
 
 add_library(
-        ${SUBMODULE_NAME} STATIC ${{SUBMODULE_NAME}_SOURCES}
+        ${SUBMODULE_NAME} STATIC ${SUBMODULE_NAME}_SOURCES}
 )
 
 if (ENABLE_TESTING MATCHES ON)

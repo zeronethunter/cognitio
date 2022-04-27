@@ -1,5 +1,5 @@
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_common_multiformats)
-set({SUBMODULE_NAME}_SOURCES cid.cpp multiaddr.cpp)
+set({SUBMODULE_NAME}_SOURCES cid.cpp multiaddr.cpp multihash.cpp)
 
 add_library(${SUBMODULE_NAME} STATIC ${{SUBMODULE_NAME}_SOURCES})
 

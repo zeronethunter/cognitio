@@ -56,7 +56,7 @@ include(cmake/GlobalVariables.cmake)
 
 # Finding all files for the checking of static analyzers
 file(GLOB_RECURSE ${PROJECT_NAME}_ALL_FILES ${PROJECT_SOURCE_DIR}/src *.cpp *.hpp)
-list(FILTER ${PROJECT_NAME}_ALL_FILES EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/build|test/*")
+#list(FILTER ${PROJECT_NAME}_ALL_FILES EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/build|test/*")
 
 # Clang-format, clang-tidy, cpplint and cppcheck configuration
 include(cmake/FormatStaticAnalysys.cmake)
