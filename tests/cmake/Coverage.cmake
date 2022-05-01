@@ -1,5 +1,0 @@
-function(target_coverage TARGET_NAME)
-  target_compile_options(${TARGET_NAME} PUBLIC -O0 -g -fprofile-arcs -ftest-coverage)
-  target_link_options(${TARGET_NAME} PUBLIC -fprofile-arcs -ftest-coverage)
-  message(STATUS "Code coverage for ${TARGET_NAME} is enabled")
-endfunction()
