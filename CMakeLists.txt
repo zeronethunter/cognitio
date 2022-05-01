@@ -3,9 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 project(gRPC_Test)
 
 set(CMAKE_CXX_STANDARD 11)
-
-find_package(Protobuf CONFIG REQUIRED)
-find_package(gRPC CONFIG REQUIRED)
+find_package(gRPC REQUIRED)
 
 set(TARGET_CLIENT RouteGuideClient)
 set(TARGET_SERVER RouteGuideServer)
@@ -29,5 +27,6 @@ add_executable(
         ${SOURCE_DIR}/route_service.grpc.pb.cc
         ${SOURCE_DIR}/route_service.pb.cc
 )
+
 target_include_directories(${TARGET_SERVER} PUBLIC ${INCLUDE_DIR})
-target_link_libraries(${TARGET_SERVER} grpc++)
+target_link_libraries(${TARGET_SERVER} gRPC::grpc++)
