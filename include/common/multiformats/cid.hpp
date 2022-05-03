@@ -11,30 +11,11 @@
 #include <string>
 #include <vector>
 
+#include "common/multiformats/multihash.hpp"
 #include "linked_data/node.hpp"
 
 namespace cognitio {
-namespace cid {
-
-//! Prefix represents all the metadata of a Cid,
-//! that is, the Version, the Codec, the Multihash type
-//! and the Multihash length. It does not contains
-//! any actual content information.
-struct Prefix {
-  uint64_t version_;
-  uint64_t codec_;
-  uint64_t mh_type_;
-  int mh_length_;
-
-  Prefix() = default;
-  ~Prefix() = default;
-
-  Prefix(uint64_t version, uint64_t codec, uint64_t mh_type, int mh_length)
-      : version_(version),
-        codec_(codec),
-        mh_type_(mh_type),
-        mh_length_(mh_length){};
-};
+namespace common {
 
 enum CodeType {
   IDENTITY = 0x00,
@@ -58,40 +39,41 @@ class Cid {
  public:
   Cid();
 
-  //! Creates a new Cid.
-  Cid(const cognitio::linked_data::Node &node);
+  Cid(std::span<uint8_t> &bytes);
+  Cid(std::string_view &str_view);
+  Cid(CodeType code_type, const Multihash &content_address);
 
-  Cid(const Cid &cid) = default;
+  Cid(const Cid &other);
 
-  Cid(Cid &&cid);
+  Cid(Cid &&other);
+
+  Cid &operator=(const Cid &other);
+
+  Cid &operator=(Cid &&other);
 
   //! Equals operator checks that two Cids are the same.
-  bool operator==(const cognitio::cid::Cid &other);
+  bool operator==(const Cid &other);
 
   //! Equals operator checks that two Cids are not the same.
-  bool operator!=(const cognitio::cid::Cid &other);
+  bool operator!=(const Cid &other);
 
   //! GetBytes returns the byte representation of a Cid.
-  std::vector<uint8_t> GetBytes() const;
-
-  //! GetPrefix returns prefix form of Cid.
-  std::string GetPrefix() const;
+  std::vector<uint8_t> GetBytes() const { return bytes_view_; };
 
   //! ToString returns the default string representation of a Cid.
   std::string ToString() const { return str_cid_; };
 
   //! Type returns the multicodec-packed content type of a Cid.
-  uint64_t GetType() const;
+  uint64_t GetType() const { return content_type_; };
 
  private:
-  std::string str_cid_;                //! string view of cid.
-  std::vector<uint64_t> bytes_view_;   //! bytes array view of cid.
-  cognitio::cid::Prefix prefix_form_;  //! contains version, codec,
-                                       //! mh-type and -length.
-  cognitio::cid::CodeType content_type_;
+  std::string str_cid_;              //! string view of cid.
+  std::vector<uint8_t> bytes_view_;  //! bytes array view of cid.
+  cognitio::common::Multihash content_address_;
+  CodeType content_type_;
 };
 
-}  // namespace cid
+}  // namespace common
 }  // namespace cognitio
 
 #endif  // CGNT_UTILS_MILTIFORMATS_CID_HPP_

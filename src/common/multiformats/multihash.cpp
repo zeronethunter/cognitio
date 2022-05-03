@@ -11,6 +11,8 @@
 namespace cognitio {
 namespace common {
 
+Multihash::Multihash() : data_(nullptr) {};
+
 Status Multihash::Create(HashType ht, std::span<uint8_t> &hash) {
   if (hash.size() > max_hash_length_) {
     return Status(StatusCode::CANCELLED, "Hash size is too long");

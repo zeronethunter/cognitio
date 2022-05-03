@@ -40,11 +40,12 @@ enum HashType {
 
 class Multihash {
  public:
+  Multihash();
+  
   Multihash(const Multihash &other) = default;
   Multihash &operator=(const Multihash &other) = default;
-
-  Multihash(Multihash &&other) = default;
-  Multihash &operator=(Multihash &&other) = default;
+  Multihash(Multihash &&other) noexcept = default;
+  Multihash &operator=(Multihash &&other) noexcept = default;
 
   ~Multihash() = default;
 
@@ -54,18 +55,18 @@ class Multihash {
 
   Status CreateFromBytes(std::span<uint8_t> &bytes);
 
-  //! @return type of hash
+  //! \return type of hash
   const HashType &GetType() const { return data().hash_type_; };
 
-  //! @return info about hash type
+  //! \return info about hash type
   const std::span<uint8_t> GetHash() const {
     return std::span<uint8_t>(data().bytes_).subspan(data().hash_offset_);
   };
 
-  //! @return buffer with the multihash
+  //! \return buffer with the multihash
   const std::vector<uint8_t> ToBuffer() const { return data().bytes_; };
 
-  //! @return string view of multihash
+  //! \return string view of multihash
   std::string ToHex() const { return hex_upper(data().bytes_); };
 
   //! Overloading of comparison operators

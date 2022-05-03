@@ -8,7 +8,6 @@ add_library(
 )
 
 find_package(Boost 1.79 REQUIRED COMPONENTS algorithm)
-add_executable(foo ${SUBMODULE_NAME}_SOURCES)
 target_link_libraries(foo Boost::algorithm)
 
 #target_link_libraries(
