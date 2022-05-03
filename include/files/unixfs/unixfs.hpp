@@ -3,8 +3,8 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#include "proto_manager/proto-manager.hpp"
-#include "proto_manager/unixfs.pb.h"
+#include "common/status.hpp"
+#include "unixfs.pb.h"
 
 #ifndef CGNT_FILES_UNIXFS_UNIXFS_HPP_
 #define CGNT_FILES_UNIXFS_UNIXFS_HPP_
@@ -13,24 +13,36 @@ namespace cognitio {
 namespace files {
 namespace unixfs {
 
-template <typename Options>
 class UnixFS {
-  //! Managing data blocks:
-  //! changing, managing, encrypting, decrypting in Protobuf
+  //!\brief Managing data blocks:
+  //!\brief changing, managing, encoding, decoding in Protobuf
 
  public:
-  void marshal();  //! ... (encode to probuf bytes array)
-  std::unique_ptr<UnixFS*> unmarshaled(
-      const std::string& marshaled);  //! ...(decode from probuf)
-  UnixFS(const Options& options = {
-    type : 'file'
-  });  //! Initialize protobuf class Data with Options
-  void AddBlockSize(size_t size_in_bytes);  //! Add block size...
-  void RemoveBlockSize(size_t index);       //! Remove block size by index
-  size_t Filesize();          //! Return 0 or data.length + sum(blocksizes)
-  void SetMode(size_t mode);  //! Set mode ('r' or 'w')
+  std::unique_ptr<Data> EncodeMessage(
+      const std::vector<uint8_t>& data);  //! Encode data to probuf
+  static std::vector<uint8_t> DecodeMessage(
+      const Data& encoded);  //! Decode from probuf to data
+  Status CreateUnixFS(const std::string& datatype, uint64_t filesize,
+                      const std::vector<uint64_t>&
+                          blocksizes);  //! Initialize protobuf message pattern
+  void AddBlockSize(uint64_t size_in_bytes) {
+    blocksizes_.push_back(size_in_bytes);
+  }  //! Adder for blocksize
+  size_t GetBlockSize(size_t index) {
+    return blocksizes_.at(index);
+  }  //! Get blocksize by index
+  std::vector<uint64_t> GetBlockSize() {
+    return blocksizes_;
+  }  //! Get vector of blocksizes
+  uint64_t GetFilesize() { return filesize_; }
+  void SetFilesize(uint64_t filesize) { filesize_ = filesize; }
+  std::string GetDataType() { return data_type_; }
+
  private:
-  protomanager::UnixFSData<Options> data_;
+  std::string data_type_;
+  std::vector<uint8_t> data_;
+  uint64_t filesize_;
+  std::vector<uint64_t> blocksizes_;
 };
 
 }  // namespace unixfs

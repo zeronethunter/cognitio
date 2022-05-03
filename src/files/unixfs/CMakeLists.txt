@@ -1,7 +1,7 @@
 # Template subdirectory CMakeLists.txt
 
 # Configure all submodules and dependencies if needed
-add_subdirectory(proto_manager)
+# add_subdirectory(proto_manager)
 # ...
 
 # If you need more then one cmake file
@@ -23,18 +23,18 @@ add_library(
 
 # Identify and link with the specific libs the submodule uses
 # No need to make PUBLIC interface when it's not supposed to be there
- target_link_libraries(
-   ${SUBMODULE_NAME} PUBLIC
-       ${CMAKE_PROJECT_NAME}_proto-manager)
+# target_link_libraries(
+#   ${SUBMODULE_NAME} PUBLIC
+#       ${CMAKE_PROJECT_NAME}_proto-manager)
 
 ############################################################
 # Don't change the code below, just change SUBMODULE_NAME  #
 # to yours and paste it into your submodule CMakeLists.txt #
 ############################################################
 
-if(ENABLE_TESTING MATCHES ON)
+if (ENABLE_TESTING MATCHES ON)
     add_libs_for_testing(${SUBMODULE_NAME})
-endif()
+endif ()
 
 # Including directories (IMPORTANT: path to includes is absolute)
 include_directories(

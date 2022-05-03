@@ -9,27 +9,57 @@ namespace cognitio {
 namespace files {
 namespace unixfs {
 
-template <typename Options>
-void UnixFS<Options>::marshal() {
+std::unique_ptr<Data> UnixFS::EncodeMessage(const std::vector<uint8_t>& data) {
+  Data message;
+  if (data_type_ == "raw") {
+    message.set_type(Data_DataType_Raw);
+  } else if (data_type_ == "directory") {
+    message.set_type(Data_DataType_Directory);
+  } else if (data_type_ == "file") {
+    message.set_type(Data_DataType_File);
+  } else if (data_type_ == "metadata") {
+    message.set_type(Data_DataType_Metadata);
+  } else if (data_type_ == "symlink") {
+    message.set_type(Data_DataType_Symlink);
+  }
+  message.set_data(std::string(data.begin(), data.end()));
+  message.set_filesize(filesize_);
+  for (const uint64_t& blocksize : blocksizes_) {
+    message.add_blocksizes(blocksize);
+  }
+
+  return std::make_unique<Data>(message);
 }
-template <typename Options>
-std::unique_ptr<UnixFS<Options>*> UnixFS<Options>::unmarshaled(
-    const std::string& marshaled) {
+std::vector<uint8_t> UnixFS::DecodeMessage(const Data& encoded) {
+  return std::vector<uint8_t>(encoded.data().begin(), encoded.data().end());
 }
-template <typename Options>
-UnixFS<Options>::UnixFS(const Options& options) {
-}
-template <typename Options>
-void UnixFS<Options>::AddBlockSize(size_t size_in_bytes) {
-}
-template <typename Options>
-void UnixFS<Options>::RemoveBlockSize(size_t index) {
-}
-template <typename Options>
-size_t UnixFS<Options>::Filesize() {
-}
-template <typename Options>
-void UnixFS<Options>::SetMode(size_t mode) {
+Status UnixFS::CreateUnixFS(const std::string& datatype, uint64_t filesize,
+                            const std::vector<uint64_t>& blocksizes) {
+  if (datatype == "raw") {
+    data_type_ = "raw";
+  } else if (datatype == "directory") {
+    data_type_ = "directory";
+  } else if (datatype == "file") {
+    data_type_ = "file";
+  } else if (datatype == "metadata") {
+    data_type_ = "metadata";
+  } else if (datatype == "symlink") {
+    data_type_ = "symlink";
+  } else {
+    return Status(StatusCode::CANCELLED,
+                  "Type + " + datatype + " doesn't exist");
+  }
+  if (filesize) {
+    filesize_ = filesize;
+  } else {
+    return Status(StatusCode::INVALID_ARGUMENT, "Empty filesize");
+  }
+  if (!blocksizes.empty()) {
+    blocksizes_ = blocksizes;
+  } else {
+    return Status(StatusCode::INVALID_ARGUMENT, "Empty blocksizes");
+  }
+  return Status::OK;
 }
 
 }  // namespace unixfs
