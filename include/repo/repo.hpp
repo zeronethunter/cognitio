@@ -14,35 +14,30 @@
 
 namespace cognitio {
 namespace repo {
-//! Repository part of project.
-//! Responsible for creating, managing and deleting the repository.
-//! Creates Garbage Collector, Config File and Storages.
-//! And also manages Pins.
+//! \brief Repository part of project.
+//! \brief Responsible for creating, managing and deleting the repository.
+//! \brief Creates Garbage Collector, Config File and Storages.
+//! \brief And also manages Pins.
 
-template <typename Key, typename CID, typename Value, typename Options>
 class Repo {
  public:
-  static Repo<Key, CID, Value, Options> CreateRepo(
-      std::filesystem::path path,
-      const Options& options);  //! Create repository
-  explicit Repo(datastore::Datastore<Key, Value, Options> const& datastore,
-                Options const& config);
-  void
+  static Repo CreateRepo(
+      const std::filesystem::path& path);  //! Create repository
+  explicit Repo(datastore::Filesystem<std::vector<uint8_t>> const& root);
+  Status
   Init();  //! Initializing the repository, namely starting gc and creating pins
-  void Open();   //! Open the repository
-  void Close();  //! Close the repository, clean it up
+  Status Open();   //! Open the repository
+  Status Close();  //! Close the repository, clean it up
 
  private:
   bool closed_ = true;
-  Options config_;
-  datastore::Datastore<Key, Value, Options> root_;
-  datastore::Datastore<Key, Value, Options> datastore_;
-  datastore::Datastore<Key, Value, Options> key_;
-  pinner::PinManager<Key, CID, Value, Options> pins_;
-  blockstorage::Blockstorage<Key, CID, Value, Options> pinned_block_storage_;
-  void OpenRoot();
-  void OpenLock();
-  void CloseLock();
+  datastore::Filesystem<std::vector<uint8_t>> root_;
+  blockstorage::Blockstorage blocks_;
+  //  pinner::PinManager<Key, Value, Options> pins_;
+  //  blockstorage::Blockstorage<Key, Value, Options> pinned_block_storage_;
+  Status OpenRoot();
+  //  Status OpenLock();
+  //  Status CloseLock();
 };
 
 }  // namespace repo

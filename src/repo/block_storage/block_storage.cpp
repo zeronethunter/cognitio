@@ -9,46 +9,39 @@ namespace cognitio {
 namespace repo {
 namespace blockstorage {
 
-template <typename Key, typename CID, typename Value, typename Options>
-datastore::DsError Blockstorage<Key, CID, Value, Options>::Open() {}
-
-template <typename Key, typename CID, typename Value, typename Options>
-datastore::DsError Blockstorage<Key, CID, Value, Options>::Close() {}
-
-template <typename Key, typename CID, typename Value, typename Options>
-datastore::DsError Blockstorage<Key, CID, Value, Options>::Put(
-    const CID& cid, const Value& value, const Options& options) {
-  return storage_.Put(cid, value, options);
+Status blockstorage::Blockstorage::Open(const std::filesystem::path& path) {
+  return storage_.Open(path);
 }
 
-template <typename Key, typename CID, typename Value, typename Options>
-Value Blockstorage<Key, CID, Value, Options>::Get(const CID& cid,
-                                                  const Options& options) {
-  return storage_.Get(cid, options);
+Status blockstorage::Blockstorage::Close() { return storage_.Close(); }
+
+Status blockstorage::Blockstorage::Put(const cid::Cid& key,
+                                       const std::vector<uint8_t>& value) {
+  return storage_.Put(key, value);
 }
 
-template <typename Key, typename CID, typename Value, typename Options>
-datastore::DsError Blockstorage<Key, CID, Value, Options>::Delete(
-    const CID& cid, const Options& options) {
-  return storage_.Delete(cid, options);
+std::pair<Status, std::vector<uint8_t>> blockstorage::Blockstorage::Get(
+    const cid::Cid& key) {
+  return storage_.Get(key);
 }
 
-template <typename Key, typename CID, typename Value, typename Options>
-datastore::DsError Blockstorage<Key, CID, Value, Options>::PutMany(
-    const std::set<std::pair<CID, Value>>& source, const Options& options) {
-  return storage_.PutMany(source, options);
+Status blockstorage::Blockstorage::Delete(const cid::Cid& key) {
+  return storage_.Delete(key);
 }
 
-template <typename Key, typename CID, typename Value, typename Options>
-std::set<Value> Blockstorage<Key, CID, Value, Options>::GetMany(
-    const std::set<CID>& source, const Options& options) {
-  return storage_.GetMany(source, options);
+Status blockstorage::Blockstorage::PutMany(
+    const std::set<std::pair<cid::Cid, std::vector<uint8_t>>>& source) {
+  return storage_.PutMany(source);
 }
 
-template <typename Key, typename CID, typename Value, typename Options>
-datastore::DsError Blockstorage<Key, CID, Value, Options>::DeleteMany(
-    const std::set<CID>& source, const Options& options) {
-  return storage_.DeleteMany(source, options);
+std::pair<Status, std::set<std::vector<uint8_t>>>
+blockstorage::Blockstorage::GetMany(const std::set<cid::Cid>& source) {
+  return storage_.GetMany(source);
+}
+
+Status blockstorage::Blockstorage::DeleteMany(
+    const std::set<cid::Cid>& source) {
+  return storage_.DeleteMany(source);
 }
 
 }  // namespace blockstorage

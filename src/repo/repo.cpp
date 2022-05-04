@@ -8,28 +8,32 @@
 namespace cognitio {
 namespace repo {
 
-template <typename Key, typename CID, typename Value, typename Options>
-Repo<Key, CID, Value, Options>::Repo(
-    const datastore::Datastore<Key, Value, Options>& datastore,
-    const Options& config) {}
+Repo::Repo(datastore::Filesystem<std::vector<uint8_t>> const& root) {
+  root_ = root;
+  closed_ = false;
+}
 
-template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::Init() {}
+Repo Repo::CreateRepo(const std::filesystem::path& path) {
+  datastore::Filesystem<std::vector<uint8_t>> fs;
+  fs.Open(path);
+  return Repo(fs);
+}
 
-template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::Open() {}
+Status Repo::Init() {
+  if (closed_) {
+    return Status(StatusCode::CANCELLED, "You should create Repo first");
+  }
 
-template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::Close() {}
+  blockstorage::Blockstorage blocks;
+  Status err = blocks.Open(root_.Root() / "blocks");
 
-template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::OpenRoot() {}
+  if (!err.ok()) {
+    return err;
+  }
 
-template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::OpenLock() {}
-
-template <typename Key, typename CID, typename Value, typename Options>
-void Repo<Key, CID, Value, Options>::CloseLock() {}
+  blocks_ = blocks;
+  // TODO: config creation
+}
 
 }  // namespace repo
 }  // namespace cognitio

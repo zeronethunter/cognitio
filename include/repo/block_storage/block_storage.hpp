@@ -3,12 +3,15 @@
 //  Distributed under the GNU GPLv3 software license, see the accompanying
 //  file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#include <set>
-
-#include "datastore/datastore.hpp"
-
 #ifndef CGNT_REPO_BLOCKSTORE_BLOCKSTORE_HPP_
 #define CGNT_REPO_BLOCKSTORE_BLOCKSTORE_HPP_
+
+#include <set>
+
+#include "common/block/block.hpp"
+#include "common/multiformats/cid.hpp"
+#include "common/status.hpp"
+#include "datastore/ds_fs.hpp"
 
 namespace cognitio {
 namespace repo {
@@ -16,35 +19,27 @@ namespace blockstorage {
 
 //! This is special wrapper for datastore
 //! Used to work with blocks localy (CIDs)
-template <typename Key, typename CID, typename Value, typename Options>
 class Blockstorage {
  public:
-  datastore::DsError Open();   //! Open Blockstorage
-  datastore::DsError Close();  //! Close Blockstorage
-  datastore::DsError Put(
-      const CID& cid, const Value& value,
-      const Options& options);  //! Put Value by CID in storage
-  Value Get(const CID& cid,
-            const Options& options);  //! Get Value by CID from storage
-  datastore::DsError Delete(
-      const CID& cid,
-      const Options& options);  //! Delete Value by CID from storage
-  datastore::DsError PutMany(
-      const std::set<std::pair<CID, Value>>& source,
-      const Options& options =
-          Options());  //! Put many Values by their CIDs in storage
-  std::set<Value> GetMany(
-      const std::set<CID>& source,
-      const Options& options =
-          Options());  //! Get many Value by their CIDs from storage
-  datastore::DsError DeleteMany(
-      const std::set<CID>& source,
-      const Options& options =
-          Options());  //! Delete many Values by their CIDs in storage
+  Status Open(const std::filesystem::path& path);  //! Open Blockstorage
+  std::filesystem::path Root() { return storage_.Root(); }
+  Status Close();  //! Close Blockstorage
+  Status Put(
+      const cid::Cid& key,
+      const std::vector<uint8_t>& value);  //! Put Value by CID in storage
+  std::pair<Status, std::vector<uint8_t>> Get(
+      const cid::Cid& key);            //! Get Value by CID from storage
+  Status Delete(const cid::Cid& key);  //! Delete Value by CID from storage
+  Status PutMany(const std::set<std::pair<cid::Cid, std::vector<uint8_t>>>&
+                     source);  //! Put many Values by their CIDs in storage
+  std::pair<Status, std::set<std::vector<uint8_t>>> GetMany(
+      const std::set<cid::Cid>&
+          source);  //! Get many Value by their CIDs from storage
+  Status DeleteMany(
+      const std::set<cid::Cid>& source);  //! Delete many Values by
+                                          //! their CIDs in storage
  private:
-  Options config_;
-  datastore::Datastore<Key, Value, Options>
-      storage_;  //! Any datastorage to store blocks
+  datastore::Filesystem<std::vector<uint8_t>> storage_;  //! FS datastorage
 };
 
 }  // namespace blockstorage

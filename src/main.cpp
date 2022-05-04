@@ -17,14 +17,11 @@
 
 int main(int argc, char *argv[]) {
   using namespace cognitio;
-  using namespace cognitio::cli;
-  using namespace cognitio::common::logger;
-  using namespace cognitio::core::commands;
-
-  // Initializing needed stuff
   std::srand(static_cast<uint>(std::time(0)));
-  LogSetSeverity(argc, argv);
-  LogInit();
+
+  // Initial logger configuration
+  auto loggerProcessingEngine = common::logger::createLogger("cognitio");
+  loggerProcessingEngine->set_level(spdlog::level::debug);
 
   // Transforming args from c-style to cpp
   std::vector<std::string> args(static_cast<size_t>(argc));
@@ -32,7 +29,7 @@ int main(int argc, char *argv[]) {
                  [&](char *arg) { return std::string(arg); });
 
   args[0] = "cognitio";
-  Cli cli(MakeCommands(), {std::cin, std::cout, std::cerr});
+  cli::Cli cli(cli::MakeCommands(), {std::cin, std::cout, std::cerr});
   Status status = cli.Run(args);
   return status.ok();
 }

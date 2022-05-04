@@ -1,6 +1,6 @@
 # Check out the subdirectory template in the core folder
-add_subdirectory(datastore)
-add_subdirectory(repo)
+# add_subdirectory(datastore)
+# add_subdirectory(repo)
 # ...
 
 set(MAIN_BIN ${CMAKE_PROJECT_NAME})

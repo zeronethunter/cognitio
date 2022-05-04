@@ -1,30 +1,38 @@
-// Copyright (c) 2022 NodeOps
+// Copyright (c)  override 2022 NodeOps
 //
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#include "datastore.hpp"
-
 #ifndef CGNT_DATASTORE_DS_FS_HPP_
 #define CGNT_DATASTORE_DS_FS_HPP_
+
+#include <filesystem>
+
+#include "common/multiformats/cid.hpp"
+#include "common/status.hpp"
+#include "datastore/datastore.hpp"
 
 namespace cognitio {
 namespace datastore {
 //! This is implementation of datastore filesystem
 //! Responsible for file management in the storage
 
-template <typename Key, typename Value, typename Options>
-class Filesystem : public Datastore<Key, Value, Options> {
+template <typename Value>
+class Filesystem : public Datastore<cid::Cid, Value, Status> {
  public:
-  void Open();
-  void Close();
-  void Put(const Key& key, const Value& value, const Options& options);
-  void Get(const Key& key, const Options& options);
-  void Delete(const Key& key, const Options& options);
-  void PutMany(const std::set<Key>& source, const Options& options = Options());
-  void GetMany(const std::set<Key>& source, const Options& options = Options());
-  void DeleteMany(const std::set<Key>& source,
-                  const Options& options = Options());
+  Status Open(const std::filesystem::path& path) override;
+  Status Close() override;
+  std::filesystem::path Root() { return path_; }
+  Status Put(const cid::Cid& key, const Value& value) override;
+  std::pair<Status, Value> Get(const cid::Cid& key) override;
+  Status Delete(const cid::Cid& key) override;
+  Status PutMany(const std::set<std::pair<cid::Cid, Value>>& source) override;
+  std::pair<Status, std::set<Value>> GetMany(
+      const std::set<cid::Cid>& source) override;
+  Status DeleteMany(const std::set<cid::Cid>& source) override;
+
+ private:
+  std::filesystem::path path_;
 };
 
 }  // namespace datastore
