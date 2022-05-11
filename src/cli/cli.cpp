@@ -14,14 +14,18 @@ namespace cognitio {
 namespace cli {
 
 template <class Context>
-Cli<Context>::Cli(Cli<Context>::CmdPtr root) : root_(root) {}
+Cli<Context>::Cli(RootCmd&& root) : root_(std::make_unique<RootCmd>(root)) {}
 
 template <class Context>
 template <Container T>
 Status Cli<Context>::Run(T& args) {
   logger_->debug("Command line interface module is starting...");
+  if (!IsInitialized()) {
+    logger_->error("CLI is not initialized with commands");
+    return Status::FAILED;
+  }
 
-  typename Command<Context>::CmdWrapper request;
+  CmdWrapper<Context> request;
   Status err = parse(args, request);
   if (!err.ok()) {
     logger_->error("Error while parsing: {}", err.error_message());
