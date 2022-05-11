@@ -61,7 +61,7 @@ class Blockstorage {
    *  @brief  Get many Value by their CIDs from storage.
    */
   std::pair<Status, std::set<std::vector<uint8_t>>> GetMany(
-      const std::set<common::Cid>& source);  //!
+      const std::set<common::Cid>& source);
   /**
    *  @brief  Delete many Values by their CIDs in storage.
    */
