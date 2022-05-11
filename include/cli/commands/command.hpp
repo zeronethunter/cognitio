@@ -59,6 +59,7 @@ class Command {
     bool no_remote_ = false;
     bool no_local_ = false;
   };
+
   Command() = default;
   virtual ~Command() = default;
   CmdMeta& GetMeta() const noexcept { return meta_; }
