@@ -16,21 +16,20 @@
 #include "common/concepts/container.hpp"
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
-#include "core/commands/root.hpp"
 
 namespace cognitio {
 namespace cli {
 
 using namespace common::logger;
-using namespace core::commands;
+using namespace commands;
 
 template <class Context>
 class Cli {
-  typedef std::unique_ptr<core::commands::RootCmd> CmdPtr;
-
  public:
+  typedef std::unique_ptr<commands::Command<Context>> CmdPtr;
+
   Cli() = default;
-  explicit Cli(RootCmd&& root);
+  explicit Cli(CmdPtr root);
   ~Cli() = default;
 
   bool IsInitialized();
@@ -41,7 +40,6 @@ class Cli {
   template <Container T>
   Status parse(T& args, CmdWrapper<Context>& cmd);
   Status handleHelp(CmdWrapper<Context>& cmd);
-
   Logger logger_ = createLogger("CLI");
   CmdPtr root_ = nullptr;
 };

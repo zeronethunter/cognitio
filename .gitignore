@@ -78,3 +78,5 @@ html_docs
 
 ## Protobuf
 *.pb.*
+
+.DS_Store
