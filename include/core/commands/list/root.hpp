@@ -23,6 +23,7 @@ class RootMeta : public CmdMeta {
 class RootCmd : public Command<Context> {
  public:
 
+  RootCmd() : Command() {};
   void PrintHelp(std::ostream& out) override;
   Status Run([[maybe_unused]] Context& ctx, [[maybe_unused]] const CmdEnv& env,
              [[maybe_unused]] ResponseEmitter& re) override {
