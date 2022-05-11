@@ -2,7 +2,7 @@ syntax = "proto3";
 
 message ProtoResponse {
     message ResponseStatus {
-        uint32 StatusCode = 1;
+        int32 StatusCode = 1;
         string StatusMsg = 2;
     }
 
