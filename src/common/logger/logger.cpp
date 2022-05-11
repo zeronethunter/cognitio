@@ -33,12 +33,12 @@ namespace cognitio {
 namespace common {
 namespace logger {
 
-Logger createLogger(const std::string& tag) {
+Logger createLogger(const std::string& tag, bool debug_mode) {
   static std::mutex mutex;
   std::lock_guard<std::mutex> lock(mutex);
   auto logger = spdlog::get(tag);
   if (logger == nullptr) {
-    logger = ::createLogger(tag, true);
+    logger = ::createLogger(tag, debug_mode);
   }
 
   return logger;

@@ -3,7 +3,10 @@ FROM gcc
 RUN echo "Installing dependencies..."
 RUN apt-get update -y
 RUN apt-get install -y clang clang-format clang-tidy cmake cppcheck curl make python3 python3-pip tar \
-                    valgrind vim lcov doxygen libgtest-dev libgrpc++-dev libprotobuf23 grpc-proto --fix-missing
+                    valgrind vim lcov doxygen libgtest-dev libgrpc++-dev grpc-proto --fix-missing
+
+RUN echo "Installing gRPC & Protobuf"
+RUN apt-get install -y protobuf-compiler protobuf-compiler-grpc libprotobuf23
 
 RUN pip install cpplint scan-build
 

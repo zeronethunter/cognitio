@@ -27,7 +27,7 @@ class Status {
 
   // Pre-defined special status objects.
   static const Status& OK;
-  static const Status& CANCELLED;
+  static const Status& FAILED;
 
   StatusCode error_code() const { return code_; }
   std::string error_message() const { return error_message_; }

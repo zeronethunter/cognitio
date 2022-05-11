@@ -7,8 +7,8 @@
 #define CGNT_CORE_COMMANDS_COMMAND_ROOT_HPP_
 
 #include "cli/commands/command.hpp"
+#include "common/context.hpp"
 #include "common/status.hpp"
-#include "core/commands/context.hpp"
 
 namespace cognitio {
 namespace core {
@@ -18,9 +18,15 @@ using namespace cli::commands;
 
 class RootCmd : public Command<Context> {
  public:
+  class RootMeta : public Command::CmdMeta {
+    RootMeta() : CmdMeta(std::string("cognitio")) {}
+  };
+
+  void PrintHelp(std::ostream& out) override;
   Status Run([[maybe_unused]] Context& ctx, [[maybe_unused]] const CmdEnv& env,
-             [[maybe_unused]] ResponseEmitter& re) {
-    return Status::OK;
+             [[maybe_unused]] ResponseEmitter& re) override {
+    // It's not supposed to be ran
+    return Status::FAILED;
   }
 };
 

@@ -10,15 +10,16 @@ namespace cognitio {
 
 enum StatusCode {
   OK = 0,
-  CANCELLED = 1,
-  UNKNOWN = 2,
-  INVALID_ARGUMENT = 3,
-  NOT_FOUND = 4,
-  ALREADY_EXISTS = 5,
-  PERMISSION_DENIED = 6,
-  OUT_OF_RANGE = 7,
-  UNIMPLEMENTED = 8,
-  INTERNAL = 9,
+  FAILED = 1,
+  CANCELLED = 2,
+  UNKNOWN = 3,
+  INVALID_ARGUMENT = 4,
+  NOT_FOUND = 5,
+  ALREADY_EXISTS = 6,
+  PERMISSION_DENIED = 7,
+  OUT_OF_RANGE = 8,
+  UNIMPLEMENTED = 9,
+  INTERNAL = 10,
 };
 
 }  // namespace cognitio

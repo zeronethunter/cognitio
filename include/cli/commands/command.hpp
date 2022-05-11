@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "common/concepts/container.hpp"
 #include "common/status.hpp"
 
 // FIXME: Delete forward declaration
@@ -25,17 +26,32 @@ namespace commands {
 // Composite patterns
 template <class Context>
 class Command {
+  // TODO: sequence container concept to templates, not this hardcode
+  typedef std::vector<std::unique_ptr<Command<Context>>> SubCmdsArr;
+
  public:
   class CmdMeta {
    public:
+    typedef std::vector<std::string> ArgsArr;
+
     CmdMeta() = default;
+    ~CmdMeta() = default;
+    CmdMeta(std::string&& name, const ArgsArr& args = ArgsArr(),
+            bool options_required = false, bool no_remote = false,
+            bool no_local = false)
+        : name_(name),
+          possible_arguments_(args),
+          options_required_(options_required),
+          no_remote_(no_remote),
+          no_local_(no_local) {}
+
     std::string GetName() const noexcept { return name_; }
     bool IsNoRemote() const noexcept { return no_remote_; }
     bool IsNoLocal() const noexcept { return no_local_; }
 
    private:
     std::string name_;
-    std::vector<std::string> possible_options_;
+    ArgsArr possible_arguments_;
     bool options_required_ = false;
     bool no_remote_ = false;
     bool no_local_ = false;
@@ -48,6 +64,7 @@ class Command {
 
   struct CmdWrapper {
     std::unique_ptr<Command> cmd;
+    Context ctx;
     CmdEnv env;
   };
 
@@ -56,10 +73,11 @@ class Command {
   CmdMeta& GetMeta() const noexcept { return meta_; }
   void AddSubCmd(std::unique_ptr<Command> cmd) { sub_commands_.push_back(cmd); }
   virtual Status Run(Context& ctx, const CmdEnv& env, ResponseEmitter& re) = 0;
+  virtual void PrintHelp(std::ostream& out) = 0;
 
  private:
   CmdMeta meta_;
-  std::vector<std::unique_ptr<Command<Context>>> sub_commands_;
+  SubCmdsArr sub_commands_;
 };
 
 }  // namespace commands

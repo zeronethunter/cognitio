@@ -5,14 +5,27 @@
 
 #include "cli/cli.hpp"
 
+#include "cli/commands/command.hpp"
 #include "common/status.hpp"
 
 namespace cognitio {
 namespace cli {
-Cli::Cli(RootCmd&& root, CliEnv&& env)
-    : root_(std::move(root)), cli_env_(std::move(env)) {}
 
-Status Cli::Run(std::vector<std::string>& args) {
+template <class Context>
+Cli<Context>::Cli(Cli<Context>::CmdPtr root) : root_(root) {}
+
+template <class Context>
+template <Container T>
+Status Cli<Context>::Run(T& args) {
+  logger_->debug("Command line interface module is starting...");
+
+  typename Command<Context>::CmdWrapper request;
+  Status err = parse(args, request);
+  if (!err.ok()) {
+    logger_->error("Error while parsing: {}", err.error_message());
+    return err;
+  }
+
   return Status::OK;
 }
 

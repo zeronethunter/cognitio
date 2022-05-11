@@ -6,8 +6,6 @@
 #ifndef CGNT_CORE_COMMANDS_CONTEXT_HPP_
 #define CGNT_CORE_COMMANDS_CONTEXT_HPP_
 
-#include <grpcpp/impl/codegen/core_codegen.h>
-
 #include "core/core.hpp"
 #include "core/core_api/core_api.hpp"
 #include "repo/config.hpp"

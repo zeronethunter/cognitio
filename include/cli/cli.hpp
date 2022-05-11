@@ -13,28 +13,33 @@
 #include <string>
 #include <vector>
 
+#include "cli/commands/command.hpp"
+#include "common/concepts/container.hpp"
+#include "common/logger/logger.hpp"
 #include "common/status.hpp"
-#include "core/commands/command_root.hpp"
 
 namespace cognitio {
 namespace cli {
 
-using namespace core::commands;
+using namespace common::logger;
+using namespace commands;
 
+template <class Context>
 class Cli {
  public:
-  struct CliEnv {
-    std::istream& in;
-    std::ostream& out;
-    std::ostream& err;
-  };
+  typedef std::unique_ptr<commands::Command<Context>> CmdPtr;
 
-  explicit Cli(RootCmd&& root, CliEnv&& env);
-  Status Run(std::vector<std::string>& args);
+  Cli() = default;
+  explicit Cli(CmdPtr root);
+  ~Cli() = default;
+
+  bool IsInitialized();
+  template <Container T>
+  Status Run(T& args);
 
  private:
-  RootCmd root_;
-  CliEnv cli_env_;
+  Logger logger_ = createLogger("CLI");
+  CmdPtr root_ = nullptr;
 };
 }  // namespace cli
 }  // namespace cognitio
