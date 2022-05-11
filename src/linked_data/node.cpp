@@ -5,6 +5,8 @@
 
 #include "linked_data/node.hpp"
 
+#include <span>
+
 namespace cognitio {
 namespace linked_data {
 
@@ -26,12 +28,17 @@ std::vector<std::string_view> Node::GetSubNodeNames() const {
   return names_vec;
 }
 
+common::Cid Node::GetCid() const {
+  common::Cid cid(content_);
+  return cid;
+}
+
 Status Node::InsertSubNode(std::string &&name, Node &&children_node) {
-    auto result = children_.emplace(std::move(name), std::move(children_node));
-    if (result.second) {
-        return Status::OK;
-    }
-    return Status(CANCELLED, "Duplicate node");
+  auto result = children_.emplace(std::move(name), std::move(children_node));
+  if (result.second) {
+    return Status::OK;
+  }
+  return Status(CANCELLED, "Duplicate node");
 }
 
 }  // namespace linked_data

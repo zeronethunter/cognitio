@@ -18,7 +18,7 @@ template <typename Value>
 Status Filesystem<Value>::Close() {}
 
 template <typename Value>
-Status Filesystem<Value>::Put(const cid::Cid& key, const Value& value) {
+Status Filesystem<Value>::Put(const common::Cid& key, const Value& value) {
   std::string filename = key.ToString();
   if (std::filesystem::exists(path_ / filename)) {
     return Status(StatusCode::ALREADY_EXISTS, " already exists");
@@ -38,7 +38,7 @@ Status Filesystem<Value>::Put(const cid::Cid& key, const Value& value) {
 }
 
 template <typename Value>
-std::pair<Status, Value> Filesystem<Value>::Get(const cid::Cid& key) {
+std::pair<Status, Value> Filesystem<Value>::Get(const common::Cid& key) {
   std::string filename = key.ToString();
   if (!std::filesystem::exists(path_ / filename)) {
     return std::pair<Status, Value>(Status(StatusCode::NOT_FOUND, " not found"), Value());
@@ -60,7 +60,7 @@ std::pair<Status, Value> Filesystem<Value>::Get(const cid::Cid& key) {
 }
 
 template <typename Value>
-Status Filesystem<Value>::Delete(const cid::Cid& key) {
+Status Filesystem<Value>::Delete(const common::Cid& key) {
   std::string filename = key.ToString();
   if (std::filesystem::remove(path_ / filename)) {
     return Status::OK;
@@ -70,7 +70,7 @@ Status Filesystem<Value>::Delete(const cid::Cid& key) {
 
 template <typename Value>
 Status Filesystem<Value>::PutMany(
-    const std::set<std::pair<cid::Cid, Value>>& source) {
+    const std::set<std::pair<common::Cid, Value>>& source) {
   for (const auto& input : source) {
     Status err = Put(input.first, input.second);
     if (!err.ok()) {
@@ -82,7 +82,7 @@ Status Filesystem<Value>::PutMany(
 
 template <typename Value>
 std::pair<Status, std::set<Value>> Filesystem<Value>::GetMany(
-    const std::set<cid::Cid>& source) {
+    const std::set<common::Cid>& source) {
   std::set<Value> result;
   for (const auto& key : source) {
     std::pair<Status, Value> it = Get(key);
@@ -95,7 +95,7 @@ std::pair<Status, std::set<Value>> Filesystem<Value>::GetMany(
 }
 
 template <typename Value>
-Status Filesystem<Value>::DeleteMany(const std::set<cid::Cid>& source) {
+Status Filesystem<Value>::DeleteMany(const std::set<common::Cid>& source) {
   for (const auto& key : source) {
     Status err = Delete(key);
     if (!err.ok()) {

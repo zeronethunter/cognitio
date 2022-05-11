@@ -11,19 +11,26 @@
 #include <vector>
 
 #include "common/status.hpp"
+#include "common/multiformats/cid.hpp"
 
 namespace cognitio {
 namespace linked_data {
 
 class Node {
  public:
+  Node() = default;
   explicit Node(std::vector<uint8_t> &&bytes) : content_(std::move(bytes)) {};
+
+  Node(Node &&other) noexcept;
+  Node &operator=(Node &&other) noexcept;
 
   /// \return content of node
   std::vector<uint8_t> GetContent() const;
 
   /// \return size of node's children
   size_t Count() const;
+
+  common::Cid GetCid() const;
 
   std::unique_ptr<Node> GetSubNode(std::string_view name) const;
 

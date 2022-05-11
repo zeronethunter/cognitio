@@ -40,6 +40,7 @@ class Cid {
   Cid();
 
   Cid(std::span<uint8_t> &bytes);
+  Cid(const std::vector<uint8_t> &bytes);
   Cid(std::string_view &str_view);
   Cid(CodeType code_type, const Multihash &content_address);
 

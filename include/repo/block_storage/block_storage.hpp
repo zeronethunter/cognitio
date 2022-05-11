@@ -22,21 +22,29 @@ namespace blockstorage {
 class Blockstorage {
  public:
   Status Open(const std::filesystem::path& path);  //! Open Blockstorage
+
   std::filesystem::path Root() { return storage_.Root(); }
+
   Status Close();  //! Close Blockstorage
+
   Status Put(
-      const cid::Cid& key,
+      const common::Cid& key,
       const std::vector<uint8_t>& value);  //! Put Value by CID in storage
+
   std::pair<Status, std::vector<uint8_t>> Get(
-      const cid::Cid& key);            //! Get Value by CID from storage
-  Status Delete(const cid::Cid& key);  //! Delete Value by CID from storage
-  Status PutMany(const std::set<std::pair<cid::Cid, std::vector<uint8_t>>>&
+      const common::Cid& key);            //! Get Value by CID from storage
+
+  Status Delete(const common::Cid& key);  //! Delete Value by CID from storage
+
+  Status PutMany(const std::set<std::pair<common::Cid, std::vector<uint8_t>>>&
                      source);  //! Put many Values by their CIDs in storage
+
   std::pair<Status, std::set<std::vector<uint8_t>>> GetMany(
-      const std::set<cid::Cid>&
+      const std::set<common::Cid>&
           source);  //! Get many Value by their CIDs from storage
+
   Status DeleteMany(
-      const std::set<cid::Cid>& source);  //! Delete many Values by
+      const std::set<common::Cid>& source);  //! Delete many Values by
                                           //! their CIDs in storage
  private:
   datastore::Filesystem<std::vector<uint8_t>> storage_;  //! FS datastorage

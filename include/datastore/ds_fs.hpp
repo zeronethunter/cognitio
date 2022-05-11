@@ -14,22 +14,30 @@
 
 namespace cognitio {
 namespace datastore {
+
 //! This is implementation of datastore filesystem
 //! Responsible for file management in the storage
-
 template <typename Value>
-class Filesystem : public Datastore<cid::Cid, Value, Status> {
+class Filesystem :  Datastore<common::Cid, Value, Status> {
  public:
   Status Open(const std::filesystem::path& path) override;
+
   Status Close() override;
+
   std::filesystem::path Root() { return path_; }
-  Status Put(const cid::Cid& key, const Value& value) override;
-  std::pair<Status, Value> Get(const cid::Cid& key) override;
-  Status Delete(const cid::Cid& key) override;
-  Status PutMany(const std::set<std::pair<cid::Cid, Value>>& source) override;
+
+  Status Put(const common::Cid& key, const Value& value) override;
+
+  std::pair<Status, Value> Get(const common::Cid& key) override;
+
+  Status Delete(const common::Cid& key) override;
+
+  Status PutMany(const std::set<std::pair<common::Cid, Value>>& source) override;
+
   std::pair<Status, std::set<Value>> GetMany(
-      const std::set<cid::Cid>& source) override;
-  Status DeleteMany(const std::set<cid::Cid>& source) override;
+      const std::set<common::Cid>& source) override;
+
+  Status DeleteMany(const std::set<common::Cid>& source) override;
 
  private:
   std::filesystem::path path_;

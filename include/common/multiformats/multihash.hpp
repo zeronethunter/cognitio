@@ -18,14 +18,6 @@ namespace cognitio {
 namespace common {
 
 //! Data of Multihash
-struct Data {
-  std::vector<uint8_t> bytes_;
-  uint8_t hash_offset_;  //! size of non-hash data from the beginning
-  HashType hash_type_;
-  size_t hash_size_;
-
-  Data(HashType ht, std::span<const uint8_t> hash);
-};
 
 enum HashType {
   IDENTITY = 0x0,
@@ -41,11 +33,11 @@ enum HashType {
 class Multihash {
  public:
   Multihash();
-  
+
   Multihash(const Multihash &other) = default;
-  Multihash &operator=(const Multihash &other) = default;
+  Multihash &operator=(const Multihash &other);
   Multihash(Multihash &&other) noexcept = default;
-  Multihash &operator=(Multihash &&other) noexcept = default;
+  Multihash &operator=(Multihash &&other) noexcept;
 
   ~Multihash() = default;
 
@@ -77,6 +69,15 @@ class Multihash {
  private:
   const uint8_t max_hash_length_ = 127;
   const uint8_t min_hash_length_ = 4;
+
+  struct Data {
+    std::vector<uint8_t> bytes_;
+    uint8_t hash_offset_;  //! size of non-hash data from the beginning
+    HashType hash_type_;
+    size_t hash_size_;
+
+    Data(HashType ht, std::span<const uint8_t> hash);
+  };
 
   std::shared_ptr<Data> data_;
 

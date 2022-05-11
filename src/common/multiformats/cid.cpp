@@ -20,6 +20,15 @@ Cid::Cid(std::span<uint8_t> &bytes) {
   content_type_ = CodeType::SHA2_256;
 }
 
+Cid::Cid(const std::vector<uint8_t> &bytes) {
+  std::vector<uint8_t> copy_to_vec(bytes);
+  std::span<uint8_t> sp(copy_to_vec);
+  content_address_.CreateFromBytes(sp);
+  str_cid_ = content_address_.ToHex();
+  bytes_view_ = content_address_.ToBuffer();
+  content_type_ = CodeType::SHA2_256;
+}
+
 Cid::Cid(std::string_view &str_view) {
   content_address_.CreateFromHex(str_view);
   str_cid_ = content_address_.ToHex();
@@ -46,17 +55,23 @@ Cid::Cid(Cid &&other)
       content_type_(other.content_type_){};
 
 Cid &Cid::operator=(const Cid &other) {
+  if (this != &other) {
     str_cid_ = other.str_cid_;
     bytes_view_ = other.bytes_view_;
     content_address_ = other.content_address_;
     content_type_ = other.content_type_;
+  }
+  return *this;
 }
 
 Cid &Cid::operator=(Cid &&other) {
+  if (this != &other) {
     str_cid_ = other.str_cid_;
     bytes_view_ = other.bytes_view_;
     content_address_ = std::move(other.content_address_);
     content_type_ = other.content_type_;
+  }
+  return *this;
 }
 
 }  // namespace common
