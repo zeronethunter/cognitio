@@ -16,7 +16,6 @@
 #include "common/concepts/container.hpp"
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
-#include "core/commands/list/root.hpp"
 
 namespace cognitio {
 namespace cli {

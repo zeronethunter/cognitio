@@ -71,7 +71,7 @@ class Command {
   Command() = default;
   virtual ~Command() = default;
   virtual const CmdMeta& GetMeta() const noexcept { return meta_; }
-  virtual void Run(Context& ctx, const CmdEnv& env, ResponseEmitter& re) = 0;
+  virtual Status Run(Context& ctx, const CmdEnv& env, ResponseEmitter& re) = 0;
   std::string GetArgsPrefix() const noexcept { return std::string("--"); }
   virtual CmdPtr GetSubCmd(const std::string& name) const;
   virtual void PrintHelp(std::ostream& out) = 0;
