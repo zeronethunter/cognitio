@@ -15,8 +15,14 @@
 namespace cognitio {
 namespace datastore {
 
-//! This is implementation of datastore filesystem
-//! Responsible for file management in the storage
+/**
+ *  @brief  This is implementation of datastore filesystem with key of type Cid.
+ *
+ *  Responsible for file management in the storage.
+ *
+ *  @tparam Value type of value to put in local storage.
+ *  @extends from Datastore virtual class
+ */
 template <typename Value>
 class Filesystem :  Datastore<common::Cid, Value, Status> {
  public:

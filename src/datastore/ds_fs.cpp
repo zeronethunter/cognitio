@@ -41,14 +41,16 @@ template <typename Value>
 std::pair<Status, Value> Filesystem<Value>::Get(const common::Cid& key) {
   std::string filename = key.ToString();
   if (!std::filesystem::exists(path_ / filename)) {
-    return std::pair<Status, Value>(Status(StatusCode::NOT_FOUND, " not found"), Value());
+    return std::pair<Status, Value>(Status(StatusCode::NOT_FOUND, " not found"),
+                                    Value());
   }
 
   std::fstream file;
   file.open(filename, std::ios::binary);
 
   if (!file.is_open()) {
-    return std::pair<Status, Value>(Status(StatusCode::CANCELLED, "Can not create " + filename), Value());
+    return std::pair<Status, Value>(
+        Status(StatusCode::CANCELLED, "Can not create " + filename), Value());
   }
 
   Value result;

@@ -8,13 +8,13 @@
 namespace cognitio {
 namespace repo {
 
-Repo::Repo(datastore::Filesystem<std::vector<uint8_t>> const& root) {
+Repo::Repo(datastore::Filesystem<std::string> const& root) {
   root_ = root;
   closed_ = false;
 }
 
-Repo Repo::CreateRepo(const std::filesystem::path& path) {
-  datastore::Filesystem<std::vector<uint8_t>> fs;
+Repo Repo::CreateRepo(const std::filesystem::path& path)  {
+  datastore::Filesystem<std::string> fs;
   fs.Open(path);
   return Repo(fs);
 }

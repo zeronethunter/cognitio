@@ -16,6 +16,15 @@ namespace cognitio {
 namespace files {
 namespace chunker {
 
+/**
+ *  @brief  Function to chunk raw of bytes into blocks of data with setted size.
+ *
+ *  @tparam  Buffer type of container for bytes.
+ *  @param  blocks container of bytes.
+ *  @param  max_width max size of chunked block, default = 262144 bytes.
+ *
+ *  @return vector of chunked blocks.
+ */
 template <typename Buffer>
 std::vector<Buffer> chunk_fixed_raw(const Buffer& blocks,
                                     const size_t max_width = 262144);

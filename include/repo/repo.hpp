@@ -14,24 +14,41 @@
 
 namespace cognitio {
 namespace repo {
-//! \brief Repository part of project.
-//! \brief Responsible for creating, managing and deleting the repository.
-//! \brief Creates Garbage Collector, Config File and Storages.
-//! \brief And also manages Pins.
 
+/**
+ *  @brief  Repository part of project. Responsible for creating, managing and
+ * deleting the repository.
+ *
+ *  Creates Garbage Collector, Config File and Storages.
+ *
+ *  And also manages Pins.
+ */
 class Repo {
  public:
-  static Repo CreateRepo(
-      const std::filesystem::path& path);  //! Create repository
-  explicit Repo(datastore::Filesystem<std::vector<uint8_t>> const& root);
-  Status
-  Init();  //! Initializing the repository, namely starting gc and creating pins
-  Status Open();   //! Open the repository
-  Status Close();  //! Close the repository, clean it up
+  /**
+   *  @static Function for creating repository.
+   *
+   *  @param path the path where to create repo.
+   */
+  static Repo CreateRepo(const std::filesystem::path& path);
+  /**
+   *  @brief Constructor of repository from Filesystem.
+   *
+   *  @param root filesystem of repository.
+   */
+  explicit Repo(datastore::Filesystem<std::string> const& root);
+  /**
+   *  @brief Initializing the repository, namely starting gc and creating pins.
+   */
+  Status Init();
+  /**
+   *  @brief Close the repository, clean it up.
+   */
+  Status Close();
 
  private:
   bool closed_ = true;
-  datastore::Filesystem<std::vector<uint8_t>> root_;
+  datastore::Filesystem<std::string> root_;
   blockstorage::Blockstorage blocks_;
   //  pinner::PinManager<Key, Value, Options> pins_;
   //  blockstorage::Blockstorage<Key, Value, Options> pinned_block_storage_;

@@ -16,25 +16,20 @@ namespace repo {
 namespace pinner {
 //! Pin Manager
 //! Pins and Unpins blocks, so the Garbage Collector doesn't remove them
-
-template <typename Key, typename CID, typename Value, typename Options>
+/**
+ *  @brief  Pin Manager.
+ *
+ *  Pins and Unpins blocks, so the Garbage Collector doesn't remove them
+ */
 class PinManager {
  public:
   PinManager() = default;
   PinManager(const datastore::Datastore<Key, Value, Options>& pinstore) {
     pinstore_ = pinstore;
   }
-  void PinDirectly(
-      const CID& cid,
-      const Options& options = Options());  //! Put key to pinstore directly
-  void UnPin(const CID& cid,
-             const Options& options);  //! Delete key in pinstore
-  void PinRecursively(
-      const CID& cid,
-      const Options& options = Options());  //! Put key to pinstore recursively
-  void DirectKeys(const Options& options);
-  void RecursiveKeys(const Options& options);
-  void IndirectKeys(const Options& options);
+  void PinDirectly(const CID& cid);  //! Put key to pinstore directly
+  void UnPin(const CID& cid);  //! Delete key in pinstore
+  void PinRecursively(const CID& cid);  //! Put key to pinstore recursively
 
  private:
   datastore::Datastore<Key, Value, Options> pinstore_;

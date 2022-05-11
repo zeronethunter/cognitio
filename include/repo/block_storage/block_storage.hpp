@@ -17,37 +17,58 @@ namespace cognitio {
 namespace repo {
 namespace blockstorage {
 
-//! This is special wrapper for datastore
-//! Used to work with blocks localy (CIDs)
+/**
+ *  @brief  This is special wrapper for filesystem datastorage.
+ *
+ *  Used to work with blocks of bytes.
+ *
+ *  Responsible for blocks management in the storage.
+ *
+ *  @attention For more information read documentation of Datastore interface.
+ */
 class Blockstorage {
  public:
-  Status Open(const std::filesystem::path& path);  //! Open Blockstorage
-
+  /**
+   *  @brief  Open Blockstorage.
+   */
+  Status Open(const std::filesystem::path& path);
+  /**
+   *  @brief  Get root of Blockstorage.
+   */
   std::filesystem::path Root() { return storage_.Root(); }
-
-  Status Close();  //! Close Blockstorage
-
-  Status Put(
-      const common::Cid& key,
-      const std::vector<uint8_t>& value);  //! Put Value by CID in storage
-
-  std::pair<Status, std::vector<uint8_t>> Get(
-      const common::Cid& key);            //! Get Value by CID from storage
-
-  Status Delete(const common::Cid& key);  //! Delete Value by CID from storage
-
-  Status PutMany(const std::set<std::pair<common::Cid, std::vector<uint8_t>>>&
-                     source);  //! Put many Values by their CIDs in storage
-
+  /**
+   *  @brief  Close Blockstorage.
+   */
+  Status Close();
+  /**
+   *  @brief  Put Value by CID in storage.
+   */
+  Status Put(const common::Cid& key, const std::vector<uint8_t>& value);
+  /**
+   *  @brief  Get Value by CID from storage.
+   */
+  std::pair<Status, std::vector<uint8_t>> Get(const common::Cid& key);
+  /**
+   *  @brief  Delete Value by CID from storage.
+   */
+  Status Delete(const common::Cid& key);
+  /**
+   *  @brief  Put many Values by their CIDs in storage.
+   */
+  Status PutMany(
+      const std::set<std::pair<common::Cid, std::vector<uint8_t>>>& source);
+  /**
+   *  @brief  Get many Value by their CIDs from storage.
+   */
   std::pair<Status, std::set<std::vector<uint8_t>>> GetMany(
-      const std::set<common::Cid>&
-          source);  //! Get many Value by their CIDs from storage
+      const std::set<common::Cid>& source);  //!
+  /**
+   *  @brief  Delete many Values by their CIDs in storage.
+   */
+  Status DeleteMany(const std::set<common::Cid>& source);
 
-  Status DeleteMany(
-      const std::set<common::Cid>& source);  //! Delete many Values by
-                                          //! their CIDs in storage
  private:
-  datastore::Filesystem<std::vector<uint8_t>> storage_;  //! FS datastorage
+  datastore::Filesystem<std::vector<uint8_t>> storage_;
 };
 
 }  // namespace blockstorage

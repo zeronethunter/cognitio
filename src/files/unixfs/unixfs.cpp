@@ -9,30 +9,36 @@ namespace cognitio {
 namespace files {
 namespace unixfs {
 
-std::unique_ptr<Data> UnixFS::EncodeMessage(const std::vector<uint8_t>& data) {
-  Data message;
-  if (data_type_ == "raw") {
-    message.set_type(Data_DataType_Raw);
-  } else if (data_type_ == "directory") {
-    message.set_type(Data_DataType_Directory);
-  } else if (data_type_ == "file") {
-    message.set_type(Data_DataType_File);
-  } else if (data_type_ == "metadata") {
-    message.set_type(Data_DataType_Metadata);
-  } else if (data_type_ == "symlink") {
-    message.set_type(Data_DataType_Symlink);
-  }
-  message.set_data(std::string(data.begin(), data.end()));
-  message.set_filesize(filesize_);
-  for (const uint64_t& blocksize : blocksizes_) {
-    message.add_blocksizes(blocksize);
-  }
 
-  return std::make_unique<Data>(message);
+// TODO: logger message of failure
+std::unique_ptr<Data> UnixFS::EncodeMessage(const std::vector<uint8_t>& data) {
+  if (is_created_) {
+    Data message;
+    if (data_type_ == "raw") {
+      message.set_type(Data_DataType_Raw);
+    } else if (data_type_ == "directory") {
+      message.set_type(Data_DataType_Directory);
+    } else if (data_type_ == "file") {
+      message.set_type(Data_DataType_File);
+    } else if (data_type_ == "metadata") {
+      message.set_type(Data_DataType_Metadata);
+    } else if (data_type_ == "symlink") {
+      message.set_type(Data_DataType_Symlink);
+    }
+    message.set_data(std::string(data.begin(), data.end()));
+    message.set_filesize(filesize_);
+    for (const uint64_t& blocksize : blocksizes_) {
+      message.add_blocksizes(blocksize);
+    }
+
+    return std::make_unique<Data>(message);
+  }
 }
+
 std::vector<uint8_t> UnixFS::DecodeMessage(const Data& encoded) {
   return std::vector<uint8_t>(encoded.data().begin(), encoded.data().end());
 }
+
 Status UnixFS::CreateUnixFS(const std::string& datatype, uint64_t filesize,
                             const std::vector<uint64_t>& blocksizes) {
   if (datatype == "raw") {
@@ -59,6 +65,7 @@ Status UnixFS::CreateUnixFS(const std::string& datatype, uint64_t filesize,
   } else {
     return Status(StatusCode::INVALID_ARGUMENT, "Empty blocksizes");
   }
+  is_created_ = true;
   return Status::OK;
 }
 
