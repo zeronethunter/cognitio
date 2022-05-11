@@ -5,6 +5,12 @@
 
 #include "common/context.hpp"
 
+#include <cstdlib>
+
+#include "cli/commands/command.hpp"
+#include "common/status.hpp"
+#include "common/status_code.hpp"
+#include "common/utils/repo.hpp"
 #include "core/core_api/core_api.hpp"
 
 namespace cognitio {
@@ -18,7 +24,18 @@ void Context::SetAPI(CoreAPI&& api) noexcept {
   core_api_ = std::make_shared<CoreAPI>(std::move(api));
 }
 
-Status Context::Init(CmdMeta& meta, CmdEnv env) noexcept {}
+Status Context::Init(CmdMeta& meta, CmdEnv env) noexcept {
+  std::string repo_path = getRepoPath(env);
+}
+
+std::string getRepoPath(CmdEnv& env) {
+  std::string cgnt_home = std::getenv("CGNT_HOME");
+  if (!cgnt_home.empty()) {
+    return cgnt_home;
+  }
+
+  // auto if_found = std::find
+}
 
 }  // namespace commands
 }  // namespace core

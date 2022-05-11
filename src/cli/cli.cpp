@@ -5,10 +5,14 @@
 
 #include "cli/cli.hpp"
 
+<<<<<<< HEAD
 #include <algorithm>
 #include <memory>
 #include "cli/commands/command.hpp"
 #include "common/logger/logger.hpp"
+=======
+#include "cli/commands/command.hpp"
+>>>>>>> 38078b3 (CLI basis)
 #include "common/status.hpp"
 #include "common/status_code.hpp"
 

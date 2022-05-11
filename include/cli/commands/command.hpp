@@ -7,6 +7,7 @@
 #define CGNT_CLI_COMMANDS_COMMAND_HPP_
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -76,7 +77,6 @@ class Command {
   virtual void AddSubCmd(std::unique_ptr<Command> cmd) {
     sub_commands_.push_back(cmd);
   }
-
 
  private:
   CmdMeta meta_;

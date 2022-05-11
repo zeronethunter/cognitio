@@ -7,6 +7,7 @@
 #define CGNT_CORE_COMMANDS_CONTEXT_HPP_
 
 #include <memory>
+#include <string>
 
 #include "cli/commands/command.hpp"
 #include "core/core.hpp"
@@ -37,11 +38,14 @@ class Context {
   void SetConfig(Config&& conf) noexcept;
   void SetAPI(CoreAPI&& api) noexcept;
 
-  Status Init(CmdMeta& meta, CmdEnv env) noexcept;
+  Status Init(CmdMeta& meta, CmdEnv& env) noexcept;
 
  private:
+  std::string getRepoPath(CmdEnv& env);
+
   CfgPtr config_ = nullptr;
   ApiPtr core_api_ = nullptr;
+  std::string repo_path_ = "";
 };
 
 }  // namespace commands

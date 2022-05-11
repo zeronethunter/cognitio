@@ -102,7 +102,7 @@ docker:
 CLI_PROTO_SRC_DIR=proto/cli
 DATA_PROTO_SRC_DIR=proto/data
 
-proto: cli-proto data-proto
+proto: cli-proto
 
 cli-proto:
 	protoc -I ${CLI_PROTO_SRC_DIR} --cpp_out=${CLI_PROTO_SRC_DIR} ${CLI_PROTO_SRC_DIR}/*.proto
