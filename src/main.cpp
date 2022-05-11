@@ -36,9 +36,7 @@ int main(int argc, char *argv[]) {
   args[0] = "cognitio";
 
   // Builing the tree of commands, parsing & running of the argv
-  cli::Cli<Context> cli(std::make_unique<RootCmd>(MakeCommands()),
-                        {std::cin, std::cout, std::cerr});
-
+  cli::Cli<Context> cli(MakeCommands());
   Status status = cli.Run(args);
   return status.ok();
 }

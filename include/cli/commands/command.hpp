@@ -13,15 +13,18 @@
 #include <type_traits>
 #include <vector>
 
+#include "cli/commands/response_emitter.hpp"
 #include "common/concepts/container.hpp"
 #include "common/status.hpp"
-
-// FIXME: Delete forward declaration
-class ResponseEmitter;
 
 namespace cognitio {
 namespace cli {
 namespace commands {
+
+struct CmdEnv {
+  std::vector<std::string> options;
+  std::vector<std::string> arguments;
+};
 
 // Composite patterns
 template <class Context>
@@ -57,17 +60,6 @@ class Command {
     bool no_local_ = false;
   };
 
-  struct CmdEnv {
-    std::vector<std::string> options;
-    std::vector<std::string> arguments;
-  };
-
-  struct CmdWrapper {
-    std::unique_ptr<Command> cmd;
-    Context ctx;
-    CmdEnv env;
-  };
-
   Command() = default;
   virtual ~Command() = default;
   CmdMeta& GetMeta() const noexcept { return meta_; }
@@ -78,6 +70,13 @@ class Command {
  private:
   CmdMeta meta_;
   SubCmdsArr sub_commands_;
+};
+
+template <class Context>
+struct CmdWrapper {
+  std::unique_ptr<Command<Context>> cmd;
+  Context ctx;
+  CmdEnv env;
 };
 
 }  // namespace commands

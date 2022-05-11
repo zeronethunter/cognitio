@@ -95,3 +95,16 @@ docker:
     # docker build -t ${DOCKER_IMAGE} .
     # docker image pull serpentian/cognitio:latest
 	docker run -v $(shell pwd):/home/project -it ${DOCKER_IMAGE}
+
+# Protobuf compiling
+
+# All locations of the proto files
+CLI_PROTO_SRC_DIR=proto/cli
+
+proto: cli-proto
+
+cli-proto:
+	protoc -I ${CLI_PROTO_SRC_DIR} --cpp_out=${CLI_PROTO_SRC_DIR} ${CLI_PROTO_SRC_DIR}/*.proto
+	mkdir -p include/${CLI_PROTO_SRC_DIR} src/${CLI_PROTO_SRC_DIR}
+	mv ${CLI_PROTO_SRC_DIR}/*.pb.h include/${CLI_PROTO_SRC_DIR}
+	mv ${CLI_PROTO_SRC_DIR}/*.pb.cc src/${CLI_PROTO_SRC_DIR}

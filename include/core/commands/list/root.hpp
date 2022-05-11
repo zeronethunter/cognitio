@@ -22,6 +22,7 @@ class RootCmd : public Command<Context> {
     RootMeta() : CmdMeta(std::string("cognitio")) {}
   };
 
+  RootCmd() : Command() {};
   void PrintHelp(std::ostream& out) override;
   Status Run([[maybe_unused]] Context& ctx, [[maybe_unused]] const CmdEnv& env,
              [[maybe_unused]] ResponseEmitter& re) override {

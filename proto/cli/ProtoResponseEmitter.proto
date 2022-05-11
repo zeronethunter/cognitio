@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message ProtoResponse {
+    message ResponseStatus {
+        int32 StatusCode = 1;
+        string StatusMsg = 2;
+    }
+
+    ResponseStatus status = 1;
+    bytes data = 2;
+}
