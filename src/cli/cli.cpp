@@ -5,15 +5,10 @@
 
 #include "cli/cli.hpp"
 
-<<<<<<< HEAD
-#include <algorithm>
 #include <memory>
 
 #include "cli/commands/command.hpp"
 #include "common/logger/logger.hpp"
-=======
-#include "cli/commands/command.hpp"
->>>>>>> 38078b3 (CLI basis)
 #include "common/status.hpp"
 #include "common/status_code.hpp"
 #include "core/commands/list/root.hpp"
@@ -35,6 +30,10 @@ template <class Context>
 template <Container T>
 Status Cli<Context>::Run(T& args) const {
   logger_->debug("Command line interface module is starting...");
+  if (!IsInitialized()) {
+    logger_->error("CLI is not initialized with commands");
+    return Status::FAILED;
+  }
 
   CmdWrapper<Context> request;
   Status err = parse(args, request);
