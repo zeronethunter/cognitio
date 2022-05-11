@@ -6,28 +6,22 @@
 #include "cli/cli.hpp"
 
 #include <memory>
-
 #include "cli/commands/command.hpp"
 #include "common/status.hpp"
 #include "common/status_code.hpp"
-#include "core/commands/root.hpp"
 
 namespace cognitio {
 namespace cli {
 
 template <class Context>
-Cli<Context>::Cli(RootCmd&& root) : root_(std::make_unique<RootCmd>(root)) {}
+Cli<Context>::Cli(Cli<Context>::CmdPtr root) : root_(root) {}
 
 template <class Context>
 template <Container T>
 Status Cli<Context>::Run(T& args) {
   logger_->debug("Command line interface module is starting...");
-  if (!IsInitialized()) {
-    logger_->error("CLI is not initialized with commands");
-    return Status::FAILED;
-  }
 
-  CmdWrapper<Context> request;
+  typename Command<Context>::CmdWrapper request;
   Status err = parse(args, request);
   if (!err.ok()) {
     logger_->error("Error while parsing: {}", err.error_message());
