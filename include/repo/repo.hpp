@@ -8,6 +8,7 @@
 
 #include <filesystem>
 
+#include "common/logger/logger.hpp"
 #include "datastore/ds_fs.hpp"
 #include "pinner/pin-manager.hpp"
 #include "repo/gc/gc.hpp"
@@ -22,37 +23,63 @@ namespace repo {
  *  Creates Garbage Collector, Config File and Storages.
  *
  *  And also manages Pins.
+ *
+ *  @tparam Buffer type of value to store in repo files. Default is vector of
+ * bytes.
  */
+template <typename StoreValue = std::string>
 class Repo {
  public:
-  /**
-   *  @static Function for creating repository.
-   *
-   *  @param path the path where to create repo.
-   */
-  static Repo CreateRepo(const std::filesystem::path& path);
   /**
    *  @brief Constructor of repository from Filesystem.
    *
    *  @param root filesystem of repository.
    */
-  explicit Repo(datastore::Filesystem<std::string> const& root);
+  explicit Repo(
+      std::unique_ptr<datastore::Filesystem<StoreValue>> const& root) noexcept;
+  /**
+   *  @brief Constructor of repository from path.
+   *
+   *  @param path path to new repository.
+   */
+  explicit Repo(const std::string& path) noexcept;
   /**
    *  @brief Initializing the repository, namely starting gc and creating pins.
    */
-  Status Init();
+  Status Init() noexcept;
   /**
    *  @brief Close the repository, clean it up.
    */
-  Status Close();
+  Status Close() noexcept;
+  /**
+   *  @brief Add value by key in repo.
+   *
+   *  @param cid the key that will be used to put value.
+   *  @param data block of bytes.
+   */
+  Status Add(const common::Cid& cid, const std::vector<uint8_t>& data) noexcept;
+  /**
+   *  @brief Delete value by key in repo.
+   *
+   *  @param cid the key that will be used to delete value.
+   */
+  Status Delete(const common::Cid& cid) noexcept;
+  /**
+   *  @brief Check if repo is already exists.
+   */
+  bool Exists() noexcept;
 
  private:
+  Status openRepo() noexcept;
+  std::string shard(const cognitio::common::Cid& cid, size_t name_length = 2);
+
   bool closed_ = true;
-  datastore::Filesystem<std::string> root_;
-  blockstorage::Blockstorage blocks_;
+  std::unique_ptr<datastore::Filesystem<StoreValue>> root_;
+  std::unique_ptr<blockstorage::Blockstorage> blocks_;
+  common::logger::Logger logger_ = common::logger::createLogger("Repo logger");
   //  pinner::PinManager<Key, Value, Options> pins_;
   //  blockstorage::Blockstorage<Key, Value, Options> pinned_block_storage_;
-  Status OpenRoot();
+
   //  Status OpenLock();
   //  Status CloseLock();
 };

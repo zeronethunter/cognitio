@@ -1,7 +1,7 @@
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_utils)
 
 # Set headers and sources
-set(${SUBMODULE_NAME}_SOURCES hex_util.cpp)
+set(${SUBMODULE_NAME}_SOURCES hex_util.cpp prefix_reader.cpp)
 
 add_library(
         ${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES}

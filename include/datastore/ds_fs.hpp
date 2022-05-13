@@ -21,29 +21,42 @@ namespace datastore {
  *  Responsible for file management in the storage.
  *
  *  @tparam Value type of value to put in local storage.
- *  @extends from Datastore virtual class
+ *  @extends from Datastore interface.
  */
 template <typename Value>
-class Filesystem :  Datastore<common::Cid, Value, Status> {
+class Filesystem : Datastore<common::Cid, Value, Status> {
  public:
-  Status Open(const std::filesystem::path& path) override;
+  Status Open(const std::filesystem::path& path) noexcept override;
 
-  Status Close() override;
+  Status Close() noexcept override;
 
-  std::filesystem::path Root() { return path_; }
+  std::filesystem::path Root() const noexcept { return path_; }
 
-  Status Put(const common::Cid& key, const Value& value) override;
+  Status MakeDir(const std::string& dir_name) noexcept {
+    if (std::filesystem::create_directory(path_ / dir_name)) {
+      return Status::OK;
+    }
+    return Status(StatusCode::CANCELLED,
+                  "Can't create directory " + dir_name + ".");
+  }
 
-  std::pair<Status, Value> Get(const common::Cid& key) override;
+  Status Put(const common::Cid& key, const Value& value) noexcept override;
 
-  Status Delete(const common::Cid& key) override;
+  std::pair<Status, Value> Get(const common::Cid& key) const noexcept override;
 
-  Status PutMany(const std::set<std::pair<common::Cid, Value>>& source) override;
+  Status Delete(const common::Cid& key) noexcept override;
+
+  bool Has(const common::Cid& key) const noexcept override {
+    return std::filesystem::exists(key.ToString());
+  }
+
+  Status PutMany(
+      const std::set<std::pair<common::Cid, Value>>& source) noexcept override;
 
   std::pair<Status, std::set<Value>> GetMany(
-      const std::set<common::Cid>& source) override;
+      const std::set<common::Cid>& source) const noexcept override;
 
-  Status DeleteMany(const std::set<common::Cid>& source) override;
+  Status DeleteMany(const std::set<common::Cid>& source) noexcept override;
 
  private:
   std::filesystem::path path_;

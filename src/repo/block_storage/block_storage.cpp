@@ -10,38 +10,38 @@ namespace repo {
 namespace blockstorage {
 
 Status blockstorage::Blockstorage::Open(const std::filesystem::path& path) {
-  return storage_.Open(path);
+  return storage_->Open(path);
 }
 
-Status blockstorage::Blockstorage::Close() { return storage_.Close(); }
+Status blockstorage::Blockstorage::Close() { return storage_->Close(); }
 
 Status blockstorage::Blockstorage::Put(const common::Cid& key,
                                        const std::vector<uint8_t>& value) {
-  return storage_.Put(key, value);
+  return storage_->Put(key, value);
 }
 
 std::pair<Status, std::vector<uint8_t>> blockstorage::Blockstorage::Get(
     const common::Cid& key) {
-  return storage_.Get(key);
+  return storage_->Get(key);
 }
 
 Status blockstorage::Blockstorage::Delete(const common::Cid& key) {
-  return storage_.Delete(key);
+  return storage_->Delete(key);
 }
 
 Status blockstorage::Blockstorage::PutMany(
     const std::set<std::pair<common::Cid, std::vector<uint8_t>>>& source) {
-  return storage_.PutMany(source);
+  return storage_->PutMany(source);
 }
 
 std::pair<Status, std::set<std::vector<uint8_t>>>
 blockstorage::Blockstorage::GetMany(const std::set<common::Cid>& source) {
-  return storage_.GetMany(source);
+  return storage_->GetMany(source);
 }
 
 Status blockstorage::Blockstorage::DeleteMany(
     const std::set<common::Cid>& source) {
-  return storage_.DeleteMany(source);
+  return storage_->DeleteMany(source);
 }
 
 }  // namespace blockstorage

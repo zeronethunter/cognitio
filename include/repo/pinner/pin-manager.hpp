@@ -14,8 +14,6 @@
 namespace cognitio {
 namespace repo {
 namespace pinner {
-//! Pin Manager
-//! Pins and Unpins blocks, so the Garbage Collector doesn't remove them
 /**
  *  @brief  Pin Manager.
  *
@@ -24,18 +22,34 @@ namespace pinner {
 class PinManager {
  public:
   PinManager() = default;
-  PinManager(const datastore::Datastore<Key, Value, Options>& pinstore) {
-    pinstore_ = pinstore;
-  }
-  void PinDirectly(const CID& cid);  //! Put key to pinstore directly
-  void UnPin(const CID& cid);  //! Delete key in pinstore
-  void PinRecursively(const CID& cid);  //! Put key to pinstore recursively
+  PinManager(const blockstorage::Blockstorage& pinstore)
+      : pinstore_(pinstore) {}
+
+  PinManager(const PinManager& pin_manager) = delete;
+  PinManager& operator=(const PinManager& pin_manager) = delete;
+
+  /**
+   *  @brief  Put key to pinstore directly.
+   *
+   *  @param cid key to pin.
+   */
+  void PinDirectly(const common::Cid& cid);
+  /**
+   *  @brief  Put key to pinstore recursively.
+   *
+   *  @param cid key to pin recursively.
+   */
+  void PinRecursively(const common::Cid& cid);
+  /**
+   *  @brief  Delete key in pinstore.
+   *
+   *  @param cid key to unpin.
+   */
+  void UnPin(const common::Cid& cid);
 
  private:
-  datastore::Datastore<Key, Value, Options> pinstore_;
-  blockstorage::Blockstorage<Key, CID, Value, Options> blockstorage_;
-  std::set<CID> direct_pins_;
-  std::set<CID> recursive_pins_;
+  blockstorage::Blockstorage pinstore_;
+  std::set<common::Cid> pins_;
 };
 
 }  // namespace pinner

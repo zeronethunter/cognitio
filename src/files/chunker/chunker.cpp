@@ -10,13 +10,14 @@ namespace files {
 namespace chunker {
 
 template <typename Buffer>
-std::vector<Buffer> chunk_fixed_raw(const Buffer& buffer, const size_t max_width) {
+std::vector<Buffer> chunk_fixed_raw(const Buffer& buffer,
+                                    const size_t max_width) noexcept {
   size_t size = buffer.size();
   size_t i = 0;
   std::vector<Buffer> result;
   while (size >= max_width) {
-    result.push_back(Buffer(std::begin(buffer) + i,
-                            std::begin(buffer) + max_width + i - 1));
+    result.push_back(
+        Buffer(std::begin(buffer) + i, std::begin(buffer) + max_width + i - 1));
     i += max_width;
     size -= max_width;
   }

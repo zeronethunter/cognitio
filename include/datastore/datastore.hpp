@@ -33,20 +33,20 @@ class Datastore {
    *
    *  @param path where to open storage.
    */
-  virtual ErrCode Open(const std::filesystem::path& path) = 0;
+  virtual ErrCode Open(const std::filesystem::path& path) noexcept = 0;
   /**
    *  @brief  Close storage.
    *
    *  Closes Datastore in a predefined path.
    */
-  virtual ErrCode Close() = 0;
+  virtual ErrCode Close() noexcept = 0;
   /**
    *  @brief  Put value in storage.
    *
    *  @param key the key that will be used to put value.
    *  @param value value to put in store by key.
    */
-  virtual ErrCode Put(const Key& key, const Value& value) = 0;
+  virtual ErrCode Put(const Key& key, const Value& value) noexcept = 0;
   /**
    *  @brief  Get value by key from storage.
    *
@@ -54,32 +54,39 @@ class Datastore {
    *
    *  @return pair of ErrCode and Value types.
    */
-  virtual std::pair<ErrCode, Value> Get(const Key& key) = 0;
+  virtual std::pair<ErrCode, Value> Get(const Key& key) const noexcept = 0;
   /**
    *  @brief  Delete value by key in storage.
    *
    *  @param key the key that will be used to delete value.
    */
-  virtual ErrCode Delete(const Key& key) = 0;
+  virtual ErrCode Delete(const Key& key) noexcept = 0;
+  /**
+   *  @brief  Check if key is stored.
+   *
+   *  @param key the key to find in storage.
+   */
+  virtual bool Has(const Key& key) const noexcept = 0;
   /**
    *  @brief  Put set of values by keys in storage.
    *
    *  @param source set of pairs<key, value> that will be putted in storage.
    */
-  virtual ErrCode PutMany(const std::set<std::pair<Key, Value>>& source) = 0;
+  virtual ErrCode PutMany(
+      const std::set<std::pair<Key, Value>>& source) noexcept = 0;
   /**
    *  @brief  Get set of values by keys from storage.
    *
    *  @param source set of keys of values to get from storage.
    */
   virtual std::pair<ErrCode, std::set<Value>> GetMany(
-      const std::set<Key>& source) = 0;
+      const std::set<Key>& source) const noexcept = 0;
   /**
    *  @brief  Delete set of values by keys from storage.
    *
    *  @param source set of keys of values to delete from storage.
    */
-  virtual ErrCode DeleteMany(const std::set<Key>& source) = 0;
+  virtual ErrCode DeleteMany(const std::set<Key>& source) noexcept = 0;
 };
 
 }  // namespace datastore

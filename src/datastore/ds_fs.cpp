@@ -6,7 +6,7 @@ namespace cognitio {
 namespace datastore {
 
 template <typename Value>
-Status Filesystem<Value>::Open(const std::filesystem::path& path) {
+Status Filesystem<Value>::Open(const std::filesystem::path& path) noexcept {
   path_ = path;
   if (std::filesystem::create_directory(path_)) {
     return Status::OK;
@@ -15,10 +15,11 @@ Status Filesystem<Value>::Open(const std::filesystem::path& path) {
 }
 
 template <typename Value>
-Status Filesystem<Value>::Close() {}
+Status Filesystem<Value>::Close() noexcept {}
 
 template <typename Value>
-Status Filesystem<Value>::Put(const common::Cid& key, const Value& value) {
+Status Filesystem<Value>::Put(const common::Cid& key,
+                              const Value& value) noexcept {
   std::string filename = key.ToString();
   if (std::filesystem::exists(path_ / filename)) {
     return Status(StatusCode::ALREADY_EXISTS, " already exists");
@@ -38,7 +39,8 @@ Status Filesystem<Value>::Put(const common::Cid& key, const Value& value) {
 }
 
 template <typename Value>
-std::pair<Status, Value> Filesystem<Value>::Get(const common::Cid& key) {
+std::pair<Status, Value> Filesystem<Value>::Get(
+    const common::Cid& key) const noexcept {
   std::string filename = key.ToString();
   if (!std::filesystem::exists(path_ / filename)) {
     return std::pair<Status, Value>(Status(StatusCode::NOT_FOUND, " not found"),
@@ -62,17 +64,17 @@ std::pair<Status, Value> Filesystem<Value>::Get(const common::Cid& key) {
 }
 
 template <typename Value>
-Status Filesystem<Value>::Delete(const common::Cid& key) {
+Status Filesystem<Value>::Delete(const common::Cid& key) noexcept {
   std::string filename = key.ToString();
   if (std::filesystem::remove(path_ / filename)) {
     return Status::OK;
   }
-  return Status(StatusCode::NOT_FOUND, " not found");
+  return Status(StatusCode::NOT_FOUND, filename + " not found");
 }
 
 template <typename Value>
 Status Filesystem<Value>::PutMany(
-    const std::set<std::pair<common::Cid, Value>>& source) {
+    const std::set<std::pair<common::Cid, Value>>& source) noexcept {
   for (const auto& input : source) {
     Status err = Put(input.first, input.second);
     if (!err.ok()) {
@@ -84,7 +86,7 @@ Status Filesystem<Value>::PutMany(
 
 template <typename Value>
 std::pair<Status, std::set<Value>> Filesystem<Value>::GetMany(
-    const std::set<common::Cid>& source) {
+    const std::set<common::Cid>& source) const noexcept {
   std::set<Value> result;
   for (const auto& key : source) {
     std::pair<Status, Value> it = Get(key);
@@ -97,7 +99,8 @@ std::pair<Status, std::set<Value>> Filesystem<Value>::GetMany(
 }
 
 template <typename Value>
-Status Filesystem<Value>::DeleteMany(const std::set<common::Cid>& source) {
+Status Filesystem<Value>::DeleteMany(
+    const std::set<common::Cid>& source) noexcept {
   for (const auto& key : source) {
     Status err = Delete(key);
     if (!err.ok()) {

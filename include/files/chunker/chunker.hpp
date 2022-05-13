@@ -7,10 +7,10 @@
 #define CONGITIO_CHUNKER_CHUNKER_HPP_
 
 #include <iostream>
+#include <set>
+#include <vector>
 
 #include "common/status.hpp"
-#include "set"
-#include "vector"
 
 namespace cognitio {
 namespace files {
@@ -27,7 +27,7 @@ namespace chunker {
  */
 template <typename Buffer>
 std::vector<Buffer> chunk_fixed_raw(const Buffer& blocks,
-                                    const size_t max_width = 262144);
+                                    const size_t max_width = 262144) noexcept;
 
 }  // namespace chunker
 }  // namespace files

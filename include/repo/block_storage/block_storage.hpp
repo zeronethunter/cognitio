@@ -35,7 +35,7 @@ class Blockstorage {
   /**
    *  @brief  Get root of Blockstorage.
    */
-  std::filesystem::path Root() { return storage_.Root(); }
+  std::filesystem::path Root() { return storage_->Root(); }
   /**
    *  @brief  Close Blockstorage.
    */
@@ -53,6 +53,10 @@ class Blockstorage {
    */
   Status Delete(const common::Cid& key);
   /**
+   *  @brief  Check if key is in storage.
+   */
+  bool Has(const common::Cid& key) { return storage_->Has(key); }
+  /**
    *  @brief  Put many Values by their CIDs in storage.
    */
   Status PutMany(
@@ -68,7 +72,7 @@ class Blockstorage {
   Status DeleteMany(const std::set<common::Cid>& source);
 
  private:
-  datastore::Filesystem<std::vector<uint8_t>> storage_;
+  std::unique_ptr<datastore::Filesystem<std::vector<uint8_t>>> storage_;
 };
 
 }  // namespace blockstorage

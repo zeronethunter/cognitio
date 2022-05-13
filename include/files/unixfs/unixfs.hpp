@@ -6,8 +6,9 @@
 #ifndef CGNT_FILES_UNIXFS_UNIXFS_HPP_
 #define CGNT_FILES_UNIXFS_UNIXFS_HPP_
 
+#include "common/logger/logger.hpp"
 #include "common/status.hpp"
-#include "unixfs.pb.h"
+#include "proto/files/ProtoData.pb.h"
 
 namespace cognitio {
 namespace files {
@@ -30,14 +31,14 @@ class UnixFS {
    *
    *  @return an unique ptr to protobuf class Data.
    */
-  std::unique_ptr<Data> EncodeMessage(const std::vector<uint8_t>& data);
+  std::unique_ptr<Data> EncodeMessage() const noexcept;
   /**
    *  @brief  Decode from probuf to data.
    *  @param  encoded protobuf class Data.
    *
-   *  @return a vector of bytes that was taken from protobuf.
+   *  @return Status code.
    */
-  static std::vector<uint8_t> DecodeMessage(const Data& encoded);
+  Status DecodeMessage(const Data& encoded) noexcept;
   /**
    *  @brief  Initialize protobuf message pattern.
    *  @param  datatype data type of future protobuf message. Example: "raw",
@@ -48,12 +49,13 @@ class UnixFS {
    *  @return a Status.
    */
   Status CreateUnixFS(const std::string& datatype, uint64_t filesize,
-                      const std::vector<uint64_t>& blocksizes);
+                      const std::vector<uint64_t>& blocksizes,
+                      const std::vector<uint8_t>& data) noexcept;
   /**
    *  @brief  Adder for blocksize.
    *  @param  size_in_bytes size in bytes to add.
    */
-  void AddBlockSize(uint64_t size_in_bytes) {
+  void AddBlockSize(uint64_t size_in_bytes) noexcept {
     blocksizes_.push_back(size_in_bytes);
   }
   /**
@@ -61,32 +63,52 @@ class UnixFS {
    *  @param  index index of size to get.
    *  @return size.
    */
-  size_t GetBlockSize(size_t index) { return blocksizes_.at(index); }
+  size_t GetBlockSize(size_t index) const noexcept {
+    return blocksizes_.at(index);
+  }
   /**
    *  @brief  Get vector of block sizes.
    *  @return vector of block sizes.
    */
-  std::vector<uint64_t> GetBlockSize() { return blocksizes_; }
+  std::vector<uint64_t> GetBlockSize() const noexcept { return blocksizes_; }
   /**
    *  @brief  Get file size.
    */
-  uint64_t GetFilesize() { return filesize_; }
+  uint64_t GetFilesize() const noexcept { return filesize_; }
   /**
    *  @brief  Set file size.
    *  @param  filesize size of file to set.
    */
-  void SetFilesize(uint64_t filesize) { filesize_ = filesize; }
+  void SetFilesize(uint64_t filesize) noexcept { filesize_ = filesize; }
   /**
    *  @brief  Get type of data.
    */
-  std::string GetDataType() { return data_type_; }
+  std::string GetDataType() const noexcept { return data_type_; }
+  /**
+   *  @brief  Get data.
+   */
+  std::vector<uint8_t> GetData() const noexcept { return data_; }
+  /**
+   *  @brief  Set data.
+   */
+  void SetData(const std::vector<uint8_t>& data) noexcept { data_ = data; }
 
  private:
+  /**
+   *  @private Transform string type to enum int type of data message.
+   *
+   *  @param type type to convert.
+   */
+  Data_DataType stringToDatatype(const std::string& type) const noexcept;
+
   bool is_created_ = false;
   std::string data_type_;
   std::vector<uint8_t> data_;
   uint64_t filesize_;
   std::vector<uint64_t> blocksizes_;
+
+  common::logger::Logger logger_ =
+      common::logger::createLogger("UnixFSDecodeMessage");
 };
 
 }  // namespace unixfs
