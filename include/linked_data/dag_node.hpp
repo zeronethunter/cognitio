@@ -3,31 +3,34 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#ifndef CGNT_LINKED_DATA_NODE_HPP
-#define CGNT_LINKED_DATA_NODE_HPP
+#ifndef CGNT_LINKED_DATA_DAG_NODE_HPP_
+#define CGNT_LINKED_DATA_DAG_NODE_HPP_
 
 #include <map>
 #include <string>
 #include <vector>
 
+#include "proto/data/ProtoData.pb.h"
 #include "common/status.hpp"
 #include "common/multiformats/cid.hpp"
-#include "proto/link/ProtoLink.pb.h"
 
 namespace cognitio {
 namespace linked_data {
 
-template <typename Data>
 class DagNode {
  public:
   DagNode() = default;
-  explicit DagNode(Data &&data) : content_(std::move(data)) {};
+  explicit DagNode(std::vector<uint8_t> &&data) : content_(std::move(data)) {};
+  DagNode &operator=(std::vector<uint8_t> &&data);
 
   DagNode(DagNode &&other) noexcept;
   DagNode &operator=(DagNode &&other) noexcept;
 
   /// \return content of node
-  Data GetContent() const;
+  std::vector<uint8_t> GetContent() const;
+
+  Status DecodeProtoNode(const Node &node);
+  std::unique_ptr<Node> EncodeProtoNode() const;
 
   /// \return size of node's children
   size_t Count() const;
@@ -42,11 +45,13 @@ class DagNode {
   Status InsertSubNode(std::string &&name, DagNode &&children_node);
 
  private:
+  std::vector<common::Cid> cid_;
+
   std::vector<uint8_t> content_;
-  std::map<std::string, DagNode, std::less<> > children_;
+  std::map<std::string, DagNode, std::less<>> children_;
 };
 
 }  // namespace linked_data
 }  // namespace cognitio
 
-#endif  // CGNT_LINKED_DATA_NODE_HPP
+#endif  // CGNT_LINKED_DATA_DAG_NODE_HPP_

@@ -32,8 +32,8 @@ enum CodeType {
   FILECOIN_COMMITMENT_SEALED = 0xf102,
 };
 
-//* Content identifier.
-//* View: <multicodec><multihash-algorithm><multihash-length><multihash-hash>
+/// Content identifier.
+/// View: <multicodec><multihash-algorithm><multihash-length><multihash-hash>
 class Cid {
  public:
   Cid();

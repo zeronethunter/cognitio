@@ -20,14 +20,7 @@ namespace common {
 //! Data of Multihash
 
 enum HashType {
-  IDENTITY = 0x0,
-  SHA1 = 0x11,
-  SHA256 = 0x12,
-  SHA512 = 0x13,
-  BLAKE2B_256 = 0xb220,
-  BLAKE2S128 = 0xb250,
-  BLACKE2S256 = 0xb260,
-  SHA2_256_TRUNC254_PADDED = 0x1012,
+  SHA256 = 0x12
 };
 
 class Multihash {

@@ -3,20 +3,18 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#ifndef CGNT_COMMON_BLOCK_BLOCK_HPP
-#define CGNT_COMMON_BLOCK_BLOCK_HPP
+#ifndef CGNT_LINKED_DATA_BLOCK_HPP_
+#define CGNT_LINKED_DATA_BLOCK_HPP_
 
-#include <string>
 #include <vector>
 
 #include "common/multiformats/cid.hpp"
 
 namespace cognitio {
-namespace block {
+namespace linked_data {
 
 //! A BasicBlock is a singular block of data in ipfs.
-class Block 
-{
+class Block {
  public:
   Block() = default;
 
@@ -39,11 +37,11 @@ class Block
   common::Multihash Multihash() const;
 
  private:
-  cognitio::common::Cid cid_;      //! Cid of block
+  cognitio::common::Cid cid_;   //! Cid of block
   std::vector<uint8_t> bytes_;  //! bytes of block
 };
 
-}  // namespace block
+}  // namespace linked_data
 }  // namespace cognitio
 
-#endif  // CGNT_COMMON_BLOCK_BLOCK_HPP
+#endif  // CGNT_LINKED_DATA_BLOCK_HPP_

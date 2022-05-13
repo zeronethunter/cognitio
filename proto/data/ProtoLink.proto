@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-message Link {
-    bytes Cid = 1;
-    optional string Name = 2;
-    uint64 Size = 3;
-}
