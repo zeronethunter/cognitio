@@ -1,50 +1,40 @@
-// Copyright (c) 2022 NodeOps
+//  Copyright (c) 2022 NodeOps
 //
-// Distributed under the GNU GPLv3 software license, see the accompanying
-// file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
+//  Distributed under the GNU GPLv3 software license, see the accompanying
+//  file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#ifndef CGNT_LINKED_DATA_NODE_HPP
-#define CGNT_LINKED_DATA_NODE_HPP
+#ifndef CGNT_LINKED_DATA_NODE_HPP_
+#define CGNT_LINKED_DATA_NODE_HPP_
 
-#include <map>
-#include <string>
-#include <vector>
-
-#include "common/status.hpp"
 #include "common/multiformats/cid.hpp"
+#include "linked_data/link.hpp"
 
 namespace cognitio {
 namespace linked_data {
 
 class Node {
  public:
-  Node() = default;
-  explicit Node(std::vector<uint8_t> &&bytes) : content_(std::move(bytes)) {};
+  virtual ~Node() = default;
 
-  Node(Node &&other) noexcept;
-  Node &operator=(Node &&other) noexcept;
+  virtual common::Cid GetCid() const = 0;
 
-  /// \return content of node
-  std::vector<uint8_t> GetContent() const;
+  virtual std::vector<uint8_t> GetBytes() const = 0;
 
-  /// \return size of node's children
-  size_t Count() const;
+  virtual size_t Size() const = 0;
 
-  common::Cid GetCid() const;
+  virtual Status AddChild(const std::string &name,
+                          std::shared_ptr<Node> node) = 0;
 
-  std::unique_ptr<Node> GetSubNode(std::string_view name) const;
+  virtual std::unique_ptr<Node> GetLink(const std::string &name) const = 0;
 
-  std::vector<std::string_view> GetSubNodeNames() const;
+  virtual void RemoveLink(const std::string &name) = 0;
 
-  /// \brief insert children
-  Status InsertSubNode(std::string &&name, Node &&children_node);
+  virtual void AddLink(const Link &link) = 0;
 
- private:
-  std::vector<uint8_t> content_;
-  std::map<std::string, Node, std::less<> > children_;
+  virtual std::vector<std::unique_ptr<Link>> GetLinks() const = 0;
 };
 
 }  // namespace linked_data
 }  // namespace cognitio
 
-#endif  // CGNT_LINKED_DATA_NODE_HPP
+#endif  // CGNT_LINKED_DATA_NODE_HPP_

@@ -3,11 +3,14 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
+#include <functional>
 #include <memory>
 #include <vector>
 
 #include "common/multiformats/cid.hpp"
 #include "common/status.hpp"
+#include "linked_data/dag_node.hpp"
+#include "linked_data/link.hpp"
 #include "linked_data/node.hpp"
 #include "repo/block_storage/block_storage.hpp"
 
@@ -17,28 +20,44 @@
 namespace cognitio {
 namespace linked_data {
 
-//! Directed Acyclic Graph
+/// Directed Acyclic Graph
 class MerkleDag {
  public:
   MerkleDag() = default;
 
-  //! Creates new MerkleDag on blocks source
+  /// \brief creates new MerkleDag on blocks source
   MerkleDag(const repo::blockstorage::Blockstorage &blocks);
 
-  //! Adds new Node in Dag
-  Status AddNode(const cognitio::linked_data::Node &node);
+  /// \brief Adds new Node in Dag
+  Status AddNode(const cognitio::linked_data::DagNode &node);
 
-  //! Gets Node by Cid
-  std::pair<Status, cognitio::linked_data::Node> GetNode(const cognitio::common::Cid &cid) const;
+  /// \brief Gets Node by Cid
+  std::pair<Status, DagNode> GetNode(
+      const common::Cid &cid) const;
 
-  //! Removes Node from Dag by Cid
-  Status RemoveNode(const cognitio::common::Cid &cid);
+  /// \brief gets name of file by Cid
+  std::string Get(const common::Cid &cid);
 
-  //! Getting array of Nodes by Directed Traversal Dag
-  std::vector<cognitio::linked_data::Node> DirectedTrasersal() const;
+  /// \brief Removes Node from Dag by Cid
+  Status RemoveNode(const common::Cid &cid);
+
+  /// \brief fetch graph with given root
+  std::shared_ptr<linked_data::DagNode> FetchGraph(
+      const common::Cid &cid) const;
+
+  /// \brief Getting array of Nodes by Directed Traversal Dag
+  std::vector<cognitio::linked_data::DagNode> DirectedTrasersal() const;
 
  private:
   std::shared_ptr<repo::blockstorage::Blockstorage> block_service_;
+
+  Status build_graph(std::function<std::shared_ptr<Node>(
+                         const common::Cid &cid)>
+                         node_getter,
+                     const std::shared_ptr<DagNode> &root,
+                     const std::vector<std::unique_ptr<Link>> &links,
+                     std::optional<size_t> max_depth, 
+                     size_t current_depth);
 };
 
 }  // namespace linked_data

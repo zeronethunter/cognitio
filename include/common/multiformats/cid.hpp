@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "common/multiformats/multihash.hpp"
-#include "linked_data/node.hpp"
 
 namespace cognitio {
 namespace common {

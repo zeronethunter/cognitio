@@ -3,24 +3,24 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#include "linked_data/node.hpp"
+#include "linked_data/dag_node.hpp"
 
 #include <span>
 
 namespace cognitio {
 namespace linked_data {
 
-std::vector<uint8_t> Node::GetContent() const { return content_; }
+std::vector<uint8_t> DagNode::GetContent() const { return content_; }
 
-size_t Node::Count() const { return children_.size(); }
+size_t DagNode::Count() const { return children_.size(); }
 
-std::unique_ptr<Node> Node::GetSubNode(std::string_view name) const {
+std::unique_ptr<DagNode> DagNode::GetSubNode(std::string_view name) const {
   if (auto iter = children_.find(name); iter != children_.end()) {
-    return std::make_unique<Node>(iter->second);
+    return std::make_unique<DagNode>(iter->second);
   }
 }
 
-std::vector<std::string_view> Node::GetSubNodeNames() const {
+std::vector<std::string_view> DagNode::GetSubNodeNames() const {
   std::vector<std::string_view> names_vec;
   for (const auto &element : children_) {
     names_vec.push_back(element.first);
@@ -28,12 +28,11 @@ std::vector<std::string_view> Node::GetSubNodeNames() const {
   return names_vec;
 }
 
-common::Cid Node::GetCid() const {
-  common::Cid cid(content_);
-  return cid;
+common::Cid DagNode::GetCid() const {
+  return common::Cid(content_);
 }
 
-Status Node::InsertSubNode(std::string &&name, Node &&children_node) {
+Status DagNode::InsertSubNode(std::string &&name, DagNode &&children_node) {
   auto result = children_.emplace(std::move(name), std::move(children_node));
   if (result.second) {
     return Status::OK;
