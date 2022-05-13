@@ -26,18 +26,29 @@ namespace datastore {
 template <typename Value>
 class Filesystem : Datastore<common::Cid, Value, Status> {
  public:
+  Filesystem(const std::filesystem::path& path) noexcept : path_(path) {}
+
   Status Open(const std::filesystem::path& path) noexcept override;
+
+  Status Open() noexcept {
+    if (std::filesystem::exists(path_)) {
+      return Open(path_);
+    }
+    return Status(StatusCode::OK, path_.string() + "  is already opened.");
+  }
 
   Status Close() noexcept override;
 
   std::filesystem::path Root() const noexcept { return path_; }
 
   Status MakeDir(const std::string& dir_name) noexcept {
-    if (std::filesystem::create_directory(path_ / dir_name)) {
-      return Status::OK;
+    if (!std::filesystem::exists(path_ / dir_name)) {
+      if (std::filesystem::create_directory(path_ / dir_name)) {
+        return Status::OK;
+      }
+      return Status(StatusCode::OK, "Can't create directory " + dir_name + ".");
     }
-    return Status(StatusCode::CANCELLED,
-                  "Can't create directory " + dir_name + ".");
+    return Status::OK;
   }
 
   Status Put(const common::Cid& key, const Value& value) noexcept override;

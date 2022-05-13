@@ -8,10 +8,12 @@ namespace datastore {
 template <typename Value>
 Status Filesystem<Value>::Open(const std::filesystem::path& path) noexcept {
   path_ = path;
-  if (std::filesystem::create_directory(path_)) {
-    return Status::OK;
+  if (!std::filesystem::exists(path)) {
+    if (std::filesystem::create_directory(path_)) {
+      return Status::OK;
+    }
+    return Status(StatusCode::FAILED, "Can't open storage.");
   }
-  return Status(StatusCode::OK, path_.string() + " was created");
 }
 
 template <typename Value>

@@ -29,9 +29,23 @@ namespace blockstorage {
 class Blockstorage {
  public:
   /**
+   *  @brief  Construct from path.
+   */
+  explicit Blockstorage(const std::filesystem::path& path) noexcept {
+    datastore::Filesystem<std::vector<uint8_t>> blocks(path);
+    storage_ =
+        std::make_unique<datastore::Filesystem<std::vector<uint8_t>>>(blocks);
+  }
+  /**
    *  @brief  Open Blockstorage.
+   *
+   *  @param path where to open.
    */
   Status Open(const std::filesystem::path& path);
+  /**
+   *  @brief  Open Blockstorage.
+   */
+  Status Open() { return storage_->Open(); }
   /**
    *  @brief  Get root of Blockstorage.
    */

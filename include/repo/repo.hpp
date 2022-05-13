@@ -9,6 +9,7 @@
 #include <filesystem>
 
 #include "common/logger/logger.hpp"
+#include "common/utils/repo.hpp"
 #include "datastore/ds_fs.hpp"
 #include "pinner/pin-manager.hpp"
 #include "repo/gc/gc.hpp"
@@ -42,7 +43,16 @@ class Repo {
    *
    *  @param path path to new repository.
    */
-  explicit Repo(const std::string& path) noexcept;
+  explicit Repo(const std::filesystem::path& path =
+                    std::filesystem::current_path() /
+                    common::utils::GetDefaultRepoPath()) noexcept;
+  /**
+   *  @brief Constructor of repository from name.
+   *
+   *  @param name name of new repository.
+   */
+  explicit Repo(
+      const std::string& name = common::utils::GetDefaultRepoPath()) noexcept;
   /**
    *  @brief Initializing the repository, namely starting gc and creating pins.
    */
@@ -72,6 +82,7 @@ class Repo {
  private:
   Status openRepo() noexcept;
   std::string shard(const cognitio::common::Cid& cid, size_t name_length = 2);
+  void initRepoStorage(const std::filesystem::path& path);
 
   bool closed_ = true;
   std::unique_ptr<datastore::Filesystem<StoreValue>> root_;
