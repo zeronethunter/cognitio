@@ -43,16 +43,14 @@ class Repo {
    *
    *  @param path path to new repository.
    */
-  explicit Repo(const std::filesystem::path& path =
-                    std::filesystem::current_path() /
-                    common::utils::GetDefaultRepoPath()) noexcept;
+  explicit Repo(const std::filesystem::path& path = std::filesystem::path(
+                    common::utils::GetDefaultRepoPath())) noexcept;
   /**
    *  @brief Constructor of repository from name.
    *
    *  @param name name of new repository.
    */
-  explicit Repo(
-      const std::string& name = common::utils::GetDefaultRepoPath()) noexcept;
+  explicit Repo(const std::string& name = ".cognitio") noexcept;
   /**
    *  @brief Initializing the repository, namely starting gc and creating pins.
    */
@@ -75,9 +73,27 @@ class Repo {
    */
   Status Delete(const common::Cid& cid) noexcept;
   /**
+   *  @brief Get value by key in repo.
+   *
+   *  @param cid the key that will be used to delete value.
+   *
+   *  @return vector of bytes.
+   */
+  std::vector<uint8_t> Get(const common::Cid& cid) const noexcept;
+  /**
+   *  @brief Check if key is in repo.
+   *
+   *  @param cid the key to find in storage.
+   */
+  bool Has(const common::Cid& cid) const noexcept;
+  /**
    *  @brief Check if repo is already exists.
    */
   bool Exists() noexcept;
+  /**
+   *  @return Path of root storage.
+   */
+  std::filesystem::path Root() const noexcept { return root_->Root(); }
 
  private:
   Status openRepo() noexcept;

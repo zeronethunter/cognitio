@@ -70,7 +70,8 @@ Repo<StoreValue>::Repo(const std::filesystem::path& path) noexcept {
 
 template <typename StoreValue>
 Repo<StoreValue>::Repo(const std::string& name) noexcept {
-  std::filesystem::path root = std::filesystem::current_path() / name;
+  std::filesystem::path root =
+      std::filesystem::path(common::utils::GetDefaultRepoPath()) / name;
   initRepoStorage(root);
 }
 
@@ -81,6 +82,8 @@ Status Repo<StoreValue>::Init() noexcept {
   }
 
   closed_ = false;
+
+  return Status::OK;
 }
 
 template <typename StoreValue>
@@ -115,12 +118,12 @@ Status Repo<StoreValue>::Add(const common::Cid& cid,
 template <typename StoreValue>
 Status Repo<StoreValue>::Delete(const common::Cid& cid) noexcept {
   if (!closed_) {
-    if (!blocks_->Has(cid)) {
+    std::string name_of_shard = shard(cid);
+
+    if (!std::filesystem::exists(blocks_->Root() / name_of_shard)) {
       return Status(StatusCode::FAILED,
                     "No such file or directory: " + cid.ToString() + ".");
     }
-
-    std::string name_of_shard = shard(cid);
 
     blockstorage::Blockstorage block(blocks_->Root() / name_of_shard);
 
@@ -135,6 +138,45 @@ Status Repo<StoreValue>::Delete(const common::Cid& cid) noexcept {
     return is_deleted;
   }
   return Status(StatusCode::CANCELLED, "Open repo before deleting.");
+}
+
+template <typename StoreValue>
+std::vector<uint8_t> Repo<StoreValue>::Get(
+    const common::Cid& cid) const noexcept {
+  if (!closed_) {
+    std::string name_of_shard = shard(cid);
+
+    if (!std::filesystem::exists(blocks_->Root() / name_of_shard)) {
+      logger_->error("Can't get value by cid. It doesn't exist.");
+      return std::vector<uint8_t>();
+    }
+
+    blockstorage::Blockstorage block(blocks_->Root() / name_of_shard);
+
+    std::pair<Status, std::vector<uint8_t>> result = block.Get(cid);
+
+    if (!result.first.ok()) {
+      logger_->error(result.first.error_message());
+      return std::vector<uint8_t>();
+    }
+
+    return block.Get(cid).second;
+  }
+}
+
+template <typename StoreValue>
+bool Repo<StoreValue>::Has(const common::Cid& cid) const noexcept {
+  if (!closed_) {
+    std::string name_of_shard = shard(cid);
+
+    if (!std::filesystem::exists(blocks_->Root() / name_of_shard)) {
+      return false;
+    }
+
+    blockstorage::Blockstorage block(blocks_->Root() / name_of_shard);
+
+    return block.Has(cid);
+  }
 }
 
 template <typename StoreValue>
