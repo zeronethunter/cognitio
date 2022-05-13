@@ -61,6 +61,10 @@ file(GLOB_RECURSE ${PROJECT_NAME}_ALL_FILES ${PROJECT_SOURCE_DIR}/src *.cpp *.hp
 # Clang-format, clang-tidy, cpplint and cppcheck configuration
 include(cmake/FormatStaticAnalysys.cmake)
 
+# Dependencies
+add_subdirectory(third-party/SHA256)
+
+# Project building
 add_subdirectory(src)
 
 ###############################################
