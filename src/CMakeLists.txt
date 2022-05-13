@@ -13,10 +13,13 @@ target_link_libraries(
         ${MAIN_BIN} PRIVATE
         ${CMAKE_PROJECT_NAME}_ds_fs
         ${CMAKE_PROJECT_NAME}_repo
-        ${CMAKE_PROJECT_NAME}_gc
         ${CMAKE_PROJECT_NAME}_block_storage
-        ${CMAKE_PROJECT_NAME}_pin-manager
-        ${CMAKE_PROJECT_NAME}_common_utils
+        ${CMAKE_PROJECT_NAME}_common
+        ${CMAKE_PROJECT_NAME}_utils
+        ${CMAKE_PROJECT_NAME}_common
+        ${CMAKE_PROJECT_NAME}_block_service
+        ${CMAKE_PROJECT_NAME}_linked_data
+        ${CMAKE_PROJECT_NAME}_unixfs
 )
 
 include_directories(

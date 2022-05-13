@@ -12,10 +12,10 @@
 # The first parameter can be whatever you want, the second
 # one is strictly formatted for everyone's convenience:
 # ${CMAKE_PROJECT_NAME}_the_path_to_submodule (path is in lowercase)
-set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_ds_fs)
+set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_unixfs)
 
 # Set headers and sources
-set(${SUBMODULE_NAME}_SOURCES ds_fs.cpp)
+set(${SUBMODULE_NAME}_SOURCES unixfs.cpp)
 
 add_library(
         ${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES}
@@ -23,9 +23,9 @@ add_library(
 
 # Identify and link with the specific libs the submodule uses
 # No need to make PUBLIC interface when it's not supposed to be there
-# target_link_libraries(
-#   ${SUBMODULE_NAME} PUBLIC
-#       ${CMAKE_PROJECT_NAME}_proto-manager)
+target_link_libraries(
+        ${SUBMODULE_NAME} PUBLIC
+        ${CMAKE_PROJECT_NAME}_common)
 
 ############################################################
 # Don't change the code below, just change SUBMODULE_NAME  #

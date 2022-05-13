@@ -8,7 +8,6 @@
 
 #include <set>
 
-#include "common/block/block.hpp"
 #include "common/multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "datastore/ds_fs.hpp"

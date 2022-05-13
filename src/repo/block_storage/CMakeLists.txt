@@ -25,7 +25,8 @@ add_library(
 # No need to make PUBLIC interface when it's not supposed to be there
 target_link_libraries(
         ${SUBMODULE_NAME} PUBLIC
-        ${CMAKE_PROJECT_NAME}_ds_fs)
+        ${CMAKE_PROJECT_NAME}_ds_fs
+        ${CMAKE_PROJECT_NAME}_common)
 
 ############################################################
 # Don't change the code below, just change SUBMODULE_NAME  #
