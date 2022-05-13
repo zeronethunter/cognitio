@@ -23,49 +23,60 @@ namespace commands {
 
 struct CmdEnv {
   std::vector<std::string> options;
-  std::vector<std::string> arguments;
+  std::map<std::string, std::string> arguments;
+};
+
+class CmdMeta {
+ public:
+  typedef std::vector<std::string> OptsArr;
+  typedef std::map<std::string, std::string> ArgsArr;
+
+  CmdMeta() = default;
+  ~CmdMeta() = default;
+  CmdMeta(std::string&& name, const ArgsArr& args = ArgsArr(),
+          bool options_required = false, bool no_remote = false,
+          bool no_local = false)
+      : name_(name),
+        possible_arguments_(args),
+        options_required_(options_required),
+        no_remote_(no_remote),
+        no_local_(no_local) {}
+
+  std::string GetName() const noexcept { return name_; }
+  bool IsNoRemote() const noexcept { return no_remote_; }
+  bool IsNoLocal() const noexcept { return no_local_; }
+  bool AreOptionsRequired() const noexcept { return options_required_; }
+  const ArgsArr& GetDefaultArgs() const noexcept { return possible_arguments_; }
+
+ private:
+  std::string name_;
+  ArgsArr possible_arguments_;
+  bool options_required_ = false;
+  bool no_remote_ = false;
+  bool no_local_ = false;
 };
 
 // Composite patterns
 template <class Context>
 class Command {
-  // TODO: sequence container concept to templates, not this hardcode
-  typedef std::vector<std::unique_ptr<Command<Context>>> SubCmdsArr;
-
  public:
-  class CmdMeta {
-   public:
-    typedef std::vector<std::string> ArgsArr;
-
-    CmdMeta() = default;
-    ~CmdMeta() = default;
-    CmdMeta(std::string&& name, const ArgsArr& args = ArgsArr(),
-            bool options_required = false, bool no_remote = false,
-            bool no_local = false)
-        : name_(name),
-          possible_arguments_(args),
-          options_required_(options_required),
-          no_remote_(no_remote),
-          no_local_(no_local) {}
-
-    std::string GetName() const noexcept { return name_; }
-    bool IsNoRemote() const noexcept { return no_remote_; }
-    bool IsNoLocal() const noexcept { return no_local_; }
-
-   private:
-    std::string name_;
-    ArgsArr possible_arguments_;
-    bool options_required_ = false;
-    bool no_remote_ = false;
-    bool no_local_ = false;
-  };
+  typedef CmdMeta::OptsArr OptsArr;
+  typedef CmdMeta::ArgsArr ArgsArr;
+  typedef std::shared_ptr<Command<Context>> CmdPtr;
+  typedef std::vector<CmdPtr> SubCmdsArr;
 
   Command() = default;
   virtual ~Command() = default;
-  CmdMeta& GetMeta() const noexcept { return meta_; }
-  void AddSubCmd(std::unique_ptr<Command> cmd) { sub_commands_.push_back(cmd); }
-  virtual Status Run(Context& ctx, const CmdEnv& env, ResponseEmitter& re) = 0;
+  virtual const CmdMeta& GetMeta() const noexcept { return meta_; }
+  virtual void Run(Context& ctx, const CmdEnv& env, ResponseEmitter& re) = 0;
+  std::string GetArgsPrefix() const noexcept { return std::string("--"); }
+  virtual CmdPtr GetSubCmd(const std::string& name) const;
   virtual void PrintHelp(std::ostream& out) = 0;
+  virtual SubCmdsArr GetSubCmdsNames() const noexcept;
+  virtual void AddSubCmd(std::unique_ptr<Command> cmd) {
+    sub_commands_.push_back(cmd);
+  }
+
 
  private:
   CmdMeta meta_;
@@ -75,7 +86,6 @@ class Command {
 template <class Context>
 struct CmdWrapper {
   std::unique_ptr<Command<Context>> cmd;
-  Context ctx;
   CmdEnv env;
 };
 

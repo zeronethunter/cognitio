@@ -6,6 +6,9 @@
 #ifndef CGNT_CORE_COMMANDS_CONTEXT_HPP_
 #define CGNT_CORE_COMMANDS_CONTEXT_HPP_
 
+#include <memory>
+
+#include "cli/commands/command.hpp"
 #include "core/core.hpp"
 #include "core/core_api/core_api.hpp"
 #include "repo/config.hpp"
@@ -13,21 +16,34 @@
 namespace cognitio {
 namespace core {
 namespace commands {
+
+using namespace repo::config;
+using namespace core::core_api;
+using namespace cli::commands;
+
 class Context {
  public:
+  typedef std::shared_ptr<Config> CfgPtr;
+  typedef std::shared_ptr<CoreAPI> ApiPtr;
+
   Context() = default;
+  Context(Context& ctx) = delete;
+  Context& operator=(Context& ctx) = delete;
   ~Context() = default;
 
-  void SetConfig(repo::config::Config& conf);
-  void SetAPI(core::core_api::CoreAPI& api);
-  repo::config::Config& GetConfig() noexcept;
-  core::core_api::CoreAPI& GetAPI() noexcept;
-  core::Core& GetCore() noexcept;
+  bool IsInitialized() const noexcept { return config_ && core_api_; }
+  CfgPtr GetConfig() noexcept { return config_; }
+  ApiPtr GetAPI() noexcept { return core_api_; }
+  void SetConfig(Config&& conf) noexcept;
+  void SetAPI(CoreAPI&& api) noexcept;
+
+  Status Init(CmdMeta& meta, CmdEnv env) noexcept;
 
  private:
-  repo::config::Config config_;
-  core::core_api::CoreAPI core_api_;
+  CfgPtr config_ = nullptr;
+  ApiPtr core_api_ = nullptr;
 };
+
 }  // namespace commands
 }  // namespace core
 }  // namespace cognitio
