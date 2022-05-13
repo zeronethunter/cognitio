@@ -24,7 +24,6 @@ State PrefixReader::consume(uint8_t byte) {
         state_ = overloadState;
         return state_;
       }
-      [[_LIBCPP_FALLTHROUGH]];
     } else {
       temp <<= 7 * (recieved_ - 1);
     }

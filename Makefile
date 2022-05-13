@@ -100,7 +100,7 @@ docker:
 
 # All locations of the proto files
 CLI_PROTO_SRC_DIR=proto/cli
-DATA_PROTO_SRC_DIR=proto/files
+DATA_PROTO_SRC_DIR=proto/data
 
 proto: cli-proto data-proto
 
@@ -115,9 +115,3 @@ data-proto:
 	mkdir -p include/${DATA_PROTO_SRC_DIR} src/${DATA_PROTO_SRC_DIR}
 	mv ${DATA_PROTO_SRC_DIR}/*.pb.h include/${DATA_PROTO_SRC_DIR}
 	mv ${DATA_PROTO_SRC_DIR}/*.pb.cc src/${DATA_PROTO_SRC_DIR}
-
-link-proto:
-	protoc -I ${LINK_PROTO_SRC_DIR} --cpp_out=${LINK_PROTO_SRC_DIR} ${LINK_PROTO_SRC_DIR}/*.proto
-	mkdir -p include/${LINK_PROTO_SRC_DIR} src/${LINK_PROTO_SRC_DIR}
-	mv ${LINK_PROTO_SRC_DIR}/*.pb.h include/${LINK_PROTO_SRC_DIR}
-	mv ${LINK_PROTO_SRC_DIR}/*.pb.cc src/${LINK_PROTO_SRC_DIR}

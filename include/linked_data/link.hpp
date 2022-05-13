@@ -9,22 +9,36 @@
 #include <string>
 
 #include "common/multiformats/cid.hpp"
+#include "proto/data/ProtoData.pb.h"
+#include "common/status.hpp"
 
 namespace cognitio {
 namespace linked_data {
 
 class Link {
  public:
-  virtual ~Link() = default;
+  Link() = default;
+  
+  Link(const common::Cid &cid, const std::string &str, size_t size)
+      : cid_(cid), name_(str), size_(size){};
 
-  virtual std::string GetName() const = 0;
+  common::Cid GetCid() const {return cid_; };
 
-  virtual common::Cid GetCid() const = 0;
+  std::string GetName() const { return name_; };
 
-  virtual size_t GetSize() const = 0;
+  size_t GetSize() const { return size_; };
+
+  Status DecodeProtoLink(const Link &link);
+
+  std::unique_ptr<Link> EncodeProtoLink() const;
+
+ private:
+  common::Cid cid_;
+  std::string name_;
+  size_t size_;
 };
 
-}  // namespace common
+}  // namespace linked_data
 }  // namespace cognitio
 
 #endif  // CGNT_LINKED_DATA_LINK_HPP_

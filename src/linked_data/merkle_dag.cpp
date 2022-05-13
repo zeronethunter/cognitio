@@ -23,7 +23,7 @@ std::pair<Status, cognitio::linked_data::DagNode> MerkleDag::GetNode(
   std::pair<Status, std::vector<uint8_t>> node = block_service_->Get(cid);
   if (node.first.ok()) {
     return std::pair<Status, linked_data::DagNode>(Status(),
-                                                std::move(node.second));
+                                                   std::move(node.second));
   }
   return std::pair<Status, linked_data::DagNode>(
       Status(StatusCode::CANCELLED, "This node doesnt exist"), DagNode());
@@ -38,22 +38,21 @@ std::shared_ptr<linked_data::DagNode> MerkleDag::FetchGraph(
   linked_data::DagNode node(block_service_->Get(cid).second);
 }
 
-Status MerkleDag::build_graph(
-    std::function<std::shared_ptr<Node>(const common::Cid &cid)>
-        node_getter,
-    const std::shared_ptr<DagNode> &root,
-    const std::vector<std::unique_ptr<Link>> &links,
-    std::optional<size_t> max_depth, 
-    size_t current_depth) {
-  if (max_depth && current_depth == *max_depth) {
-    return Status();
-  }
+Status MerkleDag::buildGraph(const std::vector<std::vector<uint8_t>> &chunks) {
+  /* initalizing the bottom lay of chunks */
+  int vec_size = (chunks.size() % CHUNK_SIZE == 0)
+                     ? chunks.size() / CHUNK_SIZE
+                     : chunks.size() / CHUNK_SIZE + 1;
+  std::vector<DagNode> bottom_lay_vec(vec_size);
 
-  for (const auto &link : links) {
-    auto request = node_getter(link.get()->GetCid());
-
-    std::shared_ptr<Node> node = request;
-    auto child_node = std::make_shared<linked_data::Node>(node->GetContent());
+  int offset_cnt = 0;
+  int vec_indx = 0;
+  for (auto chunk : chunks) {
+    bottom_lay_vec[vec_indx] = std::move(chunk);
+    if (++offset_cnt == CHUNK_SIZE) {
+      offset_cnt = 0;
+      ++vec_indx;
+    }
   }
 }
 

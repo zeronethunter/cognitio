@@ -13,3 +13,13 @@ message Data {
   uint64 filesize = 3;
   repeated uint64 blocksizes = 4;
 }
+
+message Node {
+  repeated bytes Cid = 1;
+  optional bytes Data = 2;
+}
+
+message Block {
+  bytes Cid = 1;
+  Node Node = 2;
+}

@@ -17,6 +17,8 @@
 #ifndef CGNT_LINKED_DATA_MERKLE_DAG_HPP
 #define CGNT_LINKED_DATA_MERKLE_DAG_HPP
 
+#define CHUNK_SIZE 10
+
 namespace cognitio {
 namespace linked_data {
 
@@ -29,7 +31,7 @@ class MerkleDag {
   MerkleDag(const repo::blockstorage::Blockstorage &blocks);
 
   /// \brief Adds new Node in Dag
-  Status AddNode(const cognitio::linked_data::DagNode &node);
+  Status AddNode(const DagNode &node);
 
   /// \brief Gets Node by Cid
   std::pair<Status, DagNode> GetNode(
@@ -51,13 +53,7 @@ class MerkleDag {
  private:
   std::shared_ptr<repo::blockstorage::Blockstorage> block_service_;
 
-  Status build_graph(std::function<std::shared_ptr<Node>(
-                         const common::Cid &cid)>
-                         node_getter,
-                     const std::shared_ptr<DagNode> &root,
-                     const std::vector<std::unique_ptr<Link>> &links,
-                     std::optional<size_t> max_depth, 
-                     size_t current_depth);
+  Status buildGraph(const std::vector<std::vector<uint8_t>> &chunks);
 };
 
 }  // namespace linked_data

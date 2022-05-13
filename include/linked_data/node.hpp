@@ -11,6 +11,7 @@
 
 namespace cognitio {
 namespace linked_data {
+namespace node {
 
 class Node {
  public:
@@ -34,6 +35,7 @@ class Node {
   virtual std::vector<std::unique_ptr<Link>> GetLinks() const = 0;
 };
 
+}  // namespace node
 }  // namespace linked_data
 }  // namespace cognitio
 

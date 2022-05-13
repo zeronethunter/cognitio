@@ -1,8 +1,0 @@
-import "include/proto/"
-syntax = "proto3"
-
-
-message ProtoBlock {
-    bytes CID = 1;
-    Node Node = 2;
-}
