@@ -36,17 +36,18 @@ std::filesystem::path BlockService::Root() const noexcept {
   return std::filesystem::path();
 }
 
-Status BlockService::Put(const Block& block) noexcept {
+Status BlockService::Put(const ProtoBlock& block) noexcept {
   return is_daemon_opened_
              ? block_swap_->Put(block.GetCid(), block.GetNode().GetContent())
              : repo_->Add(block.GetCid(), block.GetNode().GetContent());
   ;
 }
 
-Block BlockService::Get(const common::Cid& key) const noexcept {
+linked_data::ProtoBlock BlockService::Get(
+    const common::Cid& key) const noexcept {
   std::vector<uint8_t> bytes =
       is_daemon_opened_ ? block_swap_->Get(key) : repo_->Get(key);
-  return Block(key, linked_data::DagNode(std::move(bytes)));
+  return ProtoBlock(key, linked_data::DagNode(std::move(bytes)));
 }
 
 Status BlockService::Delete(const common::Cid& key) noexcept {
@@ -57,7 +58,7 @@ bool BlockService::Has(const common::Cid& key) const noexcept {
   return is_daemon_opened_ ? block_swap_->Has(key) : repo_->Has(key);
 }
 
-Status BlockService::PutMany(const std::vector<Block>& source) noexcept {
+Status BlockService::PutMany(const std::vector<ProtoBlock>& source) noexcept {
   for (auto const& block : source) {
     Status status_put = Put(block);
     if (!status_put.ok()) {
@@ -66,11 +67,11 @@ Status BlockService::PutMany(const std::vector<Block>& source) noexcept {
   }
 }
 
-std::vector<Block> BlockService::GetMany(
+std::vector<linked_data::ProtoBlock> BlockService::GetMany(
     const std::vector<common::Cid>& source) const noexcept {
-  std::vector<Block> result;
+  std::vector<ProtoBlock> result;
   for (auto const& key : source) {
-    Block value = Get(key);
+    ProtoBlock value = Get(key);
     result.push_back(value);
   }
   return result;

@@ -9,15 +9,15 @@
 #include "common/status.hpp"
 #include "common/utils/repo.hpp"
 #include "exchange/block_swap/block_swap.hpp"
-#include "linked_data/block.hpp"
+#include "linked_data/proto_block.hpp"
 #include "repo/repo.hpp"
 
 namespace cognitio {
 namespace exchange {
 
-typedef cognitio::linked_data::Block Block;
-
 class BlockService {
+  typedef linked_data::ProtoBlock ProtoBlock;
+
  public:
   Status Open(const std::filesystem::path& path =
                   std::filesystem::path(common::utils::GetDefaultRepoPath()) /
@@ -28,17 +28,18 @@ class BlockService {
 
   std::filesystem::path Root() const noexcept;
 
-  Status Put(const Block& block) noexcept;
+  Status Put(const ProtoBlock& block) noexcept;
 
-  Block Get(const common::Cid& key) const noexcept;
+  ProtoBlock Get(const common::Cid& key) const noexcept;
 
   Status Delete(const common::Cid& key) noexcept;
 
   bool Has(const common::Cid& key) const noexcept;
 
-  Status PutMany(const std::vector<Block>& source) noexcept;
+  Status PutMany(const std::vector<ProtoBlock>& source) noexcept;
 
-  std::vector<Block> GetMany(const std::vector<common::Cid>& source) const noexcept;
+  std::vector<ProtoBlock> GetMany(
+      const std::vector<common::Cid>& source) const noexcept;
 
   Status DeleteMany(const std::vector<common::Cid>& source) noexcept;
 

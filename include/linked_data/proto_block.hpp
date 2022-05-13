@@ -15,18 +15,18 @@
 namespace cognitio {
 namespace linked_data {
 
-typedef common::Cid Cid;
-typedef std::unique_ptr<::Block> ProtoBlock;
-
 /**
  *  @brief  Special wrapper for proto Block message.
  *
  *  Use to make and read from Block messages.
  */
-class Block {
+class ProtoBlock {
+  typedef common::Cid Cid;
+  typedef std::unique_ptr<Block> ProtoBlockPtr;
+
  public:
-  Block() noexcept = default;
-  ~Block() noexcept = default;
+  ProtoBlock() noexcept = default;
+  ~ProtoBlock() noexcept = default;
 
   /**
    *  @brief  Block constructor.
@@ -34,7 +34,7 @@ class Block {
    *  @param bytes to save in member. May be empty.
    *  @param cid to save in member.
    */
-  Block(const Cid &cid, const DagNode &node = DagNode()) noexcept
+  ProtoBlock(const Cid &cid, const DagNode &node = DagNode()) noexcept
       : cid_(cid), node_(node) {}
 
   /**
@@ -42,14 +42,14 @@ class Block {
    *
    *  @return shared ptr on proto Block class.
    */
-  ProtoBlock ToProtoMessage();
+  ProtoBlockPtr ToProtoMessage();
 
   /**
    *  @brief  Read from proto Block message.
    *
    *  @param proto_block message.
    */
-  Status FromProtoMessage(const ProtoBlock &proto_block);
+  Status FromProtoMessage(const ProtoBlockPtr &proto_block);
 
   /**
    *  @brief  Get node from Block.
@@ -79,9 +79,7 @@ class Block {
    */
   void SetCid(const Cid &cid) { cid_ = cid; }
 
-  bool IsInitialized() {
-    return cid_;
-  }
+  bool IsInitialized() { return cid_; }
 
  private:
   Cid cid_;
