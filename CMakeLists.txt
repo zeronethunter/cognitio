@@ -21,7 +21,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(USE_ALT_NAMES "Use alternative names for the project" OFF)
-option(GIT_SUBMODULE "Check submodules during build" OFF)
+option(GIT_SUBMODULE "Check submodules during build" ON)
 
 if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
   # Default options

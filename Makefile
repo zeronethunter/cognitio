@@ -96,6 +96,9 @@ docker:
     # docker image pull serpentian/cognitio:latest
 	docker run -v $(shell pwd):/home/project -it ${DOCKER_IMAGE}
 
+submodules:
+	git submodule update --init --recursive
+
 # Protobuf compiling
 
 # All locations of the proto files
