@@ -9,6 +9,7 @@
 #include "cli/commands/command.hpp"
 #include "common/context.hpp"
 #include "common/status.hpp"
+#include "common/status_code.hpp"
 
 namespace cognitio {
 namespace core {
@@ -22,13 +23,12 @@ class RootMeta : public CmdMeta {
 
 class RootCmd : public Command<Context> {
  public:
-
   RootCmd() : Command() {};
   void PrintHelp(std::ostream& out) override;
-  Status Run([[maybe_unused]] Context& ctx, [[maybe_unused]] const CmdEnv& env,
-             [[maybe_unused]] ResponseEmitter& re) override {
+  void Run([[maybe_unused]] Context& ctx, [[maybe_unused]] const CmdEnv& env,
+           [[maybe_unused]] ResponseEmitter& re) override {
     // It's not supposed to be ran
-    return Status::FAILED;
+    re.SetStatus(StatusCode::FAILED, "I'm not supposed to be ran");
   }
 };
 

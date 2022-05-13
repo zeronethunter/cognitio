@@ -16,7 +16,7 @@
 #include "common/concepts/container.hpp"
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
-#include "core/commands/root.hpp"
+#include "core/commands/list/root.hpp"
 
 namespace cognitio {
 namespace cli {
@@ -39,8 +39,6 @@ class Cli {
 
  private:
   template <Container T>
-  Status parse(T& args, CmdWrapper<Context>& cmd);
-  Status handleHelp(CmdWrapper<Context>& cmd);
   Status parse(T& args, CmdWrapper<Context>& cmdw) const noexcept;
   template <Container T>
   Status parseCommand(T& args, CmdPtr cmd) const noexcept;

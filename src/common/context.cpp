@@ -5,12 +5,15 @@
 
 #include "common/context.hpp"
 
+<<<<<<< HEAD
 #include <cstdlib>
 
 #include "cli/commands/command.hpp"
 #include "common/status.hpp"
 #include "common/status_code.hpp"
 #include "common/utils/repo.hpp"
+=======
+>>>>>>> 8903429 (Local CLI basics)
 #include "core/core_api/core_api.hpp"
 
 namespace cognitio {
