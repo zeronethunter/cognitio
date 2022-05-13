@@ -130,10 +130,14 @@ Status Cli<Context>::parseCommand(T& args, CmdPtr cmd) const noexcept {
 
 template <class Context>
 template <Container T>
-Status Cli<Context>::parseArguments([[maybe_unused]] T& args, CmdPtr cmd,
+Status Cli<Context>::parseArguments(T& args, CmdPtr cmd,
                                     ArgsArr& arguments) const noexcept {
   // TODO
   arguments = cmd->GetMeta().GetDefaultArgs();
+  for (const auto& x : args) {
+    arguments.insert({x, "true"});
+  }
+
   return Status::OK;
 }
 

@@ -10,6 +10,8 @@
 #include <string>
 
 #include "cli/commands/command.hpp"
+#include "common/logger/logger.hpp"
+#include "common/status.hpp"
 #include "core/core.hpp"
 #include "core/core_api/core_api.hpp"
 #include "repo/config.hpp"
@@ -21,6 +23,7 @@ namespace commands {
 using namespace repo::config;
 using namespace core::core_api;
 using namespace cli::commands;
+using namespace common::logger;
 
 class Context {
  public:
@@ -41,11 +44,13 @@ class Context {
   Status Init(CmdMeta& meta, CmdEnv& env) noexcept;
 
  private:
-  std::string getRepoPath(CmdEnv& env);
+  std::string getRepoPath(CmdEnv& env) const noexcept;
+  Status resolveApi(CmdMeta& meta, CmdEnv& env) noexcept;
 
   CfgPtr config_ = nullptr;
   ApiPtr core_api_ = nullptr;
   std::string repo_path_ = "";
+  Logger logger_ = createLogger("context");
 };
 
 }  // namespace commands

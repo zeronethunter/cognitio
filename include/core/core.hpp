@@ -6,9 +6,20 @@
 #ifndef CGNT_CORE_CORE_HPP_
 #define CGNT_CORE_CORE_HPP_
 
+#include <memory>
+
+#include "config/config.hpp"
+#include "exchange/block_service/block_service.hpp"
+
 namespace cognitio {
 namespace core {
-class Core {};
+class Core {
+ public:
+  typedef std::shared_ptr<Config> CfgPtr;
+
+private :
+  CfgPtr config_;
+};
 }  // namespace core
 }  // namespace cognitio
 

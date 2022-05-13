@@ -46,6 +46,7 @@ class CmdMeta {
   std::string GetName() const noexcept { return name_; }
   bool IsNoRemote() const noexcept { return no_remote_; }
   bool IsNoLocal() const noexcept { return no_local_; }
+  bool IsRepoRequired() const noexcept { return repo_required; }
   bool AreOptionsRequired() const noexcept { return options_required_; }
   const ArgsArr& GetDefaultArgs() const noexcept { return possible_arguments_; }
 
@@ -53,6 +54,7 @@ class CmdMeta {
   std::string name_;
   ArgsArr possible_arguments_;
   bool options_required_ = false;
+  bool repo_required = false;
   bool no_remote_ = false;
   bool no_local_ = false;
 };

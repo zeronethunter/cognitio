@@ -6,9 +6,8 @@
 #include "common/context.hpp"
 
 #include <algorithm>
-#include <utility>
-
 #include <cstdlib>
+#include <utility>
 
 #include "cli/commands/command.hpp"
 #include "common/status.hpp"
@@ -31,8 +30,27 @@ void Context::SetAPI(CoreAPI&& api) noexcept {
 
 Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
   repo_path_ = getRepoPath(env);
-  assert(repo_path_.size());
+  logger_->debug("Found repo path: {}", repo_path_);
 
+  config_ = std::make_shared<Config>(new Config(repo_path_));
+  auto err = config_.TryInit();
+  if (!err.ok()) {
+    logger_->warn("Unable to find config at {}", repo_path_);
+    err = config_.Dump();
+    if (!err.ok()) {
+      return Status(StatusCode::FAILED,
+                    "Unable to dump default config. Exiting...");
+    } else {
+      logger_->debug("Successfully dumped default config");
+    }
+  }
+
+  err = resolveApi(meta, env);
+  if (!err.ok() || !core_api_) {
+    return err;
+  }
+
+  logger_->info("Using {} API", core_api_->GetApiMode());
 }
 
 std::string getRepoPath(CmdEnv& env) {
@@ -52,6 +70,25 @@ std::string getRepoPath(CmdEnv& env) {
   }
 
   return common::utils::GetDefaultRepoPath();
+}
+
+Status Context::resolveApi(CmdMeta& meta) noexcept {
+  // Check if cmd is disabled
+  if (meta.IsNoLocal() && meta.IsNoRemote()) {
+    return Status(StatusCode::FAILED,
+                  "Command " + meta.GetName() + "was disabled");
+  }
+
+  // Can we just run this locally
+  if (!meta.IsNoLocal()) {
+    core_api_ = std::make_shared<CoreAPI>(new LocalApi(Core(config_)));
+    return Status::OK;
+  }
+
+  if (!meta.IsNoRemote() || meta.IsRepoRequired()) {
+    core_api_ = std::make_shared<CoreAPI>(new RemoteAPI(Core(config_)));
+    return Status::OK;
+  }
 }
 
 }  // namespace commands
