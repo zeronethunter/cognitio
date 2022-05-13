@@ -6,6 +6,8 @@
 #ifndef CGNT_CORE_CORE_API_HPP_
 #define CGNT_CORE_CORE_API_HPP_
 
+#include "core/core.hpp"
+
 namespace cognitio {
 namespace core {
 namespace core_api {

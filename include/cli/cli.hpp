@@ -16,37 +16,41 @@
 #include "common/concepts/container.hpp"
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
-#include "core/commands/root.hpp"
+#include "core/commands/list/root.hpp"
 
 namespace cognitio {
 namespace cli {
+
+#define CmdPtr typename Command<Context>::CmdPtr
+#define ArgsArr typename Command<Context>::ArgsArr
+#define OptsArr typename Command<Context>::OptsArr
 
 using namespace common::logger;
 using namespace core::commands;
 
 template <class Context>
 class Cli {
-  typedef std::unique_ptr<core::commands::RootCmd> CmdPtr;
-
  public:
-  Cli() = default;
-  explicit Cli(RootCmd&& root);
+  explicit Cli(RootCmd&& root, std::ostream& out = std::cout);
   ~Cli() = default;
 
-  bool IsInitialized();
   template <Container T>
-  Status Run(T& args);
+  Status Run(T& args) const;
 
  private:
   template <Container T>
   Status parse(T& args, CmdWrapper<Context>& cmd);
   Status handleHelp(CmdWrapper<Context>& cmd);
-<<<<<<< HEAD
-=======
+  Status parse(T& args, CmdWrapper<Context>& cmdw) const noexcept;
+  template <Container T>
+  Status parseCommand(T& args, CmdPtr cmd) const noexcept;
+  template <Container T>
+  Status parseArguments(T& args, CmdPtr cmd, ArgsArr& arguments) const noexcept;
+  Status handleHelp(CmdWrapper<Context>& cmdw) const noexcept;
 
->>>>>>> 20c3cb5 (Template for Makefile's protobuf compiling)
-  Logger logger_ = createLogger("CLI");
-  CmdPtr root_ = nullptr;
+  std::ostream& out_;
+  Logger logger_;
+  CmdPtr root_;
 };
 }  // namespace cli
 }  // namespace cognitio
