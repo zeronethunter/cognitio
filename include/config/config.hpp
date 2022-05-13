@@ -7,7 +7,6 @@
 #define CGNT_CONFIG_CONFIG_HPP_
 
 #include <filesystem>
-#include <nlohmann/json.hpp>
 
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
