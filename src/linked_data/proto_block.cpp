@@ -1,9 +1,9 @@
-#include "linked_data/block.hpp"
+#include "linked_data/proto_block.hpp"
 
 namespace cognitio {
 namespace linked_data {
 
-ProtoBlock Block::ToProtoMessage() {
+std::unique_ptr<Block> ProtoBlock::ToProtoMessage() {
   ::Block new_block;
   std::unique_ptr<Node> new_node = node_.EncodeProtoNode();
 
@@ -13,7 +13,7 @@ ProtoBlock Block::ToProtoMessage() {
   return std::make_unique<::Block>(new_block);
 }
 
-Status Block::FromProtoMessage(const ProtoBlock &proto_block) {
+Status ProtoBlock::FromProtoMessage(const std::unique_ptr<Block> &proto_block) {
   if (proto_block->IsInitialized()) {
     cid_ = Cid(proto_block->cid());
     node_.DecodeProtoNode(proto_block->node());
