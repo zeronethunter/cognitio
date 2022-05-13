@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "proto/data/ProtoData.pb.h"
-#include "common/status.hpp"
 #include "common/multiformats/cid.hpp"
+#include "common/status.hpp"
+#include "proto/data/ProtoData.pb.h"
 
 namespace cognitio {
 namespace linked_data {
@@ -20,11 +20,8 @@ namespace linked_data {
 class DagNode {
  public:
   DagNode() = default;
-  explicit DagNode(std::vector<uint8_t> &&data) : content_(std::move(data)) {};
+  explicit DagNode(std::vector<uint8_t> &&data) : content_(std::move(data)){};
   DagNode &operator=(std::vector<uint8_t> &&data);
-
-  DagNode(DagNode &&other) noexcept;
-  DagNode &operator=(DagNode &&other) noexcept;
 
   /// \return content of node
   std::vector<uint8_t> GetContent() const;

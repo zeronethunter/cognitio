@@ -6,16 +6,17 @@
 #ifndef CGNT_EXCHANGE_BLOCK_SERVICE_BLOCK_SERVICE_HPP_
 #define CGNT_EXCHANGE_BLOCK_SERVICE_BLOCK_SERVICE_HPP_
 
-#include "common/block/block.hpp"
 #include "common/status.hpp"
 #include "common/utils/repo.hpp"
 #include "exchange/block_swap/block_swap.hpp"
+#include "linked_data/block.hpp"
 #include "repo/repo.hpp"
 
 namespace cognitio {
 namespace exchange {
 
-template <typename Value>
+typedef cognitio::linked_data::Block Block;
+
 class BlockService {
  public:
   Status Open(const std::filesystem::path& path =
@@ -27,20 +28,19 @@ class BlockService {
 
   std::filesystem::path Root() const noexcept;
 
-  Status Put(const common::Cid& key, const Value& value) noexcept;
+  Status Put(const Block& block) noexcept;
 
-  Value Get(const common::Cid& key) const noexcept;
+  Block Get(const common::Cid& key) const noexcept;
 
   Status Delete(const common::Cid& key) noexcept;
 
   bool Has(const common::Cid& key) const noexcept;
 
-  Status PutMany(
-      const std::set<std::pair<common::Cid, Value>>& source) noexcept;
+  Status PutMany(const std::vector<Block>& source) noexcept;
 
-  std::set<Value> GetMany(const std::set<common::Cid>& source) const noexcept;
+  std::vector<Block> GetMany(const std::vector<common::Cid>& source) const noexcept;
 
-  Status DeleteMany(const std::set<common::Cid>& source) noexcept;
+  Status DeleteMany(const std::vector<common::Cid>& source) noexcept;
 
  private:
   bool closed_ = true;

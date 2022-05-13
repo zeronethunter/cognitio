@@ -9,36 +9,83 @@
 #include <vector>
 
 #include "common/multiformats/cid.hpp"
+#include "linked_data/dag_node.hpp"
+#include "proto/data/ProtoData.pb.h"
 
 namespace cognitio {
 namespace linked_data {
 
-//! A BasicBlock is a singular block of data in ipfs.
+typedef common::Cid Cid;
+typedef std::unique_ptr<::Block> ProtoBlock;
+
+/**
+ *  @brief  Special wrapper for proto Block message.
+ *
+ *  Use to make and read from Block messages.
+ */
 class Block {
  public:
-  Block() = default;
+  Block() noexcept = default;
+  ~Block() noexcept = default;
 
-  //! Creates Block on bytes view
-  Block(const std::vector<uint8_t> &bytes);
+  /**
+   *  @brief  Block constructor.
+   *
+   *  @param bytes to save in member. May be empty.
+   *  @param cid to save in member.
+   */
+  Block(const Cid &cid, const DagNode &node = DagNode()) noexcept
+      : cid_(cid), node_(node) {}
 
-  //! NewBlock creates a Block object from opaque data. It will hash the data.
-  Block(const std::vector<uint8_t> &bytes, const cognitio::common::Cid &cid);
+  /**
+   *  @brief  Convert block to proto Block message.
+   *
+   *  @return shared ptr on proto Block class.
+   */
+  ProtoBlock ToProtoMessage();
 
-  //! GetRawData returns bytes view of block
-  std::vector<uint8_t> GetRawData() const;
+  /**
+   *  @brief  Read from proto Block message.
+   *
+   *  @param proto_block message.
+   */
+  Status FromProtoMessage(const ProtoBlock &proto_block);
 
-  //! GetCid returns Cid of block
-  cognitio::common::Cid GetCid() const;
+  /**
+   *  @brief  Get node from Block.
+   *
+   *  @return vector of bytes.
+   */
+  DagNode GetNode() const noexcept { return node_; }
 
-  //! GetString returns string view of block
-  std::string GetString() const;
+  /**
+   *  @brief  Set node to Block.
+   *
+   *  @param bytes to store in Block.
+   */
+  void SetNode(const DagNode &node) noexcept { node_ = node; }
 
-  //! Multihash returns the hash contained in the block CID.
-  common::Multihash Multihash() const;
+  /**
+   *  @brief  Get cid from Block.
+   *
+   *  @return Cid.
+   */
+  Cid GetCid() const noexcept { return cid_; }
+
+  /**
+   *  @brief  Set cid to Block.
+   *
+   *  @param cid to store in Block.
+   */
+  void SetCid(const Cid &cid) { cid_ = cid; }
+
+  bool IsInitialized() {
+    return cid_;
+  }
 
  private:
-  cognitio::common::Cid cid_;   //! Cid of block
-  std::vector<uint8_t> bytes_;  //! bytes of block
+  Cid cid_;
+  DagNode node_;
 };
 
 }  // namespace linked_data

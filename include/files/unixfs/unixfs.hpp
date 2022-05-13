@@ -8,7 +8,7 @@
 
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
-#include "proto/files/ProtoData.pb.h"
+#include "proto/data/ProtoData.pb.h"
 
 namespace cognitio {
 namespace files {
