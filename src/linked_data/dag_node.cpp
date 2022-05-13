@@ -10,7 +10,7 @@
 namespace cognitio {
 namespace linked_data {
 
-std::vector<uint8_t> DagNode::GetContent() const { return content_; }
+std::vector<uint8_t> DagNode::GetContent() const { return data_.GetData(); }
 
 size_t DagNode::Count() const { return children_.size(); }
 
@@ -20,16 +20,16 @@ std::unique_ptr<DagNode> DagNode::GetSubNode(std::string_view name) const {
   }
 }
 
-std::vector<std::string_view> DagNode::GetSubNodeNames() const {
-  std::vector<std::string_view> names_vec;
+std::vector<common::Cid> DagNode::GetSubNodeNames() const {
+  std::vector<common::Cid> cid_vec;
   for (const auto &element : children_) {
-    names_vec.push_back(element.first);
+    cid_vec.push_back(element.first);
   }
-  return names_vec;
+  return cid_vec;
 }
 
 common::Cid DagNode::GetCid() const {
-  return common::Cid(content_);
+  return common::Cid(GetContent());
 }
 
 Status DagNode::InsertSubNode(std::string &&name, DagNode &&children_node) {

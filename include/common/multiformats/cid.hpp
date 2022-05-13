@@ -71,6 +71,7 @@ class Cid {
   std::vector<uint8_t> bytes_view_;  //! bytes array view of cid.
   cognitio::common::Multihash content_address_;
   CodeType content_type_;
+
 };
 
 }  // namespace common

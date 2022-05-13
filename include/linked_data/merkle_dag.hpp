@@ -43,10 +43,6 @@ class MerkleDag {
   /// \brief Removes Node from Dag by Cid
   Status RemoveNode(const common::Cid &cid);
 
-  /// \brief fetch graph with given root
-  std::shared_ptr<linked_data::DagNode> FetchGraph(
-      const common::Cid &cid) const;
-
   /// \brief Getting array of Nodes by Directed Traversal Dag
   std::vector<cognitio::linked_data::DagNode> DirectedTrasersal() const;
 

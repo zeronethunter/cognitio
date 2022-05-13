@@ -13,15 +13,14 @@ namespace common {
 
 Multihash::Multihash() : data_(nullptr) {};
 
-Status Multihash::Create(HashType ht, std::span<uint8_t> &hash) {
-  if (hash.size() > max_hash_length_) {
-    return Status(StatusCode::CANCELLED, "Hash size is too long");
-  }
-  Multihash(ht, hash);
-  return Status::OK;
+void Multihash::ToHash(const std::span<uint8_t> &bytes) {
+  SHA256 sha;
+  sha.update(reinterpret_cast<const uint8_t *>(bytes.front()), bytes.size());
 }
 
 Status Multihash::CreateFromBytes(std::span<uint8_t> &bytes) {
+  ToHash(bytes);
+
   if (bytes.size() < min_hash_length_) {
     return Status(StatusCode::CANCELLED, "Hash size is short");
   }
@@ -31,7 +30,6 @@ Status Multihash::CreateFromBytes(std::span<uint8_t> &bytes) {
     return Status(StatusCode::CANCELLED, "Hash size is too short");
   }
 
-  auto type = static_cast<HashType>(reader.value());
   if (bytes.empty()) {
     return Status(StatusCode::CANCELLED, "Hash size is too short");
   }
@@ -46,7 +44,6 @@ Status Multihash::CreateFromBytes(std::span<uint8_t> &bytes) {
     return Status(CANCELLED, "Inconsistent length");
   }
 
-  Multihash(type, hash);
   return Status::OK;
 }
 
@@ -62,7 +59,7 @@ bool Multihash::operator==(const Multihash &other) {
   }
   const auto &first = data();
   const auto &second = other.data();
-  return first.bytes_ == second.bytes_ && first.hash_type_ == second.hash_type_;
+  return first.bytes_ == second.bytes_;
 }
 
 bool Multihash::operator!=(const Multihash &other) {
@@ -72,10 +69,7 @@ bool Multihash::operator!=(const Multihash &other) {
 bool Multihash::operator<(const Multihash &other) {
   const auto &first = data();
   const auto &second = other.data();
-  if (first.hash_type_ == second.hash_type_) {
-    return first.bytes_ < second.bytes_;
-  }
-  return first.hash_type_ < second.hash_type_;
+  return first.bytes_ < second.bytes_;
 }
 
 }  // namespace common

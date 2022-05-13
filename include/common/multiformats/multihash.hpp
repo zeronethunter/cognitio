@@ -13,16 +13,12 @@
 
 #include "common/status.hpp"
 #include "common/utils/hex_util.hpp"
+#include "SHA256.h"
 
 namespace cognitio {
 namespace common {
 
 //! Data of Multihash
-
-enum HashType {
-  SHA256 = 0x12
-};
-
 class Multihash {
  public:
   Multihash();
@@ -34,14 +30,11 @@ class Multihash {
 
   ~Multihash() = default;
 
-  Status Create(HashType ht, std::span<uint8_t> &hash);
-
   Status CreateFromHex(std::string_view &hex);
 
   Status CreateFromBytes(std::span<uint8_t> &bytes);
 
-  //! \return type of hash
-  const HashType &GetType() const { return data().hash_type_; };
+  void ToHash(const std::span<uint8_t> &bytes);
 
   //! \return info about hash type
   const std::span<uint8_t> GetHash() const {
@@ -66,17 +59,16 @@ class Multihash {
   struct Data {
     std::vector<uint8_t> bytes_;
     uint8_t hash_offset_;  //! size of non-hash data from the beginning
-    HashType hash_type_;
     size_t hash_size_;
 
-    Data(HashType ht, std::span<const uint8_t> hash);
+    Data(std::span<const uint8_t> hash);
   };
 
   std::shared_ptr<Data> data_;
 
   Data &data() const { return *data_; };
-  Multihash(HashType ht, const std::span<uint8_t> &hash)
-      : data_(std::make_shared<Data>(ht, hash)){};
+  Multihash(const std::span<uint8_t> &hash)
+      : data_(std::make_shared<Data>(hash)){};
 };
 
 }  // namespace common

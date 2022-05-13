@@ -13,17 +13,17 @@ MerkleDag::MerkleDag(const repo::blockstorage::Blockstorage &blocks) {
       std::move(std::make_shared<repo::blockstorage::Blockstorage>(blocks));
 }
 
-Status MerkleDag::AddNode(const cognitio::linked_data::DagNode &node) {
+Status MerkleDag::AddNode(const DagNode &node) {
   std::vector<uint8_t> bytes = node.GetContent();
   return block_service_->Put(node.GetCid(), bytes);
 }
 
-std::pair<Status, cognitio::linked_data::DagNode> MerkleDag::GetNode(
+std::pair<Status, DagNode> MerkleDag::GetNode(
     const cognitio::common::Cid &cid) const {
-  std::pair<Status, std::vector<uint8_t>> node = block_service_->Get(cid);
+  std::pair<Status, std::vector<uint8_t>> bytes = block_service_->Get(cid);
+  DagNode node(bytes.second);
   if (node.first.ok()) {
-    return std::pair<Status, linked_data::DagNode>(Status(),
-                                                   std::move(node.second));
+    return std::pair<Status, DagNode>(Status(), std::move(node.second));
   }
   return std::pair<Status, linked_data::DagNode>(
       Status(StatusCode::CANCELLED, "This node doesnt exist"), DagNode());
@@ -31,11 +31,6 @@ std::pair<Status, cognitio::linked_data::DagNode> MerkleDag::GetNode(
 
 Status MerkleDag::RemoveNode(const cognitio::common::Cid &cid) {
   return block_service_->Delete(cid);
-}
-
-std::shared_ptr<linked_data::DagNode> MerkleDag::FetchGraph(
-    const common::Cid &cid) const {
-  linked_data::DagNode node(block_service_->Get(cid).second);
 }
 
 Status MerkleDag::buildGraph(const std::vector<std::vector<uint8_t>> &chunks) {

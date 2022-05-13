@@ -13,6 +13,7 @@
 #include "common/multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "proto/data/ProtoData.pb.h"
+#include "files/unixfs/unixfs.hpp"
 
 namespace cognitio {
 namespace linked_data {
@@ -20,8 +21,14 @@ namespace linked_data {
 class DagNode {
  public:
   DagNode() = default;
-  explicit DagNode(std::vector<uint8_t> &&data) : content_(std::move(data)){};
-  DagNode &operator=(std::vector<uint8_t> &&data);
+
+  explicit DagNode(files::unixfs::UnixFS &&file) : data_(std::move(file)) {};
+  DagNode &operator=(files::unixfs::UnixFS &&file);
+
+  explicit DagNode(std::vector<uint8_t> &&bytes) {
+    data_.SetData(std::move(bytes));
+  }
+  DagNode &operator=(std::vector<uint8_t> &&bytes);
 
   /// \return content of node
   std::vector<uint8_t> GetContent() const;
@@ -36,16 +43,14 @@ class DagNode {
 
   std::unique_ptr<DagNode> GetSubNode(std::string_view name) const;
 
-  std::vector<std::string_view> GetSubNodeNames() const;
+  std::vector<common::Cid> GetSubNodeNames() const;
 
   /// \brief insert children
   Status InsertSubNode(std::string &&name, DagNode &&children_node);
 
  private:
-  std::vector<common::Cid> cid_;
-
-  std::vector<uint8_t> content_;
-  std::map<std::string, DagNode, std::less<>> children_;
+  files::unixfs::UnixFS data_;
+  std::map<common::Cid, DagNode, std::less<>> children_;
 };
 
 }  // namespace linked_data
