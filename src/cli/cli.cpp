@@ -5,15 +5,11 @@
 
 #include "cli/cli.hpp"
 
-<<<<<<< HEAD
 #include <algorithm>
 #include <memory>
 
 #include "cli/commands/command.hpp"
 #include "common/logger/logger.hpp"
-=======
-#include "cli/commands/command.hpp"
->>>>>>> 38078b3 (CLI basis)
 #include "common/status.hpp"
 #include "common/status_code.hpp"
 #include "core/commands/list/root.hpp"
@@ -26,10 +22,10 @@ namespace cognitio {
 namespace cli {
 
 template <class Context>
-Cli<Context>::Cli(RootCmd&& root, std::ostream& out)
+Cli<Context>::Cli(Command<Context>&& root, std::ostream& out)
     : out_(out),
       logger_(createLogger("CLI")),
-      root_(std::make_shared<RootCmd>(root)) {}
+      root_(std::make_shared<Command<Context>>(root)) {}
 
 template <class Context>
 template <Container T>
