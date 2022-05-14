@@ -12,25 +12,25 @@
 #include "common/status.hpp"
 #include "proto/config/ProtoConfig.pb.h"
 
-namespace cognitio {
-namespace config {
+namespace cognitio::config {
 
 class Config {
+ public:
   Config() noexcept = delete;
   Config(const Config &) = delete;
   Config &operator=(const Config &) = delete;
-  Config(const std::string &repo_path) noexcept;
+  explicit Config(const std::string &repo_path) noexcept;
 
   Status TryInit() noexcept;
 
-  Status Dump() const noexcept;
+  [[nodiscard]] Status Dump() const noexcept;
 
-  std::string Get(const std::string &field) const noexcept;
+  [[nodiscard]] std::string Get(const std::string &field) const noexcept;
 
   Status SetRepoPath(const std::string &repo_path) noexcept;
 
  private:
-  bool isConfigCreated(const std::string &path) const noexcept;
+  [[nodiscard]] bool isConfigCreated(const std::string &path) const noexcept;
 
   Status getExistedConfig(const std::string &path) noexcept;
   Status createConfig(
@@ -38,12 +38,12 @@ class Config {
       const std::string &api_address = "127.0.0.1::10000") const noexcept;
   bool initialized() const noexcept;
 
+ private:
   std::string repo_path_;
   std::string api_address_;
   common::logger::Logger logger = common::logger::createLogger("Config logger");
 };
 
-}  // namespace config
-}  // namespace cognitio
+}  // namespace cognitio::config
 
 #endif  // CGNT_CONFIG_CONFIG_HPP_

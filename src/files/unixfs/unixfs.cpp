@@ -5,9 +5,7 @@
 
 #include "files/unixfs/unixfs.hpp"
 
-namespace cognitio {
-namespace files {
-namespace unixfs {
+namespace cognitio::files::unixfs {
 
 Data_DataType UnixFS::stringToDatatype(const std::string& type) const noexcept {
   if (type == "raw") {
@@ -51,7 +49,7 @@ Status UnixFS::DecodeMessage(const Data& encoded) noexcept {
     if (Data_DataType_IsValid(encoded.type())) {
       data_type_ = Data_DataType_Name(encoded.type());
     } else {
-      return Status(StatusCode::INVALID_ARGUMENT, "Data type is invalid.");
+      return {StatusCode::INVALID_ARGUMENT, "Data type is invalid."};
     }
     if (!encoded.blocksizes().empty()) {
       for (const uint64_t& blocksize : encoded.blocksizes()) {
@@ -79,28 +77,26 @@ Status UnixFS::CreateUnixFS(const std::string& datatype, uint64_t filesize,
   if (Data_DataType_IsValid(type)) {
     data_type_ = Data_DataType_Name(type);
   } else {
-    return Status(StatusCode::INVALID_ARGUMENT,
-                  "Data type " + datatype + " is invalid.");
+    return {StatusCode::INVALID_ARGUMENT,
+            "Data type " + datatype + " is invalid."};
   }
   if (filesize) {
     filesize_ = filesize;
   } else {
-    return Status(StatusCode::INVALID_ARGUMENT, "Empty filesize");
+    return {StatusCode::INVALID_ARGUMENT, "Empty filesize"};
   }
   if (!blocksizes.empty()) {
     blocksizes_ = blocksizes;
   } else {
-    return Status(StatusCode::INVALID_ARGUMENT, "Empty blocksizes");
+    return {StatusCode::INVALID_ARGUMENT, "Empty blocksizes"};
   }
   if (!data.empty()) {
     data_ = data;
   } else {
-    return Status(StatusCode::INVALID_ARGUMENT, "Empty data");
+    return {StatusCode::INVALID_ARGUMENT, "Empty data"};
   }
   is_created_ = true;
   return Status::OK;
 }
 
-}  // namespace unixfs
-}  // namespace files
-}  // namespace cognitio
+}  // namespace cognitio::files::unixfs

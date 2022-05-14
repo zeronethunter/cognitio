@@ -1,7 +1,6 @@
 #include "linked_data/proto_block.hpp"
 
-namespace cognitio {
-namespace linked_data {
+namespace cognitio::linked_data {
 
 std::unique_ptr<Block> ProtoBlock::ToProtoMessage() {
   ::Block new_block;
@@ -19,8 +18,7 @@ Status ProtoBlock::FromProtoMessage(const std::unique_ptr<Block> &proto_block) {
     node_.DecodeProtoNode(proto_block->node());
     return Status::OK;
   }
-  return Status(StatusCode::FAILED, "Block message is not initialized.");
+  return {StatusCode::FAILED, "Block message is not initialized."};
 }
 
-}  // namespace linked_data
-}  // namespace cognitio
+}  // namespace cognitio::linked_data

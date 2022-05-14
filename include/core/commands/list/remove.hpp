@@ -3,12 +3,12 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#ifndef CGNT_CORE_COMMANDS_LIST_GET_HPP_
-#define CGNT_CORE_COMMANDS_LIST_GET_HPP_
+#ifndef CGNT_CORE_COMMANDS_LIST_REMOVE_HPP_
+#define CGNT_CORE_COMMANDS_LIST_REMOVE_HPP_
 
 #include "cli/commands/command.hpp"
-#include "core/context/context.hpp"
 #include "common/multiformats/cid.hpp"
+#include "core/context/context.hpp"
 
 namespace cognitio {
 namespace core {
@@ -38,4 +38,4 @@ class RmCmd : public Command<Context> {
 }  // namespace core
 }  // namespace cognitio
 
-#endif  // CGNT_CORE_COMMANDS_LIST_GET_HPP_
+#endif  // CGNT_CORE_COMMANDS_LIST_REMOVE_HPP_

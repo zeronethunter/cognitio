@@ -6,7 +6,7 @@ add_library(
 )
 
 # find_package(Boost 1.78 REQUIRED COMPONENTS algorithm)
-find_package(Boost 1.78 REQUIRED)
+find_package(Boost 1.74 REQUIRED)
 # target_link_libraries($PRIVATE Boost::algorithm)
 
 if (ENABLE_TESTING MATCHES ON)

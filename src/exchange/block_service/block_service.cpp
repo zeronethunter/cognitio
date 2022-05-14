@@ -1,7 +1,6 @@
 #include "exchange/block_service/block_service.hpp"
 
-namespace cognitio {
-namespace exchange {
+namespace cognitio::exchange {
 Status BlockService::Open(const std::filesystem::path& path,
                           bool is_daemon_opened) noexcept {
   Status status_open;
@@ -30,10 +29,10 @@ std::filesystem::path BlockService::Root() const noexcept {
       return repo_->Root();
     }
     logger_->error("Can't get root. Open repo first.");
-    return std::filesystem::path();
+    return {};
   }
   logger_->info("Daemon is opened. Can't get root.");
-  return std::filesystem::path();
+  return {};
 }
 
 Status BlockService::Put(const ProtoBlock& block) noexcept {
@@ -47,7 +46,7 @@ linked_data::ProtoBlock BlockService::Get(
     const common::Cid& key) const noexcept {
   std::vector<uint8_t> bytes =
       is_daemon_opened_ ? block_swap_->Get(key) : repo_->Get(key);
-  return ProtoBlock(key, linked_data::DagNode(std::move(bytes)));
+  return {key, linked_data::DagNode(std::move(bytes))};
 }
 
 Status BlockService::Delete(const common::Cid& key) noexcept {
@@ -86,5 +85,4 @@ Status BlockService::DeleteMany(
     }
   }
 }
-}  // namespace exchange
 }  // namespace cognitio

@@ -12,8 +12,7 @@
 #include "linked_data/proto_block.hpp"
 #include "repo/repo.hpp"
 
-namespace cognitio {
-namespace exchange {
+namespace cognitio::exchange {
 
 class BlockService {
   typedef linked_data::ProtoBlock ProtoBlock;
@@ -26,19 +25,19 @@ class BlockService {
 
   Status Close() noexcept;
 
-  std::filesystem::path Root() const noexcept;
+  [[nodiscard]] std::filesystem::path Root() const noexcept;
 
   Status Put(const ProtoBlock& block) noexcept;
 
-  ProtoBlock Get(const common::Cid& key) const noexcept;
+  [[nodiscard]] ProtoBlock Get(const common::Cid& key) const noexcept;
 
   Status Delete(const common::Cid& key) noexcept;
 
-  bool Has(const common::Cid& key) const noexcept;
+  [[nodiscard]] bool Has(const common::Cid& key) const noexcept;
 
   Status PutMany(const std::vector<ProtoBlock>& source) noexcept;
 
-  std::vector<ProtoBlock> GetMany(
+  [[nodiscard]] std::vector<ProtoBlock> GetMany(
       const std::vector<common::Cid>& source) const noexcept;
 
   Status DeleteMany(const std::vector<common::Cid>& source) noexcept;
@@ -54,7 +53,6 @@ class BlockService {
       common::logger::createLogger("BlockService logger");
 };
 
-}  // namespace exchange
 }  // namespace cognitio
 
 #endif  // CGNT_EXCHANGE_BLOCK_SERVICE_BLOCK_SERVICE_HPP_

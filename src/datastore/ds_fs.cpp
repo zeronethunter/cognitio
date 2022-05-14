@@ -2,8 +2,7 @@
 
 #include <fstream>
 
-namespace cognitio {
-namespace datastore {
+namespace cognitio::datastore {
 
 template <typename Value>
 Status Filesystem<Value>::Open(const std::filesystem::path& path) noexcept {
@@ -12,7 +11,7 @@ Status Filesystem<Value>::Open(const std::filesystem::path& path) noexcept {
     if (std::filesystem::create_directory(path_)) {
       return Status::OK;
     }
-    return Status(StatusCode::FAILED, "Can't open storage.");
+    return {StatusCode::FAILED, "Can't open storage."};
   }
 }
 
@@ -24,13 +23,13 @@ Status Filesystem<Value>::Put(const common::Cid& key,
                               const Value& value) noexcept {
   std::string filename = key.ToString();
   if (std::filesystem::exists(path_ / filename)) {
-    return Status(StatusCode::ALREADY_EXISTS, " already exists");
+    return {StatusCode::ALREADY_EXISTS, " already exists"};
   }
   std::fstream file;
   file.open(filename, std::ios::binary);
 
   if (!file.is_open()) {
-    return Status(StatusCode::CANCELLED, "Can not create " + filename);
+    return {StatusCode::CANCELLED, "Can not create " + filename};
   }
 
   file.write(static_cast<char*>(&value), sizeof(Value));
@@ -45,7 +44,7 @@ std::pair<Status, Value> Filesystem<Value>::Get(
     const common::Cid& key) const noexcept {
   std::string filename = key.ToString();
   if (!std::filesystem::exists(path_ / filename)) {
-    return std::pair<Status, Value>(Status(StatusCode::NOT_FOUND, " not found"),
+    return std::pair<Status, Value>({StatusCode::NOT_FOUND, " not found"},
                                     Value());
   }
 
@@ -54,7 +53,7 @@ std::pair<Status, Value> Filesystem<Value>::Get(
 
   if (!file.is_open()) {
     return std::pair<Status, Value>(
-        Status(StatusCode::CANCELLED, "Can not create " + filename), Value());
+        {StatusCode::CANCELLED, "Can not create " + filename}, Value());
   }
 
   Value result;
@@ -71,7 +70,7 @@ Status Filesystem<Value>::Delete(const common::Cid& key) noexcept {
   if (std::filesystem::remove(path_ / filename)) {
     return Status::OK;
   }
-  return Status(StatusCode::NOT_FOUND, filename + " not found");
+  return {StatusCode::NOT_FOUND, filename + " not found"};
 }
 
 template <typename Value>
@@ -112,5 +111,4 @@ Status Filesystem<Value>::DeleteMany(
   return Status::OK;
 }
 
-}  // namespace datastore
-}  // namespace cognitio
+}  // namespace cognitio::datastore

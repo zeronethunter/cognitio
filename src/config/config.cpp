@@ -1,10 +1,10 @@
 #include "config/config.hpp"
+
 #include <google/protobuf/util/json_util.h>
 
 #include <fstream>
 
-namespace cognitio {
-namespace config {
+namespace cognitio::config {
 
 bool Config::isConfigCreated(const std::string &path) const noexcept {
   return std::filesystem::exists(std::filesystem::path(path) / "config");
@@ -30,12 +30,12 @@ Status Config::createConfig(const std::string &repo_path,
   std::fstream config_file(config_path.string(), std::ios::out);
 
   if (!config_file.is_open()) {
-    return Status(StatusCode::FAILED, "Failed to open config file.");
+    return {StatusCode::FAILED, "Failed to open config file."};
   }
 
   std::string json_config;
   if (!google::protobuf::util::MessageToJsonString(config, &json_config).ok()) {
-    return Status(StatusCode::FAILED, "Failed to open config file.");
+    return {StatusCode::FAILED, "Failed to open config file."};
   }
 
   config_file.write(json_config.c_str(),
@@ -48,7 +48,7 @@ Status Config::getExistedConfig(const std::string &path) noexcept {
   std::fstream config_file(path, std::ios::in);
 
   if (!config_file.is_open()) {
-    return Status(StatusCode::FAILED, "Failed to open config file.");
+    return {StatusCode::FAILED, "Failed to open config file."};
   }
 
   std::string json_config =
@@ -57,7 +57,7 @@ Status Config::getExistedConfig(const std::string &path) noexcept {
   ProtoConfig config;
 
   if (!google::protobuf::util::JsonStringToMessage(json_config, &config).ok()) {
-    return Status(StatusCode::FAILED, "Failed to open config file.");
+    return {StatusCode::FAILED, "Failed to open config file."};
   }
 
   return Status::OK;
@@ -90,12 +90,11 @@ std::string Config::Get(const std::string &field) const noexcept {
   if (field == "api_address") {
     return api_address_;
   }
-  return std::string();
+  return {};
 }
 
 Status Config::SetRepoPath(const std::string &repo_path) noexcept {
   repo_path_ = repo_path;
 }
 
-}  // namespace config
-}  // namespace cognitio
+}  // namespace cognitio::config

@@ -19,8 +19,7 @@ Status Shurd(const common::Cid& cid);
 
 #include "common/logger/logger.hpp"
 
-namespace cognitio {
-namespace repo {
+namespace cognitio::repo {
 
 // template <typename StoreValue>
 // Repo<StoreValue>::Repo(
@@ -91,8 +90,7 @@ std::string Repo<StoreValue>::shard(const cognitio::common::Cid& cid,
                                     size_t name_length) {
   std::string str_cid = cid.ToString();
   size_t offset = str_cid.length() - name_length - 1;
-  return std::string(str_cid.cbegin() + static_cast<long>(offset),
-                     str_cid.cend());
+  return {str_cid.cbegin() + static_cast<long>(offset), str_cid.cend()};
 }
 
 template <typename StoreValue>
@@ -112,7 +110,7 @@ Status Repo<StoreValue>::Add(const common::Cid& cid,
 
     return is_added;
   }
-  return Status(StatusCode::CANCELLED, "Open repo before adding.");
+  return {StatusCode::CANCELLED, "Open repo before adding."};
 }
 
 template <typename StoreValue>
@@ -121,8 +119,8 @@ Status Repo<StoreValue>::Delete(const common::Cid& cid) noexcept {
     std::string name_of_shard = shard(cid);
 
     if (!std::filesystem::exists(blocks_->Root() / name_of_shard)) {
-      return Status(StatusCode::FAILED,
-                    "No such file or directory: " + cid.ToString() + ".");
+      return {StatusCode::FAILED,
+              "No such file or directory: " + cid.ToString() + "."};
     }
 
     blockstorage::Blockstorage block(blocks_->Root() / name_of_shard);
@@ -137,7 +135,7 @@ Status Repo<StoreValue>::Delete(const common::Cid& cid) noexcept {
 
     return is_deleted;
   }
-  return Status(StatusCode::CANCELLED, "Open repo before deleting.");
+  return {StatusCode::CANCELLED, "Open repo before deleting."};
 }
 
 template <typename StoreValue>
@@ -148,7 +146,7 @@ std::vector<uint8_t> Repo<StoreValue>::Get(
 
     if (!std::filesystem::exists(blocks_->Root() / name_of_shard)) {
       logger_->error("Can't get value by cid. It doesn't exist.");
-      return std::vector<uint8_t>();
+      return {};
     }
 
     blockstorage::Blockstorage block(blocks_->Root() / name_of_shard);
@@ -157,7 +155,7 @@ std::vector<uint8_t> Repo<StoreValue>::Get(
 
     if (!result.first.ok()) {
       logger_->error(result.first.error_message());
-      return std::vector<uint8_t>();
+      return {};
     }
 
     return block.Get(cid).second;
@@ -184,5 +182,4 @@ bool Repo<StoreValue>::Exists() noexcept {
   return std::filesystem::exists(root_->Root());
 }
 
-}  // namespace repo
-}  // namespace cognitio
+}  // namespace cognitio::repo

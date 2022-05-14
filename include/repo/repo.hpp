@@ -7,15 +7,16 @@
 #define CGNT_REPO_REPO_HPP_
 
 #include <filesystem>
+#include <memory>
 
+#include "block_storage/block_storage.hpp"
 #include "common/logger/logger.hpp"
 #include "common/utils/repo.hpp"
 #include "datastore/ds_fs.hpp"
 // #include "pinner/pin-manager.hpp"
 // #include "repo/gc/gc.hpp"
 
-namespace cognitio {
-namespace repo {
+namespace cognitio::repo {
 
 /**
  *  @brief  Repository part of project. Responsible for creating, managing and
@@ -36,42 +37,62 @@ class Repo {
    *
    *  @param root filesystem of repository.
    */
-  explicit Repo(
-      std::unique_ptr<datastore::Filesystem<StoreValue>> const& root) noexcept;
+  explicit Repo(std::unique_ptr<datastore::Filesystem<StoreValue>> const &root)
+
+      noexcept;
+
   /**
    *  @brief Constructor of repository from path.
    *
    *  @param path path to new repository.
    */
-  explicit Repo(const std::filesystem::path& path = std::filesystem::path(
-                    common::utils::GetDefaultRepoPath())) noexcept;
+  explicit Repo(const std::filesystem::path &path =
+                    std::filesystem::path(common::utils::GetDefaultRepoPath()))
+
+      noexcept;
+
   /**
    *  @brief Constructor of repository from name.
    *
    *  @param name name of new repository.
    */
-  explicit Repo(const std::string& name = ".cognitio") noexcept;
+  explicit Repo(const std::string &name = ".cognitio")
+
+      noexcept;
+
   /**
    *  @brief Initializing the repository, namely starting gc and creating pins.
    */
-  Status Init() noexcept;
+  Status Init()
+
+      noexcept;
+
   /**
    *  @brief Close the repository, clean it up.
    */
-  Status Close() noexcept;
+  Status Close()
+
+      noexcept;
+
   /**
    *  @brief Add value by key in repo.
    *
    *  @param cid the key that will be used to put value.
    *  @param data block of bytes.
    */
-  Status Add(const common::Cid& cid, const std::vector<uint8_t>& data) noexcept;
+  Status Add(const common::Cid &cid, const std::vector<uint8_t> &data)
+
+      noexcept;
+
   /**
    *  @brief Delete value by key in repo.
    *
    *  @param cid the key that will be used to delete value.
    */
-  Status Delete(const common::Cid& cid) noexcept;
+  Status Delete(const common::Cid &cid)
+
+      noexcept;
+
   /**
    *  @brief Get value by key in repo.
    *
@@ -79,39 +100,50 @@ class Repo {
    *
    *  @return vector of bytes.
    */
-  std::vector<uint8_t> Get(const common::Cid& cid) const noexcept;
+  [[nodiscard]] std::vector<uint8_t> Get(const common::Cid &cid) const
+
+      noexcept;
+
   /**
    *  @brief Check if key is in repo.
    *
    *  @param cid the key to find in storage.
    */
-  bool Has(const common::Cid& cid) const noexcept;
+  [[nodiscard]] bool Has(const common::Cid &cid) const
+
+      noexcept;
+
   /**
    *  @brief Check if repo is already exists.
    */
-  bool Exists() noexcept;
+  bool Exists()
+
+      noexcept;
+
   /**
    *  @return Path of root storage.
    */
-  std::filesystem::path Root() const noexcept { return root_->Root(); }
+  [[nodiscard]] std::filesystem::path Root() const
+
+      noexcept {
+    return root_->Root();
+  }
 
  private:
-  Status openRepo() noexcept;
-  std::string shard(const cognitio::common::Cid& cid, size_t name_length = 2);
-  void initRepoStorage(const std::filesystem::path& path);
+  Status openRepo()
+
+      noexcept;
+
+  std::string shard(const cognitio::common::Cid &cid, size_t name_length = 2);
+
+  void initRepoStorage(const std::filesystem::path &path);
 
   bool closed_ = true;
   std::unique_ptr<datastore::Filesystem<StoreValue>> root_;
   std::unique_ptr<blockstorage::Blockstorage> blocks_;
   common::logger::Logger logger_ = common::logger::createLogger("Repo logger");
-  //  pinner::PinManager<Key, Value, Options> pins_;
-  //  blockstorage::Blockstorage<Key, Value, Options> pinned_block_storage_;
-
-  //  Status OpenLock();
-  //  Status CloseLock();
 };
 
-}  // namespace repo
 }  // namespace cognitio
 
 #endif  // CGNT_REPO_REPO_HPP_
