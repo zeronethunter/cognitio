@@ -6,7 +6,7 @@ std::unique_ptr<Block> ProtoBlock::ToProtoMessage() {
   ::Block new_block;
   std::unique_ptr<Node> new_node = node_.EncodeProtoNode();
 
-  new_block.set_cid(cid_.String());
+  new_block.set_cid(cid_.ToString());
   new_block.set_allocated_node(new_node.get());
 
   return std::make_unique<::Block>(new_block);

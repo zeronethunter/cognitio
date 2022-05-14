@@ -110,18 +110,18 @@ proto: cli-proto data-proto config-proto
 
 cli-proto:
 	protoc -I ${CLI_PROTO_SRC_DIR} --cpp_out=${CLI_PROTO_SRC_DIR} ${CLI_PROTO_SRC_DIR}/*.proto
-	mkdir -p include/${CLI_PROTO_SRC_DIR} src/${CLI_PROTO_SRC_DIR}
-	mv ${CLI_PROTO_SRC_DIR}/*.pb.h include/${CLI_PROTO_SRC_DIR}
-	mv ${CLI_PROTO_SRC_DIR}/*.pb.cc src/${CLI_PROTO_SRC_DIR}
+	mkdir -p include/proto src/proto
+	mv ${CLI_PROTO_SRC_DIR}/*.pb.h include/proto
+	mv ${CLI_PROTO_SRC_DIR}/*.pb.cc src/proto
 
 data-proto:
 	protoc -I ${DATA_PROTO_SRC_DIR} --cpp_out=${DATA_PROTO_SRC_DIR} ${DATA_PROTO_SRC_DIR}/*.proto
-	mkdir -p include/${DATA_PROTO_SRC_DIR} src/${DATA_PROTO_SRC_DIR}
-	mv ${DATA_PROTO_SRC_DIR}/*.pb.h include/${DATA_PROTO_SRC_DIR}
-	mv ${DATA_PROTO_SRC_DIR}/*.pb.cc src/${DATA_PROTO_SRC_DIR}
+	mkdir -p include/proto src/proto
+	mv ${DATA_PROTO_SRC_DIR}/*.pb.h include/proto
+	mv ${DATA_PROTO_SRC_DIR}/*.pb.cc src/proto
 
 config-proto:
 	protoc -I ${CONFIG_PROTO_SRC_DIR} --cpp_out=${CONFIG_PROTO_SRC_DIR} ${CONFIG_PROTO_SRC_DIR}/*.proto
-	mkdir -p include/${CONFIG_PROTO_SRC_DIR} src/${CONFIG_PROTO_SRC_DIR}
-	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.h include/${CONFIG_PROTO_SRC_DIR}
-	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.cc src/${CONFIG_PROTO_SRC_DIR}
+	mkdir -p include/proto src/proto
+	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.h include/proto
+	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.cc src/proto

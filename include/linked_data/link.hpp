@@ -9,7 +9,7 @@
 #include <string>
 
 #include "common/multiformats/cid.hpp"
-#include "proto/data/ProtoData.pb.h"
+#include "proto/ProtoData.pb.h"
 #include "common/status.hpp"
 
 namespace cognitio {

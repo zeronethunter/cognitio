@@ -25,7 +25,7 @@ class RootCmd : public Command<Context> {
  public:
   RootCmd() : Command(RootMeta()){};
   void PrintHelp([[maybe_unused]] std::ostream& out) override {}
-  void Run([[maybe_unused]] Context& ctx, [[maybe_unused]] const CmdEnv& env,
+  void Run([[maybe_unused]] Context& ctx, [[maybe_unused]] CmdEnv& env,
            [[maybe_unused]] ResponseEmitter& re) override {
     // It's not supposed to be ran
     re.SetStatus(StatusCode::FAILED, "I'm not supposed to be ran");

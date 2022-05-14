@@ -10,7 +10,7 @@
 
 #include "common/multiformats/cid.hpp"
 #include "linked_data/dag_node.hpp"
-#include "proto/data/ProtoData.pb.h"
+#include "proto/ProtoData.pb.h"
 
 namespace cognitio {
 namespace linked_data {

@@ -38,9 +38,9 @@ class Cid {
  public:
   Cid();
 
-  Cid(const std::span<uint8_t> &bytes);
-  Cid(const std::vector<uint8_t> &bytes);
-  Cid(const std::string_view &str_view);
+  Cid(std::span<uint8_t> &bytes);
+  Cid(std::vector<uint8_t> &bytes);
+  Cid(std::string_view str_view);
   Cid(CodeType code_type, const Multihash &content_address);
 
   Cid(const Cid &other);
@@ -48,7 +48,6 @@ class Cid {
   Cid(Cid &&other);
 
   Cid &operator=(const Cid &other);
-
   Cid &operator=(Cid &&other);
 
   //! Equals operator checks that two Cids are the same.
@@ -69,9 +68,9 @@ class Cid {
  private:
   std::string str_cid_;              //! string view of cid.
   std::vector<uint8_t> bytes_view_;  //! bytes array view of cid.
-  cognitio::common::Multihash content_address_;
-  CodeType content_type_;
 
+  CodeType content_type_;
+  cognitio::common::Multihash content_address_;
 };
 
 }  // namespace common

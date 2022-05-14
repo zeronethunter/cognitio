@@ -26,7 +26,7 @@ class AddCmd : public Command<Context> {
   AddCmd() : Command(AddMeta()) {};
   void PrintHelp([[maybe_unused]] std::ostream& out) override {}
 
-  void Run(Context& ctx, [[maybe_unused]] const CmdEnv& env,
+  void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
     auto api = ctx.GetAPI();
     api->Add(env.option, re);
