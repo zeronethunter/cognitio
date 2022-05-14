@@ -14,14 +14,14 @@
 namespace cognitio {
 namespace common {
 
-/// @brief converts bytes to uppercase hex view
-/// @param array of bytes
-/// @return hex string
+/// \brief converts bytes to uppercase hex view
+/// \param array of bytes
+/// \return hex string
 std::string hex_upper(const std::span<uint8_t> &bytes);
 
-/// @brief converts bytes to lowercase hex view
-/// @param array of bytes
-/// @return hex string
+/// \brief converts bytes to lowercase hex view
+/// \param array of bytes
+/// \return hex string
 std::string hex_lower(const std::span<uint8_t> &bytes);
 
 /// \brief Converts hex representation to bytes view

@@ -28,6 +28,10 @@ std::vector<common::Cid> DagNode::GetSubNodeNames() const {
   return cid_vec;
 }
 
+Status DecodeProtoNode(const Node &node) {
+  
+}
+
 common::Cid DagNode::GetCid() const {
   return common::Cid(GetContent());
 }
