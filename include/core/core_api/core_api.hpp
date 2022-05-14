@@ -20,7 +20,7 @@ using namespace cli::commands;
 
 class CoreAPI {
  public:
-  typedef std::unique_ptr<Core> CorePtr;
+  typedef std::shared_ptr<Core> CorePtr;
 
   explicit CoreAPI(Core&& core)
       : core_(std::make_unique<Core>(std::move(core))) {}
@@ -32,7 +32,7 @@ class CoreAPI {
   CorePtr GetCore() noexcept { return core_; }
 
  private:
-  std::unique_ptr<Core> core_;
+  CorePtr core_;
 };
 
 }  // namespace core_api

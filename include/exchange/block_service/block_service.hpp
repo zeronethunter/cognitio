@@ -18,6 +18,7 @@ class BlockService {
   typedef linked_data::ProtoBlock ProtoBlock;
 
  public:
+  BlockService() = default;
   Status Open(const std::filesystem::path& path =
                   std::filesystem::path(common::utils::GetDefaultRepoPath()) /
                   "blocks",

@@ -16,12 +16,12 @@ namespace commands {
 
 RootCmd MakeCommands() {
   RootCmd cmd;
-  cmd.AddSubCmd(std::make_unique<InitCmd>(new InitCmd()));
+  cmd.AddSubCmd(std::make_shared<InitCmd>());
 
   // Working with local repo
-  cmd.AddSubCmd(std::make_unique<GetCmd>(new GetCmd()));
-  cmd.AddSubCmd(std::make_unique<AddCmd>(new AddCmd()));
-  cmd.AddSubCmd(std::make_unique<RmCmd>(new RmCmd()));
+  cmd.AddSubCmd(std::make_shared<GetCmd>());
+  cmd.AddSubCmd(std::make_shared<AddCmd>());
+  cmd.AddSubCmd(std::make_shared<RmCmd>());
   // cmd.AddSubCmd(std::make_unique<DaemonCmd>(new DaemonCmd()));
 
   // Working with remote repo
