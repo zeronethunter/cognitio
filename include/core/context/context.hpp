@@ -20,7 +20,6 @@ namespace cognitio {
 namespace core {
 namespace commands {
 
-using namespace repo::config;
 using namespace core::core_api;
 using namespace cli::commands;
 using namespace common::logger;

@@ -5,7 +5,7 @@ add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 target_link_libraries(${SUBMODULE_NAME} PUBLIC
         ${PROJECT_NAME}_cli_commands
         ${PROJECT_NAME}_core_api
-        ${PROJECT_NAME}_common
+        ${PROJECT_NAME}_logger
         ${PROJECT_NAME}_repo
 )
 

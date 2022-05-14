@@ -7,7 +7,9 @@ add_library(
 
 target_link_libraries(
         ${SUBMODULE_NAME} PUBLIC
-        ${CMAKE_PROJECT_NAME}_common)
+        ${CMAKE_PROJECT_NAME}_logger
+        ${CMAKE_PROJECT_NAME}_proto
+)
 
 if (ENABLE_TESTING MATCHES ON)
     add_libs_for_testing(${SUBMODULE_NAME})

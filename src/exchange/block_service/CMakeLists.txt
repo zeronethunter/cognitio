@@ -8,7 +8,8 @@ add_library(
 )
 
 target_link_libraries(${SUBMODULE_NAME} PUBLIC
-        ${CMAKE_PROJECT_NAME}_common
+        ${CMAKE_PROJECT_NAME}_logger
+        ${CMAKE_PROJECT_NAME}_utils
         ${CMAKE_PROJECT_NAME}_linked_data
         ${CMAKE_PROJECT_NAME}_repo)
 
