@@ -26,7 +26,7 @@ class DagNode {
   DagNode &operator=(files::unixfs::UnixFS &&file);
 
   explicit DagNode(std::vector<uint8_t> &&bytes) {
-    data_.SetData(std::move(bytes));
+    data_.SetData(bytes);
   }
   DagNode &operator=(std::vector<uint8_t> &&bytes);
 

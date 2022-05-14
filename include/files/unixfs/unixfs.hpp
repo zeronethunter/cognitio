@@ -10,9 +10,7 @@
 #include "common/status.hpp"
 #include "proto/data/ProtoData.pb.h"
 
-namespace cognitio {
-namespace files {
-namespace unixfs {
+namespace cognitio::files::unixfs {
 
 /**
  *  @brief  Managing data blocks:
@@ -31,7 +29,7 @@ class UnixFS {
    *
    *  @return an unique ptr to protobuf class Data.
    */
-  std::unique_ptr<Data> EncodeMessage() const noexcept;
+  [[nodiscard]] std::unique_ptr<Data> EncodeMessage() const noexcept;
   /**
    *  @brief  Decode from probuf to data.
    *  @param  encoded protobuf class Data.
@@ -63,18 +61,18 @@ class UnixFS {
    *  @param  index index of size to get.
    *  @return size.
    */
-  size_t GetBlockSize(size_t index) const noexcept {
+  [[nodiscard]] size_t GetBlockSize(size_t index) const noexcept {
     return blocksizes_.at(index);
   }
   /**
    *  @brief  Get vector of block sizes.
    *  @return vector of block sizes.
    */
-  std::vector<uint64_t> GetBlockSize() const noexcept { return blocksizes_; }
+  [[nodiscard]] std::vector<uint64_t> GetBlockSize() const noexcept { return blocksizes_; }
   /**
    *  @brief  Get file size.
    */
-  uint64_t GetFilesize() const noexcept { return filesize_; }
+  [[nodiscard]] uint64_t GetFilesize() const noexcept { return filesize_; }
   /**
    *  @brief  Set file size.
    *  @param  filesize size of file to set.
@@ -83,11 +81,11 @@ class UnixFS {
   /**
    *  @brief  Get type of data.
    */
-  std::string GetDataType() const noexcept { return data_type_; }
+  [[nodiscard]] std::string GetDataType() const noexcept { return data_type_; }
   /**
    *  @brief  Get data.
    */
-  std::vector<uint8_t> GetData() const noexcept { return data_; }
+  [[nodiscard]] std::vector<uint8_t> GetData() const noexcept { return data_; }
   /**
    *  @brief  Set data.
    */
@@ -99,7 +97,7 @@ class UnixFS {
    *
    *  @param type type to convert.
    */
-  Data_DataType stringToDatatype(const std::string& type) const noexcept;
+  [[nodiscard]] Data_DataType stringToDatatype(const std::string& type) const noexcept;
 
   bool is_created_ = false;
   std::string data_type_;
@@ -111,8 +109,6 @@ class UnixFS {
       common::logger::createLogger("UnixFSDecodeMessage");
 };
 
-}  // namespace unixfs
-}  // namespace files
 }  // namespace cognitio
 
 #endif  // CGNT_FILES_UNIXFS_UNIXFS_HPP_

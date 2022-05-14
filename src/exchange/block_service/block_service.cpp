@@ -46,7 +46,7 @@ linked_data::ProtoBlock BlockService::Get(
     const common::Cid& key) const noexcept {
   std::vector<uint8_t> bytes =
       is_daemon_opened_ ? block_swap_->Get(key) : repo_->Get(key);
-  return {key, linked_data::DagNode(std::move(bytes))};
+  return ProtoBlock(key, linked_data::DagNode(std::move(bytes)));
 }
 
 Status BlockService::Delete(const common::Cid& key) noexcept {
@@ -85,4 +85,4 @@ Status BlockService::DeleteMany(
     }
   }
 }
-}  // namespace cognitio
+}  // namespace cognitio::exchange

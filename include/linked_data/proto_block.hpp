@@ -6,14 +6,14 @@
 #ifndef CGNT_LINKED_DATA_BLOCK_HPP_
 #define CGNT_LINKED_DATA_BLOCK_HPP_
 
+#include <utility>
 #include <vector>
 
 #include "common/multiformats/cid.hpp"
 #include "linked_data/dag_node.hpp"
 #include "proto/data/ProtoData.pb.h"
 
-namespace cognitio {
-namespace linked_data {
+namespace cognitio::linked_data {
 
 /**
  *  @brief  Special wrapper for proto Block message.
@@ -34,8 +34,8 @@ class ProtoBlock {
    *  @param bytes to save in member. May be empty.
    *  @param cid to save in member.
    */
-  ProtoBlock(const Cid &cid, const DagNode &node = DagNode()) noexcept
-      : cid_(cid), node_(node) {}
+  explicit ProtoBlock(Cid &cid, DagNode node = DagNode()) noexcept
+      : cid_(std::move(cid)), node_(std::move(node)) {}
 
   /**
    *  @brief  Convert block to proto Block message.
@@ -56,7 +56,7 @@ class ProtoBlock {
    *
    *  @return vector of bytes.
    */
-  DagNode GetNode() const noexcept { return node_; }
+  [[nodiscard]] DagNode GetNode() const noexcept { return node_; }
 
   /**
    *  @brief  Set node to Block.
@@ -70,7 +70,7 @@ class ProtoBlock {
    *
    *  @return Cid.
    */
-  Cid GetCid() const noexcept { return cid_; }
+  [[nodiscard]] Cid GetCid() const noexcept { return cid_; }
 
   /**
    *  @brief  Set cid to Block.
@@ -89,7 +89,6 @@ class ProtoBlock {
   DagNode node_;
 };
 
-}  // namespace linked_data
 }  // namespace cognitio
 
 #endif  // CGNT_LINKED_DATA_BLOCK_HPP_

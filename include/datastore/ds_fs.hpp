@@ -7,13 +7,13 @@
 #define CGNT_DATASTORE_DS_FS_HPP_
 
 #include <filesystem>
+#include <utility>
 
 #include "common/multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "datastore/datastore.hpp"
 
-namespace cognitio {
-namespace datastore {
+namespace cognitio::datastore {
 
 /**
  *  @brief  This is implementation of datastore filesystem with key of type Cid.
@@ -26,7 +26,8 @@ namespace datastore {
 template <typename Value>
 class Filesystem : Datastore<common::Cid, Value, Status> {
  public:
-  Filesystem(const std::filesystem::path& path) noexcept : path_(path) {}
+  explicit Filesystem(std::filesystem::path path) noexcept
+      : path_(std::move(path)) {}
 
   Status Open(const std::filesystem::path& path) noexcept override;
 
@@ -34,19 +35,19 @@ class Filesystem : Datastore<common::Cid, Value, Status> {
     if (std::filesystem::exists(path_)) {
       return Open(path_);
     }
-    return Status(StatusCode::OK, path_.string() + "  is already opened.");
+    return {StatusCode::OK, path_.string() + "  is already opened."};
   }
 
   Status Close() noexcept override;
 
-  std::filesystem::path Root() const noexcept { return path_; }
+  [[nodiscard]] std::filesystem::path Root() const noexcept { return path_; }
 
   Status MakeDir(const std::string& dir_name) noexcept {
     if (!std::filesystem::exists(path_ / dir_name)) {
       if (std::filesystem::create_directory(path_ / dir_name)) {
         return Status::OK;
       }
-      return Status(StatusCode::OK, "Can't create directory " + dir_name + ".");
+      return {StatusCode::OK, "Can't create directory " + dir_name + "."};
     }
     return Status::OK;
   }
@@ -57,7 +58,7 @@ class Filesystem : Datastore<common::Cid, Value, Status> {
 
   Status Delete(const common::Cid& key) noexcept override;
 
-  bool Has(const common::Cid& key) const noexcept override {
+  [[nodiscard]] bool Has(const common::Cid& key) const noexcept override {
     return std::filesystem::exists(key.ToString());
   }
 
@@ -73,7 +74,6 @@ class Filesystem : Datastore<common::Cid, Value, Status> {
   std::filesystem::path path_;
 };
 
-}  // namespace datastore
-}  // namespace cognitio
+}  // namespace cognitio::datastore
 
 #endif  // CGNT_DATASTORE_DS_FS_HPP_
