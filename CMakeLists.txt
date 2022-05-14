@@ -25,10 +25,10 @@ option(GIT_SUBMODULE "Check submodules during build" ON)
 
 if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
   # Default options
-  option(ENABLE_CHECK_TOOLS "Enable format and code analysis tools" ON)
-  option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
-  option(ENABLE_TESTING "Enable unit tests for the project" ON)
-  option(ENABLE_COVERAGE "Enable code coverage through GCC" ON)
+  option(ENABLE_CHECK_TOOLS "Enable format and code analysis tools" OFF)
+  option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
+  option(ENABLE_TESTING "Enable unit tests for the project" OFF)
+  option(ENABLE_COVERAGE "Enable code coverage through GCC" OFF)
   option(ENABLE_VALGRIND "Launch all tests under valgrind" OFF)
 
   # ENABLE_CHECK_TOOLS turns on the default analyzers and formatters
