@@ -79,7 +79,10 @@ class ProtoBlock {
    */
   void SetCid(const Cid &cid) { cid_ = cid; }
 
-  bool IsInitialized() { return cid_; }
+  /**
+   *  @brief  Check if Block can be used / initialized.
+   */
+  bool IsInitialized() { return !cid_.ToString().empty(); }
 
  private:
   Cid cid_;
