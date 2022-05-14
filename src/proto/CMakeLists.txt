@@ -1,5 +1,6 @@
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_proto)
-set(${SUBMODULE_NAME}_SOURCES ProtoConfig.pb.cc ProtoData.pb.cc ProtoResponseEmitter.pb.cc)
+set(${SUBMODULE_NAME}_SOURCES ProtoConfig.pb.cc
+  ProtoData.pb.cc ProtoResponseEmitter.pb.cc)
 
 add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 if (ENABLE_TESTING MATCHES ON)
