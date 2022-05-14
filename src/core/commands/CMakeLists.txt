@@ -4,6 +4,7 @@ set(${SUBMODULE_NAME}_SOURCES root.cpp)
 add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 target_link_libraries(${SUBMODULE_NAME} PUBLIC
         ${PROJECT_NAME}_cli_commands
+        ${PROJECT_NAME}_multiformats
 )
 
 if (ENABLE_TESTING MATCHES ON)

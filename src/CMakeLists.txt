@@ -20,9 +20,9 @@ set_target_properties(${MAIN_BIN} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BI
 
 target_link_libraries(
         ${MAIN_BIN} PRIVATE
+        ${CMAKE_PROJECT_NAME}_cli
         ${CMAKE_PROJECT_NAME}_core_commands
         ${CMAKE_PROJECT_NAME}_logger
-        ${CMAKE_PROJECT_NAME}_cli
 )
 
 include_directories(
