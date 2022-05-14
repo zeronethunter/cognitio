@@ -16,19 +16,55 @@
 namespace cognitio {
 namespace config {
 
+/**
+ *  @brief  Config implementation.
+ *
+ *  Opens in root path. Dump and get json data.\n
+ *
+ *  Provides converting mechanism between Json and Protobuf.
+ *
+ */
 class Config {
   Config() noexcept = delete;
   Config(const Config &) = delete;
   Config &operator=(const Config &) = delete;
+
+  /**
+   *  @brief  Config constructor.
+   *
+   *  Add repo_path member of class.
+   *
+   *  @param repo_path path to repository.
+   */
   Config(const std::string &repo_path) noexcept;
 
+  /**
+   *  @brief  Config creation / getting from existing sources.
+   *
+   *  If config is already exists in repo, get it. Create it overwise.
+   */
   Status TryInit() noexcept;
 
+  /**
+   *  @brief  Config dumping in repo_path.
+   */
   Status Dump() const noexcept;
 
+  /**
+   *  @brief  Get config field by key (name).
+   *
+   *  @param field name of field to get.
+   */
   std::string Get(const std::string &field) const noexcept;
 
+  /**
+   *  @brief  Set repo path.
+   */
   Status SetRepoPath(const std::string &repo_path) noexcept;
+  /**
+   *  @brief  Check if all of the config required fields are initialized.
+   */
+  bool Initialized() const noexcept;
 
  private:
   bool isConfigCreated(const std::string &path) const noexcept;
@@ -37,7 +73,6 @@ class Config {
   Status createConfig(
       const std::string &repo_path,
       const std::string &api_address = "127.0.0.1::10000") const noexcept;
-  bool initialized() const noexcept;
 
   std::string repo_path_;
   std::string api_address_;

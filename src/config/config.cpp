@@ -73,12 +73,12 @@ Status Config::TryInit() noexcept {
   return createConfig(repo_path_);
 }
 
-bool Config::initialized() const noexcept {
+bool Config::Initialized() const noexcept {
   return !repo_path_.empty() && !api_address_.empty();
 }
 
 Status Config::Dump() const noexcept {
-  if (initialized()) {
+  if (Initialized()) {
     return createConfig(repo_path_, api_address_);
   }
   return createConfig(repo_path_);
