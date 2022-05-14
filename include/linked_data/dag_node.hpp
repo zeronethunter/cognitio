@@ -30,6 +30,8 @@ class DagNode {
   }
   DagNode &operator=(std::vector<uint8_t> &&bytes);
 
+  DagNode(std::vector<uint8_t> &&bytes, const std::vector<DagNode> &children_data);
+
   /// \return content of node
   std::vector<uint8_t> GetContent() const;
 
