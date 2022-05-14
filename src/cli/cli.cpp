@@ -20,6 +20,8 @@
 namespace cognitio {
 namespace cli {
 
+using namespace core::commands;
+
 template <class Context>
 Cli<Context>::Cli(Command<Context>&& root, std::ostream& out)
     : out_(out),

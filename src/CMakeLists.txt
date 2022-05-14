@@ -21,7 +21,7 @@ set_target_properties(${MAIN_BIN} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BI
 target_link_libraries(
         ${MAIN_BIN} PRIVATE
         ${PROJECT_NAME}_core_commands
-        ${PROJECT_NAME}_common
+        ${PROJECT_NAME}_logger
         ${PROJECT_NAME}_cli
 )
 

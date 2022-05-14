@@ -17,7 +17,7 @@ using namespace cli::commands;
 class LocalEmitter : public ResponseEmitter {
  public:
   explicit LocalEmitter(std::ostream& out)
-      : ResponseEmitter(), out_(out), err_(err) {}
+      : ResponseEmitter(), out_(out) {}
   ~LocalEmitter() = default;
 
   void Emit() override { out_ << GetProto().data(); }
