@@ -44,6 +44,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
   option(ENABLE_UBSAN "Build with UndefinedBehavior" ON)
 endif()
 
+# Dependencies
+add_subdirectory(third_party/SHA256)
+
 # Configuring GCC flags
 include(cmake/CompilerWarnings.cmake)
 include(cmake/Sanitizers.cmake)
@@ -60,9 +63,6 @@ file(GLOB_RECURSE ${PROJECT_NAME}_ALL_FILES ${PROJECT_SOURCE_DIR}/src *.cpp *.hp
 
 # Clang-format, clang-tidy, cpplint and cppcheck configuration
 include(cmake/FormatStaticAnalysys.cmake)
-
-# Dependencies
-add_subdirectory(third-party/SHA256)
 
 # Project building
 add_subdirectory(src)

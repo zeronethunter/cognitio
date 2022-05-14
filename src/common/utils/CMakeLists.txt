@@ -5,8 +5,9 @@ add_library(
         ${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES}
 )
 
-find_package(Boost 1.79 REQUIRED COMPONENTS algorithm)
-target_link_libraries(foo PRIVATE Boost::algorithm)
+# find_package(Boost 1.78 REQUIRED COMPONENTS algorithm)
+find_package(Boost 1.78 REQUIRED)
+# target_link_libraries($PRIVATE Boost::algorithm)
 
 if (ENABLE_TESTING MATCHES ON)
     add_libs_for_testing(${SUBMODULE_NAME})

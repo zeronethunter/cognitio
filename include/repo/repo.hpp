@@ -11,8 +11,8 @@
 #include "common/logger/logger.hpp"
 #include "common/utils/repo.hpp"
 #include "datastore/ds_fs.hpp"
-#include "pinner/pin-manager.hpp"
-#include "repo/gc/gc.hpp"
+// #include "pinner/pin-manager.hpp"
+// #include "repo/gc/gc.hpp"
 
 namespace cognitio {
 namespace repo {

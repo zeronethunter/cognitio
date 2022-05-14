@@ -3,9 +3,9 @@ add_subdirectory(core_api)
 add_subdirectory(context)
 
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_core)
-# set(${SUBMODULE_NAME}_SOURCES core.cpp)
+set(${SUBMODULE_NAME}_SOURCES core.cpp)
 
-# add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
+add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 target_link_libraries(${SUBMODULE_NAME} PUBLIC
         ${PROJECT_NAME}_core_commands
         ${PROJECT_NAME}_core_context

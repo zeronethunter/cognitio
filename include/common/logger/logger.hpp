@@ -6,7 +6,7 @@
 #ifndef CGNT_COMMON_LOGGER_LOGGER_HPP_
 #define CGNT_COMMON_LOGGER_LOGGER_HPP_
 
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
 
 namespace cognitio {
 namespace common {

@@ -10,7 +10,6 @@
 #include "common/multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "exchange/block_service/block_service.hpp"
-#include "linked_data/block.hpp"
 #include "linked_data/dag_node.hpp"
 #include "linked_data/link.hpp"
 #include "linked_data/node.hpp"

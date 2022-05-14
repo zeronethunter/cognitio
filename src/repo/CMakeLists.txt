@@ -1,6 +1,6 @@
 add_subdirectory(block_storage)
-add_subdirectory(pinner)
-add_subdirectory(gc)
+# add_subdirectory(pinner)
+# add_subdirectory(gc)
 
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_repo)
 set(${SUBMODULE_NAME}_SOURCES repo.cpp)

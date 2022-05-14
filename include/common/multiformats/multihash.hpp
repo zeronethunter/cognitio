@@ -13,7 +13,7 @@
 
 #include "common/status.hpp"
 #include "common/utils/hex_util.hpp"
-#include "SHA256.h"
+// #include "SHA256.h"
 
 namespace cognitio {
 namespace common {

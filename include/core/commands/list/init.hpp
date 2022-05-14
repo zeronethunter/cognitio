@@ -7,7 +7,7 @@
 #define CGNT_CORE_COMMANDS_LIST_INIT_HPP_
 
 #include "cli/commands/command.hpp"
-#include "common/context.hpp"
+#include "core/context/context.hpp"
 
 namespace cognitio {
 namespace core {

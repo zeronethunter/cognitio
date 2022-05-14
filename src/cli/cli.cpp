@@ -11,7 +11,6 @@
 #include "cli/commands/command.hpp"
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
-#include "common/status_code.hpp"
 #include "core/commands/list/root.hpp"
 #include "core/commands/local_emitter.hpp"
 
