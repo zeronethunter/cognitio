@@ -3,7 +3,7 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#include "common/context.hpp"
+#include "core/context/context.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -62,7 +62,7 @@ Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
     return err;
   }
 
-  logger_->info("Using {} API", core_api_->GetApiMode());
+  // logger_->info("Using {} API", core_api_->GetApiMode());
 }
 
 std::string getRepoPath(CmdEnv& env) {

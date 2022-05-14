@@ -7,5 +7,5 @@ message ProtoResponse {
     }
 
     ResponseStatus status = 1;
-    bytes data = 2;
+    optional bytes data = 2;
 }

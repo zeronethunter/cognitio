@@ -29,7 +29,9 @@ DEFAULT_CMAKE_CMD = cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_D
 VALGRIND_CMAKE_CMD = cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_VALGRIND_FLAGS} .
 TSAN_CMAKE_CMD = cmake -B ${BUILD_DIR} $(pwd) ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_TSAN_FLAGS} .
 
-build: default_build
+build:
+	cmake -B ${BUILD_DIR}
+	${MAKE_CMD}
 
 ###################################
 #  		    STATIC STAGE 		  #
@@ -88,40 +90,60 @@ tsan_cmake:
 ##  	    CUSTOM PART 	     ##
 ###################################
 
-clean:
-	rm -rf ${BUILD_DIR}
+DOCKER_PROJECT_DIR=/home/cognitio
 
-docker:
-    # docker build -t ${DOCKER_IMAGE} .
-    # docker image pull serpentian/cognitio:latest
-	docker run -v $(shell pwd):/home/project -it ${DOCKER_IMAGE}
+# Initializing project
+init: docker-git-init clean submodules proto
 
+docker-git-init:
+	[ -f /.dockerenv ] && git config --global --add safe.directory ${DOCKER_PROJECT_DIR}; \
+		git config --global --add safe.directory /home/cognitio/third_party/SHA256
+
+
+# Git submodules update
 submodules:
 	git submodule update --init --recursive
 
-# Protobuf compiling
+# Docker
+docker:
+	docker run -v $(shell pwd):${DOCKER_PROJECT_DIR} -it ${DOCKER_IMAGE}
 
+docker-build:
+	docker build -t ${DOCKER_IMAGE} .
+
+docker-pull:
+	docker image pull serpentian/cognitio:latest
+
+# Protobuf compiling
 # All locations of the proto files
 CLI_PROTO_SRC_DIR=proto/cli
 DATA_PROTO_SRC_DIR=proto/data
 CONFIG_PROTO_SRC_DIR=proto/config
 
+PROTO_OUT_SRC_DIR=src/proto
+PROTO_OUT_HEADER_DIR=include/proto
+
 proto: cli-proto data-proto config-proto
 
 cli-proto:
-	protoc -I ${CLI_PROTO_SRC_DIR} --cpp_out=${CLI_PROTO_SRC_DIR} ${CLI_PROTO_SRC_DIR}/*.proto
-	mkdir -p include/proto src/proto
-	mv ${CLI_PROTO_SRC_DIR}/*.pb.h include/proto
-	mv ${CLI_PROTO_SRC_DIR}/*.pb.cc src/proto
+	protoc --experimental_allow_proto3_optional -I ${CLI_PROTO_SRC_DIR} --cpp_out=${CLI_PROTO_SRC_DIR} ${CLI_PROTO_SRC_DIR}/*.proto
+	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
+	mv ${CLI_PROTO_SRC_DIR}/*.pb.h ${PROTO_OUT_HEADER_DIR}
+	mv ${CLI_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
 
 data-proto:
-	protoc -I ${DATA_PROTO_SRC_DIR} --cpp_out=${DATA_PROTO_SRC_DIR} ${DATA_PROTO_SRC_DIR}/*.proto
-	mkdir -p include/proto src/proto
-	mv ${DATA_PROTO_SRC_DIR}/*.pb.h include/proto
-	mv ${DATA_PROTO_SRC_DIR}/*.pb.cc src/proto
+	protoc --experimental_allow_proto3_optional -I ${DATA_PROTO_SRC_DIR} --cpp_out=${DATA_PROTO_SRC_DIR} ${DATA_PROTO_SRC_DIR}/*.proto
+	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
+	mv ${DATA_PROTO_SRC_DIR}/*.pb.h ${PROTO_OUT_HEADER_DIR}
+	mv ${DATA_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
 
 config-proto:
-	protoc -I ${CONFIG_PROTO_SRC_DIR} --cpp_out=${CONFIG_PROTO_SRC_DIR} ${CONFIG_PROTO_SRC_DIR}/*.proto
-	mkdir -p include/proto src/proto
-	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.h include/proto
-	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.cc src/proto
+	protoc --experimental_allow_proto3_optional -I ${CONFIG_PROTO_SRC_DIR} --cpp_out=${CONFIG_PROTO_SRC_DIR} ${CONFIG_PROTO_SRC_DIR}/*.proto
+	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
+	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.h ${PROTO_OUT_HEADER_DIR}
+	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
+
+clean:
+	rm -rf ${BUILD_DIR}
+	rm -rf ${PROTO_OUT_SRC_DIR}/*.pb.*
+	rm -rf ${PROTO_OUT_HEADER_DIR}/*.pb.*

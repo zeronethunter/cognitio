@@ -25,7 +25,7 @@ option(GIT_SUBMODULE "Check submodules during build" ON)
 
 if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
   # Default options
-  option(ENABLE_CHECK_TOOLS "Enable format and code analysis tools" OFF)
+  option(ENABLE_CHECK_TOOLS "Enable format and code analysis tools" ON)
   option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
   option(ENABLE_TESTING "Enable unit tests for the project" OFF)
   option(ENABLE_COVERAGE "Enable code coverage through GCC" OFF)
@@ -58,7 +58,8 @@ include(cmake/GitSubmodule.cmake)
 include(cmake/GlobalVariables.cmake)
 
 # Finding all files for the checking of static analyzers
-file(GLOB_RECURSE ${PROJECT_NAME}_ALL_FILES ${PROJECT_SOURCE_DIR}/src *.cpp *.hpp)
+file(GLOB_RECURSE ${PROJECT_NAME}_ALL_FILES ${PROJECT_SOURCE_DIR}/src *.cpp)
+file(GLOB_RECURSE ${PROJECT_NAME}_ALL_FILES ${PROJECT_SOURCE_DIR}/include *.hpp)
 #list(FILTER ${PROJECT_NAME}_ALL_FILES EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/build|test/*")
 
 # Clang-format, clang-tidy, cpplint and cppcheck configuration
