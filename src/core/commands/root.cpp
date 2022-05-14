@@ -5,7 +5,10 @@
 
 #include "core/commands/list/root.hpp"
 
+#include "core/commands/list/add.hpp"
+#include "core/commands/list/get.hpp"
 #include "core/commands/list/init.hpp"
+#include "core/commands/list/remove.hpp"
 
 namespace cognitio {
 namespace core {

@@ -10,7 +10,7 @@
 #include <iostream>
 
 #include "cli/cli.hpp"
-#include "common/context.hpp"
+#include "core/context/context.hpp"
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
 #include "core/commands/list/root.hpp"

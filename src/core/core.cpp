@@ -7,10 +7,14 @@
 
 #include <memory>
 
+#include "common/status.hpp"
+#include "common/status_code.hpp"
 #include "exchange/block_service/block_service.hpp"
 
 namespace cognitio {
 namespace core {
+
+Status Core::RunDaemon() noexcept { return Status(StatusCode::UNIMPLEMENTED); }
 
 }  // namespace core
 }  // namespace cognitio

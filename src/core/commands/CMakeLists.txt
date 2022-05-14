@@ -1,15 +1,9 @@
-add_subdirectory(utils)
-add_subdirectory(logger)
-add_subdirectory(multiformats)
-
-set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_common)
-set(${SUBMODULE_NAME}_SOURCES context.cpp hasher.cpp)
+set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_core_commands)
+set(${SUBMODULE_NAME}_SOURCES root.cpp)
 
 add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 target_link_libraries(${SUBMODULE_NAME} PUBLIC
-        ${PROJECT_NAME}_utils
-        ${PROJECT_NAME}_logger
-        ${PROJECT_NAME}_multiformats
+        ${PROJECT_NAME}_cli_commands
 )
 
 if (ENABLE_TESTING MATCHES ON)

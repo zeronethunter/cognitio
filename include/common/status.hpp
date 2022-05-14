@@ -16,7 +16,7 @@ class Status {
  public:
   Status() : code_(StatusCode::OK) {}
 
-  Status(StatusCode code, const std::string& error_message)
+  Status(StatusCode code, const std::string& error_message = "")
       : code_(code), error_message_(error_message) {}
 
   Status(StatusCode code, const std::string& error_message,
