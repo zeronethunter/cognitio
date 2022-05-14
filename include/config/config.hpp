@@ -10,7 +10,7 @@
 
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
-#include "proto/config/ProtoConfig.pb.h"
+#include "proto/ProtoConfig.pb.h"
 
 namespace cognitio {
 namespace config {

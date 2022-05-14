@@ -4,6 +4,8 @@
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
 #include "common/multiformats/multihash.hpp"
+
+#include "SHA256.h"
 #include "common/utils/prefix_reader.hpp"
 
 // using cognitio::multiformats::multihash::HashType;
@@ -11,7 +13,7 @@
 namespace cognitio {
 namespace common {
 
-Multihash::Multihash() : data_(nullptr) {};
+Multihash::Multihash() : data_(nullptr){};
 
 void Multihash::ToHash(const std::span<uint8_t> &bytes) {
   SHA256 sha;

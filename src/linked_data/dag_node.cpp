@@ -29,7 +29,8 @@ std::vector<common::Cid> DagNode::GetSubNodeNames() const {
 }
 
 common::Cid DagNode::GetCid() const {
-  return common::Cid(GetContent());
+  auto content = GetContent();
+  return common::Cid(content);
 }
 
 Status DagNode::InsertSubNode(std::string &&name, DagNode &&children_node) {

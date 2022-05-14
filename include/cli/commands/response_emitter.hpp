@@ -7,7 +7,7 @@
 #define CGNT_CLI_COMMANDS_RESPONSE_EMITTER_HPP
 
 #include "common/status.hpp"
-#include "proto/cli/ProtoResponseEmitter.pb.h"
+#include "proto/ProtoResponseEmitter.pb.h"
 
 namespace cognitio {
 namespace cli {

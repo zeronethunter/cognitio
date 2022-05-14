@@ -13,7 +13,7 @@
 #include "common/multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "files/unixfs/unixfs.hpp"
-#include "proto/data/ProtoData.pb.h"
+#include "proto/ProtoData.pb.h"
 
 namespace cognitio {
 namespace linked_data {

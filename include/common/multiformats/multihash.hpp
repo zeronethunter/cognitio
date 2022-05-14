@@ -7,12 +7,14 @@
 #define CGNT_COMMON_MILTIFORMATS_MULTIHASH_HPP_
 
 #include <cstdlib>
+#include <memory>
 #include <span>
 #include <string>
 #include <vector>
 
 #include "common/status.hpp"
 #include "common/utils/hex_util.hpp"
+#include "proto/ProtoData.pb.h"
 // #include "SHA256.h"
 
 namespace cognitio {

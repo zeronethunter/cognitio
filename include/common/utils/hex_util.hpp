@@ -6,6 +6,9 @@
 #ifndef COGNT_COMMON_UTILS_HEX_UTIL_HPP_
 #define COGNT_COMMON_UTILS_HEX_UTIL_HPP_
 
+#include <boost/algorithm/algorithm.hpp>
+#include <boost/algorithm/hex.hpp>
+
 #include <span>
 #include <string>
 #include <string_view>

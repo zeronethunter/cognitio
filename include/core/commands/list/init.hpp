@@ -25,7 +25,7 @@ class InitCmd : public Command<Context> {
   InitCmd() : Command(InitMeta()) {};
   void PrintHelp([[maybe_unused]] std::ostream& out) override {}
 
-  void Run(Context& ctx, [[maybe_unused]] const CmdEnv& env,
+  void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
     auto core = ctx.GetAPI()->GetCore();
     auto err = core->GetBlockService()->Open(ctx.GetRepoPath());

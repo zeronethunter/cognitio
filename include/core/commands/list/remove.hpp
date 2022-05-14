@@ -26,7 +26,7 @@ class RmCmd : public Command<Context> {
   RmCmd() : Command(RmMeta()) {};
   void PrintHelp([[maybe_unused]] std::ostream& out) override {}
 
-  void Run(Context& ctx, [[maybe_unused]] const CmdEnv& env,
+  void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
     common::Cid cid(env.option);
     auto api = ctx.GetAPI();
