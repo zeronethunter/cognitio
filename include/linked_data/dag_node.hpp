@@ -12,8 +12,8 @@
 
 #include "common/multiformats/cid.hpp"
 #include "common/status.hpp"
-#include "proto/data/ProtoData.pb.h"
 #include "files/unixfs/unixfs.hpp"
+#include "proto/data/ProtoData.pb.h"
 
 namespace cognitio {
 namespace linked_data {
@@ -22,7 +22,7 @@ class DagNode {
  public:
   DagNode() = default;
 
-  explicit DagNode(files::unixfs::UnixFS &&file) : data_(std::move(file)) {};
+  explicit DagNode(files::unixfs::UnixFS &&file) : data_(std::move(file)){};
   DagNode &operator=(files::unixfs::UnixFS &&file);
 
   explicit DagNode(std::vector<uint8_t> &&bytes) {
@@ -30,7 +30,8 @@ class DagNode {
   }
   DagNode &operator=(std::vector<uint8_t> &&bytes);
 
-  DagNode(std::vector<uint8_t> &&bytes, const std::vector<DagNode> &children_data);
+  DagNode(std::vector<uint8_t> &&bytes,
+          const std::vector<DagNode> &children_data);
 
   /// \return content of node
   std::vector<uint8_t> GetContent() const;
@@ -49,6 +50,10 @@ class DagNode {
 
   /// \brief insert children
   Status InsertSubNode(std::string &&name, DagNode &&children_node);
+
+  std::map<common::Cid, DagNode, std::less<>> GetChildren() const {
+    return children_;
+  };
 
  private:
   files::unixfs::UnixFS data_;

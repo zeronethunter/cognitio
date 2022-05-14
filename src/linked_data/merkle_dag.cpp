@@ -3,6 +3,8 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
+#include <stack>
+
 #include "linked_data/merkle_dag.hpp"
 
 namespace cognitio {
@@ -22,10 +24,12 @@ Status MerkleDag::AddNode(const DagNode &node) {
 
 std::pair<Status, common::Cid> MerkleDag::Add(
     const std::vector<std::vector<uint8_t>> &chunks) {
-  merkle_root_ = buildGraph(chunks);
+  if (!merkle_root_) {
+    merkle_root_ = buildGraph(chunks);
+  }
   return std::pair<Status, common::Cid>(
-      block_service_->Put(Block(merkle_root.GetCid(), merkle_root)),
-      merkle_root.GetCid());
+      block_service_->Put(Block(merkle_root_->GetCid(), *merkle_root_)),
+      merkle_root_->GetCid());
 }
 
 std::pair<Status, DagNode> MerkleDag::GetNode(
@@ -45,13 +49,31 @@ Status MerkleDag::RemoveNode(const cognitio::common::Cid &cid,
   if (!is_recursive) {
     return block_service_->Delete(cid);
   }
+  DagNode to_delete_node = GetNode(cid).second;
+  std::vector<DagNode> to_delete_vec = DirectedTrasersal(to_delete_node);
+  
+  for (DagNode node : to_delete_vec) {
+    block_service_->Delete(node.GetCid());
+  }
+  block_service_->Delete(to_delete_node.GetCid());
 }
 
-std::vector<cognitio::linked_data::DagNode> MerkleDag::DirectedTrasersal()
+std::vector<DagNode> MerkleDag::DirectedTrasersal(DagNode root_node)
     const {
-  if (merkle_root_) {
+  std::vector<DagNode> result_vec;
+  std::stack<DagNode> node_st;
+  DagNode current_node = root_node;
 
-  }
+  do {
+    for (auto node : current_node.GetChildren()) {
+      result_vec.push_back(node.second);
+      node_st.push(node.second);
+    }
+    current_node = node_st.top();
+    node_st.pop();
+  } while (!node_st.empty());
+
+  return result_vec;
 }
 
 std::unique_ptr<DagNode> MerkleDag::buildGraph(const std::vector<std::vector<uint8_t>> &chunks) {
@@ -106,8 +128,7 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(const std::vector<std::vector<uin
     }
     blck_cnt = 0;
   }
-
-  return std::make_unique<MerkleDag>(previous_layer_vec[0][0]);
+  return std::make_unique<DagNode>(previous_layer_vec[0][0]);
 }
 
 }  // namespace linked_data

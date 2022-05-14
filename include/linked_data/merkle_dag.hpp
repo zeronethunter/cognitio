@@ -45,7 +45,7 @@ class MerkleDag {
   Status RemoveNode(const common::Cid &cid, bool is_recursive = true);
 
   /// \brief Getting array of Nodes by Directed Traversal Dag
-  std::vector<cognitio::linked_data::DagNode> DirectedTrasersal() const;
+  std::vector<DagNode> DirectedTrasersal(DagNode node) const;
 
  private:
   std::shared_ptr<exchange::BlockService> block_service_;
