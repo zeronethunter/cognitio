@@ -14,7 +14,7 @@
 #include "common/status.hpp"
 #include "core/core.hpp"
 #include "core/core_api/core_api.hpp"
-#include "repo/config.hpp"
+#include "config/config.hpp"
 
 namespace cognitio {
 namespace core {

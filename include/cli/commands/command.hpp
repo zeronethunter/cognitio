@@ -75,7 +75,7 @@ class Command {
   virtual CmdPtr GetSubCmd(const std::string& name) const;
   virtual void PrintHelp(std::ostream& out) = 0;
   virtual SubCmdsArr GetSubCmdsNames() const noexcept;
-  virtual void AddSubCmd(std::unique_ptr<Command> cmd) {
+  virtual void AddSubCmd(std::shared_ptr<Command> cmd) {
     sub_commands_.push_back(cmd);
   }
 

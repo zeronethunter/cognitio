@@ -23,7 +23,7 @@ class RmMeta : public CmdMeta {
 
 class RmCmd : public Command<Context> {
  public:
-  RmCmd() : Command(RmMeta()){};
+  RmCmd() : Command(RmMeta()) {};
   void PrintHelp([[maybe_unused]] std::ostream& out) override {}
 
   void Run(Context& ctx, [[maybe_unused]] const CmdEnv& env,
