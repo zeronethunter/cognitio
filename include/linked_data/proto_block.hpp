@@ -34,7 +34,7 @@ class ProtoBlock {
    *  @param bytes to save in member. May be empty.
    *  @param cid to save in member.
    */
-  explicit ProtoBlock(Cid &cid, DagNode node = DagNode()) noexcept
+  explicit ProtoBlock(Cid cid, DagNode node = DagNode()) noexcept
       : cid_(std::move(cid)), node_(std::move(node)) {}
 
   /**
