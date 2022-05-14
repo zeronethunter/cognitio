@@ -23,13 +23,12 @@ namespace cli {
 namespace commands {
 
 struct CmdEnv {
-  std::vector<std::string> options;
+  std::string option;
   std::map<std::string, std::string> arguments;
 };
 
 class CmdMeta {
  public:
-  typedef std::vector<std::string> OptsArr;
   typedef std::map<std::string, std::string> ArgsArr;
 
   CmdMeta() = default;
@@ -63,13 +62,13 @@ class CmdMeta {
 template <class Context>
 class Command {
  public:
-  typedef CmdMeta::OptsArr OptsArr;
   typedef CmdMeta::ArgsArr ArgsArr;
   typedef std::shared_ptr<Command<Context>> CmdPtr;
   typedef std::vector<CmdPtr> SubCmdsArr;
 
-  Command() = default;
+  Command(CmdMeta meta = CmdMeta()) : meta_(meta) {}
   virtual ~Command() = default;
+
   virtual const CmdMeta& GetMeta() const noexcept { return meta_; }
   virtual void Run(Context& ctx, const CmdEnv& env, ResponseEmitter& re) = 0;
   std::string GetArgsPrefix() const noexcept { return std::string("--"); }

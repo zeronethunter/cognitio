@@ -3,11 +3,12 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#ifndef CGNT_CORE_COMMANDS_LIST_INIT_HPP_
-#define CGNT_CORE_COMMANDS_LIST_INIT_HPP_
+#ifndef CGNT_CORE_COMMANDS_LIST_GET_HPP_
+#define CGNT_CORE_COMMANDS_LIST_GET_HPP_
 
 #include "cli/commands/command.hpp"
 #include "common/context.hpp"
+#include "common/multiformats/cid.hpp"
 
 namespace cognitio {
 namespace core {
@@ -15,21 +16,21 @@ namespace commands {
 
 using namespace cli::commands;
 
-class InitMeta : public CmdMeta {
+class GetMeta : public CmdMeta {
  public:
-  InitMeta() : CmdMeta(std::string("init"), {}, false, true) {}
+  GetMeta() : CmdMeta(std::string("get"), {}, false, true) {}
 };
 
-class InitCmd : public Command<Context> {
+class GetCmd : public Command<Context> {
  public:
-  InitCmd() : Command(InitMeta()) {};
+  GetCmd() : Command(GetMeta()) {};
   void PrintHelp([[maybe_unused]] std::ostream& out) override {}
 
   void Run(Context& ctx, [[maybe_unused]] const CmdEnv& env,
            ResponseEmitter& re) override {
-    auto core = ctx.GetAPI()->GetCore();
-    auto err = core->GetBlockService()->Open(ctx.GetRepoPath());
-    re.SetStatus(StatusCode::OK);
+    common::Cid cid (env.option);
+    auto api = ctx.GetAPI();
+    api->Get(cid, re);
   }
 };
 
@@ -37,4 +38,4 @@ class InitCmd : public Command<Context> {
 }  // namespace core
 }  // namespace cognitio
 
-#endif
+#endif  // CGNT_CORE_COMMANDS_LIST_GET_HPP_

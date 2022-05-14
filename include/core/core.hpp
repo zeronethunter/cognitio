@@ -10,16 +10,28 @@
 
 #include "config/config.hpp"
 #include "exchange/block_service/block_service.hpp"
+#include "linked_data/merkle_dag.hpp"
 
 namespace cognitio {
 namespace core {
+
 class Core {
  public:
   typedef std::shared_ptr<Config> CfgPtr;
+  typedef std::shared_ptr<exchange::BlockService> BsPtr;
+  typedef std::unique_ptr<linked_data::MerkleDag> DagPtr;
 
-private :
+  explicit Core(CfgPtr cfg) : config_(cfg), dag_(block_service_) {}
+  DagPtr GetDag() noexcept { return dag_; }
+  BsPtr GetBlockService() noexcept { return block_service_; }
+  Status RunDaemon() noexcept;
+
+ private:
+  BsPtr block_service_;
   CfgPtr config_;
+  DagPtr dag_;
 };
+
 }  // namespace core
 }  // namespace cognitio
 

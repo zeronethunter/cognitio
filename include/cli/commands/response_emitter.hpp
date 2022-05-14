@@ -21,7 +21,7 @@ class ResponseEmitter {
   ~ResponseEmitter() = default;
 
   virtual void Emit() = 0;
-  void Append(std::string& data);
+  void Append(const std::string& data);
   bool HaveData() const noexcept { return proto_.data().empty(); }
   void SetStatus(StatusCode code, std::string msg = "");
   Status GetStatus() const noexcept {

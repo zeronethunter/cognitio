@@ -9,7 +9,6 @@
 #include "cli/commands/command.hpp"
 #include "common/context.hpp"
 #include "common/status.hpp"
-#include "common/status_code.hpp"
 
 namespace cognitio {
 namespace core {
@@ -18,13 +17,14 @@ namespace commands {
 using namespace cli::commands;
 
 class RootMeta : public CmdMeta {
+ public:
   RootMeta() : CmdMeta(std::string("cognitio")) {}
 };
 
 class RootCmd : public Command<Context> {
  public:
-  RootCmd() : Command() {};
-  void PrintHelp(std::ostream& out) override;
+  RootCmd() : Command(RootMeta()){};
+  void PrintHelp([[maybe_unused]] std::ostream& out) override {}
   void Run([[maybe_unused]] Context& ctx, [[maybe_unused]] const CmdEnv& env,
            [[maybe_unused]] ResponseEmitter& re) override {
     // It's not supposed to be ran
