@@ -91,11 +91,11 @@ Status Cli<Context>::parse(T& args, CmdWrapper<Context>& cmdw) const noexcept {
     return err;
   }
 
-  cmdw.env.options(args.begin(), args.end());
-  if (!cmdw.env.options.size() && cmdw.cmd->GetMeta().AreOptionsRequired()) {
+  if (!args.size() && cmdw.cmd->GetMeta().AreOptionsRequired()) {
     return Status(StatusCode::FAILED, "Options are requred");
   }
 
+  cmdw.env.options = *args.begin();
   return Status::OK;
 }
 
