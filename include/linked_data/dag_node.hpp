@@ -6,7 +6,6 @@
 #ifndef CGNT_LINKED_DATA_DAG_NODE_HPP_
 #define CGNT_LINKED_DATA_DAG_NODE_HPP_
 
-#include <map>
 #include <string>
 #include <vector>
 
@@ -22,6 +21,9 @@ class DagNode {
  public:
   DagNode() = default;
 
+  DagNode(const DagNode &other) = default;
+  DagNode &operator=(const DagNode &other) = default;
+
   explicit DagNode(files::unixfs::UnixFS &&file) : data_(std::move(file)){};
   DagNode &operator=(files::unixfs::UnixFS &&file);
 
@@ -33,7 +35,7 @@ class DagNode {
   DagNode(std::vector<uint8_t> &&bytes,
           const std::vector<DagNode> &children_data);
 
-  /// \return content of node
+  /// \return bytes of node
   std::vector<uint8_t> GetContent() const;
 
   Status DecodeProtoNode(const Node &node);
@@ -42,22 +44,20 @@ class DagNode {
   /// \return size of node's children
   size_t Count() const;
 
+  /// \return cid of current node
   common::Cid GetCid() const;
 
-  std::unique_ptr<DagNode> GetSubNode(std::string_view name) const;
-
-  std::vector<common::Cid> GetSubNodeNames() const;
-
   /// \brief insert children
-  Status InsertSubNode(std::string &&name, DagNode &&children_node);
+  // Status InsertSubNode(std::string &&name, DagNode &&children_node);
 
-  std::map<common::Cid, DagNode, std::less<>> GetChildren() const {
+  const std::vector<std::pair<common::Cid, std::shared_ptr<DagNode>>>
+      &GetChildren() const {
     return children_;
   };
 
  private:
   files::unixfs::UnixFS data_;
-  std::map<common::Cid, DagNode, std::less<>> children_;
+  std::vector<std::pair<common::Cid, std::shared_ptr<DagNode>>> children_;
 };
 
 }  // namespace linked_data
