@@ -3,23 +3,15 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#include <stack>
-
 #include "linked_data/merkle_dag.hpp"
+
+#include <stack>
 
 namespace cognitio {
 namespace linked_data {
 
-DagNode::DagNode(std::vector<uint8_t> &&bytes,
-                 const std::vector<DagNode> &children_data) {
-  data_.SetData(std::move(bytes));
-  for (DagNode node : children_data) {
-    children_.insert(std::pair<common::Cid, DagNode>(GetCid(), node));
-  }
-}
-
 Status MerkleDag::AddNode(const DagNode &node) {
-  return block_service_->Put(Block(node.GetCid(), node));
+  return block_service_->Put(ProtoBlock(node.GetCid(), node));
 }
 
 std::pair<Status, common::Cid> MerkleDag::Add(
@@ -28,7 +20,7 @@ std::pair<Status, common::Cid> MerkleDag::Add(
     merkle_root_ = buildGraph(chunks);
   }
   return std::pair<Status, common::Cid>(
-      block_service_->Put(Block(merkle_root_->GetCid(), *merkle_root_)),
+      block_service_->Put(ProtoBlock(merkle_root_->GetCid(), *merkle_root_)),
       merkle_root_->GetCid());
 }
 
@@ -43,31 +35,33 @@ std::pair<Status, DagNode> MerkleDag::GetNode(
       Status(StatusCode::CANCELLED, "This node doesnt exist"), DagNode());
 }
 
-// !!!TODO: implement is_recursive deleting nodes
-Status MerkleDag::RemoveNode(const cognitio::common::Cid &cid,
-                             bool is_recursive = true) {
+Status MerkleDag::RemoveNode(const common::Cid &cid, bool is_recursive) {
   if (!is_recursive) {
     return block_service_->Delete(cid);
   }
   DagNode to_delete_node = GetNode(cid).second;
   std::vector<DagNode> to_delete_vec = DirectedTrasersal(to_delete_node);
-  
+
   for (DagNode node : to_delete_vec) {
-    block_service_->Delete(node.GetCid());
+    if (!block_service_->Delete(node.GetCid()).ok()) {
+      return Status(StatusCode::FAILED, "Can't find node with this CID");
+    };
   }
-  block_service_->Delete(to_delete_node.GetCid());
+  if (!block_service_->Delete(to_delete_node.GetCid()).ok()) {
+    return Status(StatusCode::FAILED, "Can't find node with this CID");
+  }
+  return Status();
 }
 
-std::vector<DagNode> MerkleDag::DirectedTrasersal(DagNode root_node)
-    const {
+std::vector<DagNode> MerkleDag::DirectedTrasersal(const DagNode &root_node) const {
   std::vector<DagNode> result_vec;
   std::stack<DagNode> node_st;
   DagNode current_node = root_node;
 
   do {
-    for (auto node : current_node.GetChildren()) {
-      result_vec.push_back(node.second);
-      node_st.push(node.second);
+    for (const auto &node : current_node.GetChildren()) {
+      result_vec.push_back(*node.second);
+      node_st.push(*node.second);
     }
     current_node = node_st.top();
     node_st.pop();
@@ -76,7 +70,8 @@ std::vector<DagNode> MerkleDag::DirectedTrasersal(DagNode root_node)
   return result_vec;
 }
 
-std::unique_ptr<DagNode> MerkleDag::buildGraph(const std::vector<std::vector<uint8_t>> &chunks) {
+std::unique_ptr<DagNode> MerkleDag::buildGraph(
+    const std::vector<std::vector<uint8_t>> &chunks) {
   /* initalizing the bottom lay of chunks */
   int vec_size;
   if (chunks.size() < CHUNK_SIZE) {

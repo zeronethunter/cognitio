@@ -11,8 +11,7 @@
 #include "common/status.hpp"
 #include "exchange/block_service/block_service.hpp"
 #include "linked_data/dag_node.hpp"
-#include "linked_data/link.hpp"
-#include "linked_data/node.hpp"
+#include "linked_data/proto_block.hpp"
 
 #ifndef CGNT_LINKED_DATA_MERKLE_DAG_HPP
 #define CGNT_LINKED_DATA_MERKLE_DAG_HPP
@@ -25,8 +24,11 @@ namespace linked_data {
 /// Directed Acyclic Graph
 class MerkleDag {
  public:
+  MerkleDag() = default;
+
   /// \brief creates new MerkleDag on blocks source
-  explicit MerkleDag(std::shared_ptr<exchange::BlockService> block_service);
+  explicit MerkleDag(std::shared_ptr<exchange::BlockService> block_service)
+      : block_service_(block_service), merkle_root_(nullptr){};
 
   /// \brief Adds new Node in Dag
   Status AddNode(const DagNode &node);
@@ -44,13 +46,14 @@ class MerkleDag {
   Status RemoveNode(const common::Cid &cid, bool is_recursive = true);
 
   /// \brief Getting array of Nodes by Directed Traversal Dag
-  std::vector<DagNode> DirectedTrasersal(DagNode node) const;
+  std::vector<DagNode> DirectedTrasersal(const DagNode &node) const;
 
  private:
-  std::shared_ptr<exchange::BlockService> block_service_;
-  std::unique_ptr<DagNode> merkle_root_;
+  std::shared_ptr<exchange::BlockService> block_service_ = nullptr;
+  std::unique_ptr<DagNode> merkle_root_ = nullptr;
 
-  std::unique_ptr<DagNode> buildGraph(const std::vector<std::vector<uint8_t>> &chunks);
+  std::unique_ptr<DagNode> buildGraph(
+      const std::vector<std::vector<uint8_t>> &chunks);
 };
 
 }  // namespace linked_data
