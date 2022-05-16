@@ -1,17 +1,18 @@
 #include "exchange/block_service/block_service.hpp"
 
-namespace cognitio::exchange {
+namespace cognitio {
+namespace exchange {
 Status BlockService::Open(const std::filesystem::path& path,
                           bool is_daemon_opened) noexcept {
   Status status_open;
   is_daemon_opened_ = is_daemon_opened;
-  if (is_daemon_opened_) {
-    status_open = block_swap_->Open();
-    if (status_open.ok()) {
-      closed_ = false;
-    }
-    return status_open;
-  }
+  //  if (is_daemon_opened_) {
+  //    status_open = block_swap_->Open();
+  //    if (status_open.ok()) {
+  //      closed_ = false;
+  //    }
+  //    return status_open;
+  //  }
   repo_ =
       std::make_unique<repo::Repo<std::string>>(repo::Repo<std::string>(path));
   status_open = repo_->Init();
@@ -36,25 +37,30 @@ std::filesystem::path BlockService::Root() const noexcept {
 }
 
 Status BlockService::Put(const ProtoBlock& block) noexcept {
-  return is_daemon_opened_
-             ? block_swap_->Put(block.GetCid(), block.GetNode().GetContent())
-             : repo_->Add(block.GetCid(), block.GetNode().GetContent());
-  ;
+  // is_daemon_opened_
+  //             ? block_swap_->Put(block.GetCid(),
+  //             block.GetNode().GetContent()) : repo_->Add(block.GetCid(),
+  //             block.GetNode().GetContent())
+  return repo_->Add(block.GetCid(), block.GetNode().GetContent());
 }
 
 linked_data::ProtoBlock BlockService::Get(
     const common::Cid& key) const noexcept {
-  std::vector<uint8_t> bytes =
-      is_daemon_opened_ ? block_swap_->Get(key) : repo_->Get(key);
+  //  std::vector<uint8_t> bytes =
+  //      is_daemon_opened_ ? block_swap_->Get(key) : repo_->Get(key);
+  std::vector<uint8_t> bytes = repo_->Get(key);
   return ProtoBlock(key, linked_data::DagNode(std::move(bytes)));
 }
 
 Status BlockService::Delete(const common::Cid& key) noexcept {
-  return is_daemon_opened_ ? block_swap_->Delete(key) : repo_->Delete(key);
+  //    return is_daemon_opened_ ? block_swap_->Delete(key) :
+  //    repo_->Delete(key);
+  return repo_->Delete(key);
 }
 
 bool BlockService::Has(const common::Cid& key) const noexcept {
-  return is_daemon_opened_ ? block_swap_->Has(key) : repo_->Has(key);
+  //    return is_daemon_opened_ ? block_swap_->Has(key) : repo_->Has(key);
+  return repo_->Has(key);
 }
 
 Status BlockService::PutMany(const std::vector<ProtoBlock>& source) noexcept {
@@ -85,4 +91,5 @@ Status BlockService::DeleteMany(
     }
   }
 }
-}  // namespace cognitio::exchange
+}  // namespace exchange
+}  // namespace cognitio

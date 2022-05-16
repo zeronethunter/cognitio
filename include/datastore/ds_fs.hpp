@@ -13,7 +13,8 @@
 #include "common/status.hpp"
 #include "datastore/datastore.hpp"
 
-namespace cognitio::datastore {
+namespace cognitio {
+namespace datastore {
 
 /**
  *  @brief  This is implementation of datastore filesystem with key of type Cid.
@@ -28,6 +29,14 @@ class Filesystem : Datastore<common::Cid, Value, Status> {
  public:
   explicit Filesystem(std::filesystem::path path) noexcept
       : path_(std::move(path)) {}
+
+  Filesystem() = default;
+  Filesystem(const Filesystem<Value>& filesystem) noexcept
+      : path_(filesystem.path_) {}
+  Filesystem& operator=(const Filesystem<Value>& filesystem) noexcept {
+    path_ = filesystem.path_;
+    return *this;
+  }
 
   Status Open(const std::filesystem::path& path) noexcept override;
 
@@ -74,6 +83,7 @@ class Filesystem : Datastore<common::Cid, Value, Status> {
   std::filesystem::path path_;
 };
 
-}  // namespace cognitio::datastore
+}  // namespace datastore
+}  // namespace cognitio
 
 #endif  // CGNT_DATASTORE_DS_FS_HPP_

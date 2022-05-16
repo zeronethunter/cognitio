@@ -16,7 +16,8 @@
 // #include "pinner/pin-manager.hpp"
 // #include "repo/gc/gc.hpp"
 
-namespace cognitio::repo {
+namespace cognitio {
+namespace repo {
 
 /**
  *  @brief  Repository part of project. Responsible for creating, managing and
@@ -144,6 +145,7 @@ class Repo {
   common::logger::Logger logger_ = common::logger::createLogger("Repo logger");
 };
 
+}  // namespace repo
 }  // namespace cognitio
 
 #endif  // CGNT_REPO_REPO_HPP_

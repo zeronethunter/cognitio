@@ -12,7 +12,9 @@
 
 #include "common/status.hpp"
 
-namespace cognitio::files::chunker {
+namespace cognitio {
+namespace files {
+namespace chunker {
 
 /**
  *  @brief  Function to chunk raw of bytes into blocks of data with setted size.
@@ -27,6 +29,8 @@ template <typename Buffer>
 std::vector<Buffer> chunk_fixed_raw(const Buffer& blocks,
                                     size_t max_width = 262144) noexcept;
 
+}  // namespace chunker
+}  // namespace files
 }  // namespace cognitio
 
 #endif  // CONGITIO_CHUNKER_CHUNKER_HPP_

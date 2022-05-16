@@ -5,7 +5,9 @@
 
 #include "files/unixfs/unixfs.hpp"
 
-namespace cognitio::files::unixfs {
+namespace cognitio {
+namespace files {
+namespace unixfs {
 
 Data_DataType UnixFS::stringToDatatype(const std::string& type) const noexcept {
   if (type == "raw") {
@@ -99,4 +101,6 @@ Status UnixFS::CreateUnixFS(const std::string& datatype, uint64_t filesize,
   return Status::OK;
 }
 
-}  // namespace cognitio::files::unixfs
+}  // namespace unixfs
+}  // namespace files
+}  // namespace cognitio

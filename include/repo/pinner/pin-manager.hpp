@@ -20,10 +20,14 @@ namespace pinner {
  *  Pins and Unpins blocks, so the Garbage Collector doesn't remove them
  */
 class PinManager {
+  typedef std::set<common::Cid> Pins;
+  typedef std::unique_ptr<blockstorage::Blockstorage> PinStore;
+
  public:
   PinManager() = default;
-  PinManager(const blockstorage::Blockstorage& pinstore)
-      : pinstore_(pinstore) {}
+
+  PinManager(PinStore&& pinstore, const Pins& pins = Pins())
+      : pinstore_(std::move(pinstore)), pins_(pins) {}
 
   PinManager(const PinManager& pin_manager) = delete;
   PinManager& operator=(const PinManager& pin_manager) = delete;
@@ -48,8 +52,8 @@ class PinManager {
   void UnPin(const common::Cid& cid);
 
  private:
-  blockstorage::Blockstorage pinstore_;
-  std::set<common::Cid> pins_;
+  PinStore pinstore_;
+  Pins pins_;
 };
 
 }  // namespace pinner

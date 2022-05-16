@@ -5,7 +5,9 @@
 
 #include "repo/block_storage/block_storage.hpp"
 
-namespace cognitio::repo::blockstorage {
+namespace cognitio {
+namespace repo {
+namespace blockstorage {
 
 Status blockstorage::Blockstorage::Open(const std::filesystem::path& path) {
   return storage_->Open(path);
@@ -41,5 +43,6 @@ Status blockstorage::Blockstorage::DeleteMany(
     const std::set<common::Cid>& source) {
   return storage_->DeleteMany(source);
 }
-
+}  // namespace blockstorage
+}  // namespace repo
 }  // namespace cognitio

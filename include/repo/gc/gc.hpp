@@ -22,27 +22,39 @@ namespace garbage {
  *  @param blockstorage storage where GC should delete unpinned blocks.
  *  @param root root path of repo, used to manage lock file.
  */
-std::coroutine_handle<void> GcInit(
+void GcInit(const pinner::PinManager& pins,
+            const blockstorage::Blockstorage& blockstorage,
+            const datastore::Filesystem<std::string>& root);
+
+/**
+ *  @brief  Pins set of blocks in datastore.
+ *
+ *  @param pins pin manager that will give GC what to delete.
+ *  @param blockstorage storage where GC should delete unpinned blocks.
+ *  @param root root path of repo, used to manage lock file.
+ */
+std::set<common::Cid> CreateMarkedSet(
     const pinner::PinManager& pins,
     const blockstorage::Blockstorage& blockstorage,
     const datastore::Filesystem<std::string>& root);
 
-template <typename Key, typename CID, typename Value, typename Options>
-std::set<CID> CreateMarkedSet(
-    const pinner::PinManager<Key, CID, Value, Options>& pins,
-    const blockstorage::Blockstorage<Key, CID, Value, Options>& blockstorage,
-    const datastore::Datastore<Key, Value, Options>&
-        root);  //! Pins set of blocks in datastore
+/**
+ *  @brief  Remove block in block_storage.
+ *
+ *  @param cid to delete.
+ *  @param blockstorage where to delete.
+ */
+void RemoveBlock(const common::Cid& cid,
+                 const blockstorage::Blockstorage& blockstorage);
 
-template <typename Key, typename CID, typename Value, typename Options>
-void RemoveBlock(const CID& cid,
-                 const blockstorage::Blockstorage<Key, CID, Value, Options>&
-                     blockstorage);  //! Remove block in block_storage
-
-template <typename Key, typename CID, typename Value, typename Options>
-void DeleteUnmarkedBlocks(
-    blockstorage::Blockstorage<Key, CID, Value, Options> blockstorage,
-    std::set<CID> marked_set);  //! Delete Unpinned blocks in block_storage
+/**
+ *  @brief  Delete Unpinned blocks in block_storage.
+ *
+ *  @param marked_set set of block CIDs to delete.
+ *  @param blockstorage where to delete.
+ */
+void DeleteUnmarkedBlocks(const blockstorage::Blockstorage& blockstorage,
+                          const std::set<common::Cid>& marked_set);
 
 }  // namespace garbage
 }  // namespace repo

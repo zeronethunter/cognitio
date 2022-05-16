@@ -19,7 +19,8 @@ Status Shurd(const common::Cid& cid);
 
 #include "common/logger/logger.hpp"
 
-namespace cognitio::repo {
+namespace cognitio {
+namespace repo {
 
 // template <typename StoreValue>
 // Repo<StoreValue>::Repo(
@@ -182,4 +183,5 @@ bool Repo<StoreValue>::Exists() noexcept {
   return std::filesystem::exists(root_->Root());
 }
 
-}  // namespace cognitio::repo
+}  // namespace repo
+}  // namespace cognitio

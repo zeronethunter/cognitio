@@ -4,7 +4,8 @@
 
 #include <fstream>
 
-namespace cognitio::config {
+namespace cognitio {
+namespace config {
 
 bool Config::isConfigCreated(const std::string &path) const noexcept {
   return std::filesystem::exists(std::filesystem::path(path) / "config");
@@ -97,4 +98,5 @@ Status Config::SetRepoPath(const std::string &repo_path) noexcept {
   repo_path_ = repo_path;
 }
 
-}  // namespace cognitio::config
+}  // namespace config
+}  // namespace cognitio

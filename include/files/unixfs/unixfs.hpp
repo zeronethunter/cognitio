@@ -10,7 +10,9 @@
 #include "common/status.hpp"
 #include "proto/data/ProtoData.pb.h"
 
-namespace cognitio::files::unixfs {
+namespace cognitio {
+namespace files {
+namespace unixfs {
 
 /**
  *  @brief  Managing data blocks:
@@ -68,7 +70,9 @@ class UnixFS {
    *  @brief  Get vector of block sizes.
    *  @return vector of block sizes.
    */
-  [[nodiscard]] std::vector<uint64_t> GetBlockSize() const noexcept { return blocksizes_; }
+  [[nodiscard]] std::vector<uint64_t> GetBlockSize() const noexcept {
+    return blocksizes_;
+  }
   /**
    *  @brief  Get file size.
    */
@@ -97,7 +101,8 @@ class UnixFS {
    *
    *  @param type type to convert.
    */
-  [[nodiscard]] Data_DataType stringToDatatype(const std::string& type) const noexcept;
+  [[nodiscard]] Data_DataType stringToDatatype(
+      const std::string& type) const noexcept;
 
   bool is_created_ = false;
   std::string data_type_;
@@ -109,6 +114,8 @@ class UnixFS {
       common::logger::createLogger("UnixFSDecodeMessage");
 };
 
+}  // namespace unixfs
+}  // namespace files
 }  // namespace cognitio
 
 #endif  // CGNT_FILES_UNIXFS_UNIXFS_HPP_

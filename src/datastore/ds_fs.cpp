@@ -2,7 +2,8 @@
 
 #include <fstream>
 
-namespace cognitio::datastore {
+namespace cognitio {
+namespace datastore {
 
 template <typename Value>
 Status Filesystem<Value>::Open(const std::filesystem::path& path) noexcept {
@@ -111,4 +112,5 @@ Status Filesystem<Value>::DeleteMany(
   return Status::OK;
 }
 
-}  // namespace cognitio::datastore
+}  // namespace datastore
+}  // namespace cognitio

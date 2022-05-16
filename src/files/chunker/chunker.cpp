@@ -5,7 +5,9 @@
 
 #include "files/chunker/chunker.hpp"
 
-namespace cognitio::files::chunker {
+namespace cognitio {
+namespace files {
+namespace chunker {
 
 template <typename Buffer>
 std::vector<Buffer> chunk_fixed_raw(const Buffer& buffer,
@@ -25,4 +27,6 @@ std::vector<Buffer> chunk_fixed_raw(const Buffer& buffer,
   return result;
 }
 
+}  // namespace chunker
+}  // namespace files
 }  // namespace cognitio

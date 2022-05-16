@@ -12,7 +12,8 @@
 #include "common/status.hpp"
 #include "proto/config/ProtoConfig.pb.h"
 
-namespace cognitio::config {
+namespace cognitio {
+namespace config {
 
 class Config {
  public:
@@ -44,6 +45,7 @@ class Config {
   common::logger::Logger logger = common::logger::createLogger("Config logger");
 };
 
-}  // namespace cognitio::config
+}  // namespace config
+}  // namespace cognitio
 
 #endif  // CGNT_CONFIG_CONFIG_HPP_

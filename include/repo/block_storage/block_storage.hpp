@@ -6,6 +6,7 @@
 #ifndef CGNT_REPO_BLOCKSTORE_BLOCKSTORE_HPP_
 #define CGNT_REPO_BLOCKSTORE_BLOCKSTORE_HPP_
 
+#include <memory>
 #include <set>
 
 #include "common/multiformats/cid.hpp"
@@ -34,6 +35,22 @@ class Blockstorage {
     datastore::Filesystem<std::vector<uint8_t>> blocks(path);
     storage_ =
         std::make_unique<datastore::Filesystem<std::vector<uint8_t>>>(blocks);
+  }
+
+  Blockstorage(const Blockstorage& blockstorage) = delete;
+  Blockstorage& operator=(const Blockstorage& blockstorage) = delete;
+
+  /**
+   *  @brief  Move constructor.
+   */
+  Blockstorage(Blockstorage&& blockstorage) noexcept
+      : storage_(std::move(blockstorage.storage_)) {}
+  /**
+   *  @brief  Move operator=.
+   */
+  Blockstorage& operator=(Blockstorage&& blockstorage) noexcept {
+    storage_ = std::move(blockstorage.storage_);
+    return *this;
   }
   /**
    *  @brief  Open Blockstorage.

@@ -12,7 +12,8 @@
 #include "linked_data/proto_block.hpp"
 #include "repo/repo.hpp"
 
-namespace cognitio::exchange {
+namespace cognitio {
+namespace exchange {
 
 class BlockService {
   typedef linked_data::ProtoBlock ProtoBlock;
@@ -53,6 +54,7 @@ class BlockService {
       common::logger::createLogger("BlockService logger");
 };
 
+}  // namespace exchange
 }  // namespace cognitio
 
 #endif  // CGNT_EXCHANGE_BLOCK_SERVICE_BLOCK_SERVICE_HPP_
