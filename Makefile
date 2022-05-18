@@ -119,9 +119,13 @@ docker-pull:
 CLI_PROTO_SRC_DIR=proto/cli
 DATA_PROTO_SRC_DIR=proto/data
 CONFIG_PROTO_SRC_DIR=proto/config
+KADEMLIA_PROTO_SRC_DIR=proto/kademlia
 
 PROTO_OUT_SRC_DIR=src/proto
 PROTO_OUT_HEADER_DIR=include/proto
+
+GRPC_OUT_SRC_DIR=src/grpc
+GRPC_OUT_HEADER_DIR=include/grpc
 
 proto: cli-proto data-proto config-proto
 
@@ -143,7 +147,22 @@ config-proto:
 	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.h ${PROTO_OUT_HEADER_DIR}
 	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
 
+kademlia-proto:
+	protoc --experimental_allow_proto3_optional -I ${CONFIG_PROTO_SRC_DIR} --cpp_out=${CONFIG_PROTO_SRC_DIR} ${CONFIG_PROTO_SRC_DIR}/*.proto
+	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
+	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.h ${PROTO_OUT_HEADER_DIR}
+	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
+
+# Don't copy this one for usual protobufs. It's only for gRPC
+	protoc -I ${KADEMLIA_PROTO_SRC_DIR} --grpc_out=${KADEMLIA_PROTO_SRC_DIR} --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` \
+		${KADEMLIA_PROTO_SRC_DIR}/*proto
+	mkdir -p ${GRPC_OUT_HEADER_DIR} ${GRC_OUT_SRC_DIR}
+	mv ${KADEMLIA_PROTO_SRC_DIR}/*grpc.pb.h ${GRPC_OUT_HEADER_DIR}
+	mv ${KADEMLIA_PROTO_SRC_DIR}/*grpc.pb.cc ${GRPC_OUT_SRC_DIR}
+
 clean:
 	rm -rf ${BUILD_DIR}
 	rm -rf ${PROTO_OUT_SRC_DIR}/*.pb.*
 	rm -rf ${PROTO_OUT_HEADER_DIR}/*.pb.*
+	rm -rf ${GRPC_OUT_SRC_DIR}/*.grpc.pb.*
+	rm -rf ${GRPC_OUT_HEADER_DIR}/*.grpc.pb.*
