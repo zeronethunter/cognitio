@@ -4,6 +4,7 @@ set(${SUBMODULE_NAME}_SOURCES response_emitter.cpp)
 add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 
 target_link_libraries(${SUBMODULE_NAME} PUBLIC
+        ${PROJECT_NAME}_common
         ${PROJECT_NAME}_proto
 )
 

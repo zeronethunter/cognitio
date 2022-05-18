@@ -3,7 +3,9 @@ set(${SUBMODULE_NAME}_SOURCES cid.cpp multiaddr.cpp multihash.cpp)
 
 add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 target_link_libraries(${SUBMODULE_NAME} PRIVATE
-  sha256 ${CMAKE_PROJECT_NAME}_proto
+  ${CMAKE_PROJECT_NAME}_proto
+  ${CMAKE_PROJECT_NAME}_common
+  sha256
 )
 
 if(ENABLE_TESTING MATCHES ON)

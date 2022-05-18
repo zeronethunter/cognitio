@@ -6,15 +6,12 @@
 #ifndef CGNT_LINKED_DATA_NODE_HPP
 #define CGNT_LINKED_DATA_NODE_HPP
 
-#include "common/multiformats/cid.hpp"
+#include "multiformats/cid.hpp"
 
 namespace cognitio {
 namespace common {
 
-Cid::Cid() : str_cid_(),
-             bytes_view_(),
-             content_type_(),
-             content_address_() {}
+Cid::Cid() : str_cid_(), bytes_view_(), content_type_(), content_address_() {}
 
 Cid::Cid(std::span<uint8_t> &bytes) {
   content_address_.CreateFromBytes(bytes);

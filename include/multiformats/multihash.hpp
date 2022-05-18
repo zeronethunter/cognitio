@@ -15,7 +15,6 @@
 #include "common/status.hpp"
 #include "common/utils/hex_util.hpp"
 #include "proto/ProtoData.pb.h"
-// #include "SHA256.h"
 
 namespace cognitio {
 namespace common {
@@ -26,9 +25,20 @@ class Multihash {
   Multihash();
 
   Multihash(const Multihash &other) = default;
-  Multihash &operator=(const Multihash &other);
-  Multihash(Multihash &&other) noexcept = default;
-  Multihash &operator=(Multihash &&other) noexcept;
+  Multihash &operator=(const Multihash &other) {
+    data_ = other.data_;
+    return *this;
+  }
+
+  Multihash(Multihash &&other) noexcept
+      : max_hash_length_(other.max_hash_length_),
+        min_hash_length_(other.max_hash_length_),
+        data_(std::move(other.data_)) {}
+
+  Multihash &operator=(Multihash &&other) noexcept {
+    data_ = std::move(other.data_);
+    return *this;
+  }
 
   ~Multihash() = default;
 
@@ -64,6 +74,9 @@ class Multihash {
     size_t hash_size_;
 
     Data(std::span<const uint8_t> hash);
+
+    Data(Data &&d) = default;
+    Data &operator=(Data &&d) = default;
   };
 
   std::shared_ptr<Data> data_;

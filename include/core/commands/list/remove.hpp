@@ -7,7 +7,7 @@
 #define CGNT_CORE_COMMANDS_LIST_REMOVE_HPP_
 
 #include "cli/commands/command.hpp"
-#include "common/multiformats/cid.hpp"
+#include "multiformats/cid.hpp"
 #include "core/context/context.hpp"
 
 namespace cognitio {

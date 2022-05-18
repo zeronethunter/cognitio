@@ -9,7 +9,7 @@
 #include <sstream>
 #include <utility>
 
-#include "common/multiformats/cid.hpp"
+#include "multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "common/status_code.hpp"
 #include "files/chunker/chunker.hpp"

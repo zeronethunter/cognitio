@@ -26,15 +26,17 @@ void Context::SetConfig(Config&& conf) noexcept {
   config_ = std::make_shared<Config>(std::move(conf));
 }
 
-void Context::SetAPI(CoreAPI&& api) noexcept {
-  core_api_ = std::make_shared<CoreAPI>(std::move(api));
-}
+//////////////////////////////////////////////////////////////
+// void Context::SetAPI(CoreAPI&& api) noexcept {           //
+//   core_api_ = std::make_shared<CoreAPI>(std::move(api)); //
+// }                                                        //
+//////////////////////////////////////////////////////////////
 
 Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
   repo_path_ = getRepoPath(env);
   logger_->debug("Found repo path: {}", repo_path_);
 
-  config_ = std::make_shared<Config>(new Config(repo_path_));
+  config_ = std::make_shared<Config>(repo_path_);
   auto err = config_->TryInit();
   if (!err.ok()) {
     logger_->warn("Unable to find config at {}", repo_path_);
@@ -63,6 +65,7 @@ Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
   }
 
   // logger_->info("Using {} API", core_api_->GetApiMode());
+  return Status::OK;
 }
 
 std::string getRepoPath(CmdEnv& env) {
@@ -73,7 +76,7 @@ std::string getRepoPath(CmdEnv& env) {
 
   auto if_found =
       std::find_if(env.arguments.begin(), env.arguments.end(),
-                   [](std::pair<std::string, std::string>& p) -> bool {
+                   [](const std::pair<std::string, std::string>& p) -> bool {
                      return (p.first == CONFIG_ARG);
                    });
 
@@ -84,7 +87,7 @@ std::string getRepoPath(CmdEnv& env) {
   return common::utils::GetDefaultRepoPath();
 }
 
-Status Context::resolveApi(CmdMeta& meta) noexcept {
+Status Context::resolveApi(CmdMeta& meta, [[maybe_unused]] CmdEnv& env) noexcept {
   // Check if cmd is disabled
   if (meta.IsNoLocal() && meta.IsNoRemote()) {
     return Status(StatusCode::FAILED,
@@ -93,14 +96,18 @@ Status Context::resolveApi(CmdMeta& meta) noexcept {
 
   // Can we just run this locally
   if (!meta.IsNoLocal()) {
-    core_api_ = std::make_shared<CoreAPI>(new LocalAPI(Core(config_)));
+    core_api_ = std::make_shared<LocalAPI>(Core(config_));
     return Status::OK;
   }
 
   if (!meta.IsNoRemote() || meta.IsRepoRequired()) {
-    core_api_ = std::make_shared<CoreAPI>(new RemoteAPI(Core(config_)));
+    // TODO
+    // core_api_ = std::make_shared<RemoteAPI>(Core(config_));
+    core_api_ = std::make_shared<LocalAPI>(Core(config_));
     return Status::OK;
   }
+
+  return Status::FAILED;
 }
 
 }  // namespace commands

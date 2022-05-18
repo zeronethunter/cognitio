@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+service Communication{
+	rpc ping(PingRequest) returns (PingResponse);
+	rpc find_node(FindNodeRequest) returns (FindNodeResponse);
+	rpc store(StoreRequest) returns (StoreResponse);
+	rpc get(GetRequest) returns (GetResponse);
+}
+
+message ConnectionInfo{
+	string id = 1;
+	string ip = 2;
+	uint32 port = 3;
+}
+
+message PingRequest{
+	uint64 magic = 1;
+	ConnectionInfo caller = 2;
+}
+
+message PingResponse{
+	uint64 magic = 1;
+}
+
+message FindNodeRequest{
+	ConnectionInfo caller = 1;
+	string destination = 2;
+}
+
+message FindNodeResponse{
+	repeated ConnectionInfo closest = 1;
+}
+
+message StoreRequest{
+	uint64 magic = 1;
+	ConnectionInfo caller = 2;
+	string key = 3;
+	bytes value = 4;
+}
+
+message StoreResponse{
+	uint64 magic = 1;
+}
+
+message GetRequest{
+	uint64 magic = 1;
+	ConnectionInfo caller = 2;
+	string key = 3;
+}
+
+message GetResponse{
+	uint64 magic = 1;
+	bytes value = 2;
+}

@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "common/multiformats/cid.hpp"
+#include "multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "exchange/block_service/block_service.hpp"
 #include "linked_data/dag_node.hpp"

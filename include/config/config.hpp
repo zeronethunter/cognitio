@@ -18,8 +18,8 @@ namespace config {
 class Config {
  public:
   Config() noexcept = delete;
-  Config(const Config &) = delete;
-  Config &operator=(const Config &) = delete;
+  // Config(const Config &) = delete;
+  // Config &operator=(const Config &) = delete;
   explicit Config(const std::string &repo_path) noexcept;
 
   Status TryInit() noexcept;

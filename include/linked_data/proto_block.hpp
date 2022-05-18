@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "common/multiformats/cid.hpp"
+#include "multiformats/cid.hpp"
 #include "linked_data/dag_node.hpp"
 #include "proto/ProtoData.pb.h"
 

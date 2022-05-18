@@ -6,7 +6,7 @@
 #ifndef CGNT_LINKED_DATA_NODE_HPP_
 #define CGNT_LINKED_DATA_NODE_HPP_
 
-#include "common/multiformats/cid.hpp"
+#include "multiformats/cid.hpp"
 #include "linked_data/link.hpp"
 
 namespace cognitio {

@@ -3,9 +3,10 @@ set(${SUBMODULE_NAME}_SOURCES root.cpp)
 
 add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 target_link_libraries(${SUBMODULE_NAME} PUBLIC
-        ${PROJECT_NAME}_cli_commands
+        ${PROJECT_NAME}_cli
         ${PROJECT_NAME}_block_service
         ${PROJECT_NAME}_multiformats
+        ${PROJECT_NAME}_common
 )
 
 if (ENABLE_TESTING MATCHES ON)

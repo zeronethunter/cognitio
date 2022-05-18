@@ -9,7 +9,7 @@
 #include <memory>
 #include <set>
 
-#include "common/multiformats/cid.hpp"
+#include "multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "datastore/ds_fs.hpp"
 

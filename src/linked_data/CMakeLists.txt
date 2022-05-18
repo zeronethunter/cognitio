@@ -7,7 +7,8 @@ add_library(
 
 target_link_libraries(${SUBMODULE_NAME} PUBLIC
         ${PROJECT_NAME}_proto
-        )
+        ${PROJECT_NAME}_common
+)
 
 if (ENABLE_TESTING MATCHES ON)
     add_libs_for_testing(${SUBMODULE_NAME})

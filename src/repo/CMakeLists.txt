@@ -9,7 +9,9 @@ add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 target_link_libraries(
         ${SUBMODULE_NAME} PUBLIC
         ${CMAKE_PROJECT_NAME}_ds_fs
-        ${CMAKE_PROJECT_NAME}_block_storage)
+        ${CMAKE_PROJECT_NAME}_block_storage
+        ${CMAKE_PROJECT_NAME}_common
+)
 
 if (ENABLE_TESTING MATCHES ON)
     add_libs_for_testing(${SUBMODULE_NAME})

@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "common/multiformats/cid.hpp"
+#include "multiformats/cid.hpp"
 #include "proto/ProtoData.pb.h"
 #include "common/status.hpp"
 

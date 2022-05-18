@@ -3,9 +3,10 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#include "common/multiformats/multihash.hpp"
+#include "multiformats/multihash.hpp"
 
 #include "SHA256.h"
+#include "common/status.hpp"
 #include "common/utils/prefix_reader.hpp"
 
 // using cognitio::multiformats::multihash::HashType;

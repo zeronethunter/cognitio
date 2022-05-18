@@ -40,7 +40,7 @@ class Context {
   CfgPtr GetConfig() noexcept { return config_; }
   ApiPtr GetAPI() noexcept { return core_api_; }
   void SetConfig(Config&& conf) noexcept;
-  void SetAPI(CoreAPI&& api) noexcept;
+  // void SetAPI(CoreAPI&& api) noexcept;
 
   Status Init(CmdMeta& meta, CmdEnv& env) noexcept;
 

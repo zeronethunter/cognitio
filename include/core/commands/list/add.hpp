@@ -8,7 +8,7 @@
 
 #include "cli/commands/command.hpp"
 #include "core/context/context.hpp"
-#include "common/multiformats/cid.hpp"
+#include "multiformats/cid.hpp"
 
 namespace cognitio {
 namespace core {

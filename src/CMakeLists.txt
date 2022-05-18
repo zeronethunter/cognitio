@@ -1,5 +1,7 @@
-add_subdirectory(cli)
 add_subdirectory(common)
+add_subdirectory(multiformats)
+
+add_subdirectory(cli)
 add_subdirectory(config)
 add_subdirectory(core)
 add_subdirectory(datastore)
@@ -19,10 +21,10 @@ add_executable(${MAIN_BIN} ${${MAIN_BIN}_SOURCES})
 set_target_properties(${MAIN_BIN} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 target_link_libraries(
-        ${MAIN_BIN} PRIVATE
+        ${MAIN_BIN} PUBLIC
         ${CMAKE_PROJECT_NAME}_cli
         ${CMAKE_PROJECT_NAME}_core_commands
-        ${CMAKE_PROJECT_NAME}_logger
+        ${CMAKE_PROJECT_NAME}_common
 )
 
 include_directories(

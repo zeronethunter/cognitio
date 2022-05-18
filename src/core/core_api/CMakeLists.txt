@@ -6,7 +6,7 @@ target_link_libraries(${SUBMODULE_NAME} PUBLIC
         ${PROJECT_NAME}_files_chunker
         ${PROJECT_NAME}_cli_commands
         ${PROJECT_NAME}_linked_data
-        ${PROJECT_NAME}_logger
+        ${PROJECT_NAME}_common
 )
 
 if (ENABLE_TESTING MATCHES ON)

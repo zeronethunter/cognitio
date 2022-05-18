@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "cli/commands/response_emitter.hpp"
-#include "common/multiformats/cid.hpp"
+#include "multiformats/cid.hpp"
 #include "core/core.hpp"
 
 namespace cognitio {

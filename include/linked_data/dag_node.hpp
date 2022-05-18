@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "common/multiformats/cid.hpp"
+#include "multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "files/unixfs/unixfs.hpp"
 #include "proto/ProtoData.pb.h"

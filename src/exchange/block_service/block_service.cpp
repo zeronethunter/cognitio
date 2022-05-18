@@ -1,4 +1,5 @@
 #include "exchange/block_service/block_service.hpp"
+#include "datastore/ds_fs.hpp"
 
 namespace cognitio {
 namespace exchange {
