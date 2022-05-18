@@ -48,7 +48,7 @@ class BlockService {
   bool closed_ = true;
   bool is_daemon_opened_ = false;
 
-  std::unique_ptr<BlockSwap> block_swap_;
+//  std::unique_ptr<BlockSwap> block_swap_;
   std::unique_ptr<repo::Repo<std::string>> repo_;
 
   common::logger::Logger logger_ =

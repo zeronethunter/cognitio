@@ -8,6 +8,7 @@
 
 #include <filesystem>
 #include <utility>
+#include <set>
 
 #include "multiformats/cid.hpp"
 #include "common/status.hpp"

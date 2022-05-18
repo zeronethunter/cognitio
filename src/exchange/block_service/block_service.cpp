@@ -1,8 +1,10 @@
 #include "exchange/block_service/block_service.hpp"
-#include "datastore/ds_fs.hpp"
 
 namespace cognitio {
 namespace exchange {
+
+using namespace datastore;
+
 Status BlockService::Open(const std::filesystem::path& path,
                           bool is_daemon_opened) noexcept {
   Status status_open;

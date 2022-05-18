@@ -1,7 +1,6 @@
 add_subdirectory(common)
 add_subdirectory(multiformats)
 
-add_subdirectory(cli)
 add_subdirectory(config)
 add_subdirectory(core)
 add_subdirectory(datastore)
@@ -10,6 +9,7 @@ add_subdirectory(files)
 add_subdirectory(linked_data)
 add_subdirectory(proto)
 add_subdirectory(repo)
+add_subdirectory(cli)
 
 # add_subdirectory(p2p)
 # add_subdirectory(rpc)
@@ -23,8 +23,8 @@ set_target_properties(${MAIN_BIN} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BI
 target_link_libraries(
         ${MAIN_BIN} PUBLIC
         ${CMAKE_PROJECT_NAME}_cli
-        ${CMAKE_PROJECT_NAME}_core_commands
         ${CMAKE_PROJECT_NAME}_common
+        ${CMAKE_PROJECT_NAME}_core_commands
 )
 
 include_directories(

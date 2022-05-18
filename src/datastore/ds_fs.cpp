@@ -34,7 +34,6 @@ Status Filesystem<Value>::Put(const common::Cid& key,
   }
 
   file.write(static_cast<char*>(&value), sizeof(Value));
-
   file.close();
 
   return Status::OK;

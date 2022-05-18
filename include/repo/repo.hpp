@@ -12,7 +12,7 @@
 #include "block_storage/block_storage.hpp"
 #include "common/logger/logger.hpp"
 #include "common/utils/repo.hpp"
-#include "datastore/ds_fs.hpp"
+
 // #include "pinner/pin-manager.hpp"
 // #include "repo/gc/gc.hpp"
 

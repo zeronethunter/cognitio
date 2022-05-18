@@ -8,10 +8,11 @@
 
 #include <memory>
 #include <set>
+#include <vector>
 
-#include "multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "datastore/ds_fs.hpp"
+#include "multiformats/cid.hpp"
 
 namespace cognitio {
 namespace repo {

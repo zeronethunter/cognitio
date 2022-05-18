@@ -69,15 +69,15 @@ class Command {
   Command(CmdMeta meta = CmdMeta()) : meta_(meta) {}
   virtual ~Command() = default;
 
-  virtual const CmdMeta& GetMeta() const noexcept { return meta_; }
-  virtual void Run(Context& ctx, CmdEnv& env, ResponseEmitter& re) = 0;
+  const CmdMeta& GetMeta() const noexcept { return meta_; }
   std::string GetArgsPrefix() const noexcept { return std::string("--"); }
-  virtual CmdPtr GetSubCmd(const std::string& name) const;
-  virtual void PrintHelp(std::ostream& out) = 0;
-  virtual SubCmdsArr GetSubCmdsNames() const noexcept;
+  CmdPtr GetSubCmd(const std::string& name) const;
   virtual void AddSubCmd(std::shared_ptr<Command> cmd) {
     sub_commands_.push_back(cmd);
   }
+
+  virtual void Run(Context& ctx, CmdEnv& env, ResponseEmitter& re) = 0;
+  virtual void PrintHelp(std::ostream& out) = 0;
 
  private:
   CmdMeta meta_;

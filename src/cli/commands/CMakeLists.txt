@@ -1,5 +1,5 @@
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_cli_commands)
-set(${SUBMODULE_NAME}_SOURCES response_emitter.cpp)
+set(${SUBMODULE_NAME}_SOURCES command.cpp response_emitter.cpp)
 
 add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 
