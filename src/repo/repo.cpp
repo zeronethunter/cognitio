@@ -50,7 +50,7 @@ void Repo<StoreValue>::initRepoStorage(const std::filesystem::path& path) {
   root_ = std::make_unique<datastore::Filesystem<StoreValue>>(root);
 
   blockstorage::Blockstorage blocks(path / "blocks");
-  blocks_ = std::make_unique<blockstorage::Blockstorage>(blocks);
+  blocks_ = std::make_unique<blockstorage::Blockstorage>(std::move(blocks));
 }
 
 template <typename StoreValue>
@@ -88,7 +88,7 @@ Status Repo<StoreValue>::Init() noexcept {
 
 template <typename StoreValue>
 std::string Repo<StoreValue>::shard(const cognitio::common::Cid& cid,
-                                    size_t name_length) {
+                                    size_t name_length) const noexcept {
   std::string str_cid = cid.ToString();
   size_t offset = str_cid.length() - name_length - 1;
   return {str_cid.cbegin() + static_cast<long>(offset), str_cid.cend()};

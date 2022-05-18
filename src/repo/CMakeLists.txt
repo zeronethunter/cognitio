@@ -3,7 +3,7 @@ add_subdirectory(block_storage)
 # add_subdirectory(gc)
 
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_repo)
-set(${SUBMODULE_NAME}_SOURCES repo.cpp)
+set(${SUBMODULE_NAME}_SOURCES repo.cpp repo_templ.cpp)
 
 add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 target_link_libraries(
