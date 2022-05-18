@@ -1,4 +1,4 @@
-set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_chunker)
+set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_files_chunker)
 set(${SUBMODULE_NAME}_SOURCES chunker.cpp)
 
 add_library(

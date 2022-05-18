@@ -44,7 +44,7 @@ Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
       logger_->debug("Created directory {}", repo_path_);
     }
 
-    auto dump_err = config_.Dump();
+    auto dump_err = config_->Dump();
     if (!dump_err.ok()) {
       return Status(StatusCode::FAILED,
                     "Unable to dump default config. Exiting...");
