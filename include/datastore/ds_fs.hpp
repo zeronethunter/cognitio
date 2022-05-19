@@ -81,6 +81,7 @@ class Filesystem : Datastore<common::Cid, Value, Status> {
   Status DeleteMany(const std::set<common::Cid>& source) noexcept override;
 
  private:
+  char* makeCharFromData(const Value& value) const noexcept;
   std::filesystem::path path_;
 };
 

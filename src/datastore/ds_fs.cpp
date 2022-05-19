@@ -1,3 +1,8 @@
+// Copyright (c) 2022 NodeOps
+//
+// Distributed under the GNU GPLv3 software license, see the accompanying
+// file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
+
 #include "datastore/ds_fs.hpp"
 
 #include <fstream>
@@ -33,8 +38,11 @@ Status Filesystem<Value>::Put(const common::Cid& key,
     return {StatusCode::CANCELLED, "Can not create " + filename};
   }
 
-  file.write(static_cast<char*>(&value), sizeof(Value));
+  char* bytes = makeCharFromData(value);
+  file.write(bytes, sizeof(Value));
   file.close();
+
+  delete[] bytes;
 
   return Status::OK;
 }
@@ -57,9 +65,13 @@ std::pair<Status, Value> Filesystem<Value>::Get(
   }
 
   Value result;
-  file.read(static_cast<char*>(&result), sizeof(Value));
+
+  char* bytes = makeCharFromData(result);
+  file.read(bytes, sizeof(Value));
 
   file.close();
+
+  delete[] bytes;
 
   return std::pair<Status, Value>(Status::OK, result);
 }
@@ -96,7 +108,7 @@ std::pair<Status, std::set<Value>> Filesystem<Value>::GetMany(
       return std::pair<Status, std::set<Value>>(it.first, std::set<Value>());
     }
   }
-  return std::pair<Status, Value>(Status::OK, result);
+  return std::pair<Status, std::set<Value>>(Status::OK, result);
 }
 
 template <typename Value>
@@ -109,6 +121,14 @@ Status Filesystem<Value>::DeleteMany(
     }
   }
   return Status::OK;
+}
+template <typename Value>
+char* Filesystem<Value>::makeCharFromData(const Value& value) const noexcept {
+  char* result = new char[value.size()];
+  for (size_t i = 0; i < value.size(); ++i) {
+    result[i] = value[i];
+  }
+  return result;
 }
 
 }  // namespace datastore
