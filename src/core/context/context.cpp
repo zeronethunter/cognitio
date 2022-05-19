@@ -68,7 +68,7 @@ Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
   return Status::OK;
 }
 
-std::string getRepoPath(CmdEnv& env) {
+std::string Context::getRepoPath(CmdEnv& env) const noexcept {
   std::string cgnt_home = std::getenv("CGNT_HOME");
   if (!cgnt_home.empty()) {
     return cgnt_home;

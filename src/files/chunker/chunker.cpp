@@ -27,6 +27,9 @@ std::vector<Buffer> chunk_fixed_raw(const Buffer& buffer,
   return result;
 }
 
+template std::vector<std::vector<uint8_t>> chunk_fixed_raw(
+    const std::vector<uint8_t>& buffer, const size_t max_width) noexcept;
+
 }  // namespace chunker
 }  // namespace files
 }  // namespace cognitio
