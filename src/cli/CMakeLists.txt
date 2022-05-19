@@ -1,7 +1,7 @@
 add_subdirectory(commands)
 
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_cli)
-set(${SUBMODULE_NAME}_SOURCES cli.cpp)
+set(${SUBMODULE_NAME}_SOURCES cli.cpp cli_templ.cpp)
 
 add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 target_link_libraries(${SUBMODULE_NAME} PUBLIC

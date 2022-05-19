@@ -67,17 +67,25 @@ class Command {
   typedef std::vector<CmdPtr> SubCmdsArr;
 
   Command(CmdMeta meta = CmdMeta()) : meta_(meta) {}
+
+  Command(Command<Context> &cmd) = default;
+  Command(Command<Context> &&cmd) = default;
+  Command<Context>& operator=(Command<Context> &cmd) = default;
+  Command<Context>& operator=(Command<Context> &&cmd) = default;
+
   virtual ~Command() = default;
 
-  const CmdMeta& GetMeta() const noexcept { return meta_; }
+  CmdMeta& GetMeta() noexcept { return meta_; }
   std::string GetArgsPrefix() const noexcept { return std::string("--"); }
   CmdPtr GetSubCmd(const std::string& name) const;
+  std::vector<std::string> GetSubCmdsNames() const noexcept;
+
   virtual void AddSubCmd(std::shared_ptr<Command> cmd) {
     sub_commands_.push_back(cmd);
   }
 
   virtual void Run(Context& ctx, CmdEnv& env, ResponseEmitter& re) = 0;
-  virtual void PrintHelp(std::ostream& out) = 0;
+  virtual void PrintHelp(std::ostream& out = std::cout) = 0;
 
  private:
   CmdMeta meta_;
@@ -86,7 +94,7 @@ class Command {
 
 template <class Context>
 struct CmdWrapper {
-  std::unique_ptr<Command<Context>> cmd;
+  std::shared_ptr<Command<Context>> cmd;
   CmdEnv env;
 };
 

@@ -23,10 +23,8 @@ namespace cli {
 using namespace core::commands;
 
 template <class Context>
-Cli<Context>::Cli(Command<Context>&& root, std::ostream& out)
-    : out_(out),
-      logger_(createLogger("CLI")),
-      root_(std::make_shared<Command<Context>>(root)) {}
+Cli<Context>::Cli(CmdPtr ptr, std::ostream& out)
+    : out_(out), logger_(createLogger("CLI")), root_(ptr) {}
 
 template <class Context>
 template <Container T>
@@ -96,7 +94,7 @@ Status Cli<Context>::parse(T& args, CmdWrapper<Context>& cmdw) const noexcept {
     return Status(StatusCode::FAILED, "Options are requred");
   }
 
-  cmdw.env.options = *args.begin();
+  cmdw.env.option = *args.begin();
   return Status::OK;
 }
 
@@ -116,7 +114,7 @@ Status Cli<Context>::parseCommand(T& args, CmdPtr cmd) const noexcept {
     } else {
       is_found = false;
       size_t next_idx = 1;  // checking the next arg
-      std::string prefix = root_.GetArgsPrefix();
+      std::string prefix = root_->GetArgsPrefix();
       if (args.size() &&
           args[next_idx].compare(0, prefix.size(), prefix) != 0 &&
           !current_cmd->GetMeta().AreOptionsRequired()) {
@@ -145,13 +143,12 @@ Status Cli<Context>::parseArguments(T& args, CmdPtr cmd,
 template <class Context>
 Status Cli<Context>::handleHelp(CmdWrapper<Context>& cmdw) const noexcept {
   auto cmd_args = cmdw.env.arguments;
-  std::pair<std::string, std::string> help_arg = {HELP_ARG_MSG, ""};
-  auto find_arg = std::find(cmd_args.begin(), cmd_args.end(), help_arg);
+  // std::pair<std::string, std::string> help_arg = {HELP_ARG_MSG, ""};
+  auto find_arg =
+      std::find_if(cmd_args.begin(), cmd_args.end(),
+                   [](const auto& p) { return p.first == HELP_ARG_MSG; });
 
-  auto cmd_opts = cmdw.env.options;
-  auto find_opt = std::find(cmd_opts.begin(), cmd_opts.end(), HELP_OPT_MSG);
-
-  if (find_arg != cmd_args.end() || find_opt != cmd_opts.end()) {
+  if (find_arg != cmd_args.end() || cmdw.env.option == HELP_OPT_MSG) {
     cmdw.cmd->PrintHelp();
     return Status::OK;
   }

@@ -30,7 +30,7 @@ using namespace commands;
 template <class Context>
 class Cli {
  public:
-  explicit Cli(Command<Context>&& root, std::ostream& out = std::cout);
+  explicit Cli(CmdPtr ptr, std::ostream& out = std::cout);
   ~Cli() = default;
 
   template <Container T>

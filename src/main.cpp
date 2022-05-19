@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
   std::deque<std::string> args(argv + 1, argv + static_cast<size_t>(argc));
 
   // Builing the tree of commands, parsing & running of the argv
-  cli::Cli<Context> cli(MakeCommands());
+  cli::Cli<Context> cli(std::make_shared<RootCmd>(MakeCommands()));
   Status status = cli.Run(args);
   return status.ok();
 }

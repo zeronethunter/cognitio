@@ -21,6 +21,17 @@ typename Command<Context>::CmdPtr Command<Context>::GetSubCmd(
   return it == sub_commands_.end() ? nullptr : *it;
 }
 
+
+template <class Context>
+std::vector<std::string> Command<Context>::GetSubCmdsNames() const noexcept {
+  std::vector<std::string> vec;
+  for (const auto& x : sub_commands_) {
+    vec.push_back(x->GetMeta().GetName());
+  }
+
+  return vec;
+}
+
 }  // namespace commands
 }  // namespace cli
 }  // namespace cognitio
