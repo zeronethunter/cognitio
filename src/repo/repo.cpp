@@ -17,7 +17,11 @@ Status Shurd(const common::Cid& cid);
 
 #include "repo/repo.hpp"
 
+#include <cstdint>
+#include <filesystem>
+
 #include "common/logger/logger.hpp"
+#include "common/status.hpp"
 
 namespace cognitio {
 namespace repo {
@@ -70,20 +74,25 @@ Repo<StoreValue>::Repo(const std::filesystem::path& path) noexcept {
 
 template <typename StoreValue>
 Repo<StoreValue>::Repo(const std::string& name) noexcept {
-  std::filesystem::path root =
-      std::filesystem::path(common::utils::GetDefaultRepoPath()) / name;
+  std::filesystem::path root(name);
   initRepoStorage(root);
 }
 
 template <typename StoreValue>
 Status Repo<StoreValue>::Init() noexcept {
+  Status err = Status::OK;
+  if (!root_) {
+    logger_->error("I don't know where to init repository.");
+    return Status::FAILED;
+  }
+
   if (!Exists()) {
     initRepoStorage(root_->Root());
+    err = openRepo();
   }
 
   closed_ = false;
-
-  return Status::OK;
+  return err;
 }
 
 template <typename StoreValue>
@@ -161,6 +170,9 @@ std::vector<uint8_t> Repo<StoreValue>::Get(
 
     return block.Get(cid).second;
   }
+
+  logger_->error("Repo is closed");
+  return std::vector<uint8_t>();
 }
 
 template <typename StoreValue>
@@ -173,14 +185,17 @@ bool Repo<StoreValue>::Has(const common::Cid& cid) const noexcept {
     }
 
     blockstorage::Blockstorage block(blocks_->Root() / name_of_shard);
-
     return block.Has(cid);
   }
+
+  logger_->error("Repo is closed");
+  return false;
 }
 
 template <typename StoreValue>
 bool Repo<StoreValue>::Exists() noexcept {
-  return std::filesystem::exists(root_->Root());
+  return std::filesystem::exists(root_->Root()) &&
+         std::filesystem::exists(root_->Root() / "blocks");
 }
 
 }  // namespace repo

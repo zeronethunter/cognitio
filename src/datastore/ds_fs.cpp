@@ -6,6 +6,7 @@
 #include "datastore/ds_fs.hpp"
 
 #include <fstream>
+#include "common/status.hpp"
 
 namespace cognitio {
 namespace datastore {
@@ -19,6 +20,8 @@ Status Filesystem<Value>::Open(const std::filesystem::path& path) noexcept {
     }
     return {StatusCode::FAILED, "Can't open storage."};
   }
+
+  return Status::FAILED;
 }
 
 template <typename Value>

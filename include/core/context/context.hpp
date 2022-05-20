@@ -37,6 +37,7 @@ class Context {
   bool IsInitialized() const noexcept { return config_ && core_api_; }
   const std::string& GetRepoPath() const noexcept { return repo_path_; }
 
+  // TODO: redirect to core_api->Core->Repo->Config
   CfgPtr GetConfig() noexcept { return config_; }
   ApiPtr GetAPI() noexcept { return core_api_; }
   void SetConfig(Config&& conf) noexcept;

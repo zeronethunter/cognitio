@@ -25,9 +25,9 @@ class Core {
   typedef std::shared_ptr<repo::Repo<std::string>> RepoPtr;
   typedef std::shared_ptr<linked_data::MerkleDag> DagPtr;
 
-  explicit Core(CfgPtr cfg) : config_(cfg) {
+  explicit Core(const std::string &repo_path)  {
     repo_ =
-        std::make_shared<repo::Repo<std::string>>(config_->Get("repo_path"));
+        std::make_shared<repo::Repo<std::string>>(repo_path);
     dag_ = std::make_shared<linked_data::MerkleDag>(
         std::make_shared<exchange::BlockService>(repo_));
   }
@@ -37,7 +37,7 @@ class Core {
   Status RunDaemon() noexcept;
 
  private:
-  CfgPtr config_;
+  // CfgPtr config_;
   RepoPtr repo_;
   DagPtr dag_;
 };

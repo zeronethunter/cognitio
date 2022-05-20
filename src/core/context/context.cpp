@@ -38,25 +38,15 @@ Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
 
   config_ = std::make_shared<Config>(repo_path_);
   auto err = config_->TryInit();
-  if (!err.ok()) {
-    logger_->warn("Unable to find config at {}", repo_path_);
-
-    if (!std::filesystem::exists(repo_path_)) {
-      std::filesystem::create_directory(repo_path_);
-      logger_->debug("Created directory {}", repo_path_);
+  if (meta.GetName() != "init") {
+    if (!err.ok()) {
+      logger_->error("Repo is not initialized. Use 'cognitio init'");
+      return Status::FAILED;
     }
 
-    auto dump_err = config_->Dump();
-    if (!dump_err.ok()) {
-      return Status(StatusCode::FAILED,
-                    "Unable to dump default config. Exiting...");
-    } else {
-      logger_->debug("Successfully dumped default config");
+    if (config_->Get("repo_path").empty()) {
+      config_->SetRepoPath(repo_path_);
     }
-  }
-
-  if (config_->Get("repo_path").empty()) {
-    config_->SetRepoPath(repo_path_);
   }
 
   err = resolveApi(meta, env);
@@ -87,7 +77,8 @@ std::string Context::getRepoPath(CmdEnv& env) const noexcept {
   return common::utils::GetDefaultRepoPath();
 }
 
-Status Context::resolveApi(CmdMeta& meta, [[maybe_unused]] CmdEnv& env) noexcept {
+Status Context::resolveApi(CmdMeta& meta,
+                           [[maybe_unused]] CmdEnv& env) noexcept {
   // Check if cmd is disabled
   if (meta.IsNoLocal() && meta.IsNoRemote()) {
     return Status(StatusCode::FAILED,
@@ -96,14 +87,14 @@ Status Context::resolveApi(CmdMeta& meta, [[maybe_unused]] CmdEnv& env) noexcept
 
   // Can we just run this locally
   if (!meta.IsNoLocal()) {
-    core_api_ = std::make_shared<LocalAPI>(Core(config_));
+    core_api_ = std::make_shared<LocalAPI>(Core(repo_path_));
     return Status::OK;
   }
 
   if (!meta.IsNoRemote() || meta.IsRepoRequired()) {
     // TODO
     // core_api_ = std::make_shared<RemoteAPI>(Core(config_));
-    core_api_ = std::make_shared<LocalAPI>(Core(config_));
+    core_api_ = std::make_shared<LocalAPI>(Core(repo_path_));
     return Status::OK;
   }
 
