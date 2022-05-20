@@ -3,6 +3,7 @@
 #include <google/protobuf/util/json_util.h>
 
 #include <fstream>
+#include <utility>
 
 namespace cognitio {
 namespace config {
@@ -11,13 +12,7 @@ bool Config::isConfigCreated(const std::string &path) const noexcept {
   return std::filesystem::exists(std::filesystem::path(path) / "config");
 }
 
-Config::Config(const std::string &repo_path) noexcept {
-  if (isConfigCreated(repo_path)) {
-    repo_path_ = repo_path;
-  } else {
-    logger->error("Open repository first.");
-  }
-}
+Config::Config(std::string repo_path) noexcept : repo_path_(std::move(repo_path)) {}
 
 Status Config::createConfig(const std::string &repo_path,
                             const std::string &api_address) const noexcept {

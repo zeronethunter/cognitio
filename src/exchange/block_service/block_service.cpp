@@ -17,7 +17,7 @@ Status BlockService::Open(const std::filesystem::path& path,
   //    return status_open;
   //  }
   repo_ =
-      std::make_unique<repo::Repo<std::string>>(repo::Repo<std::string>(path));
+      std::make_shared<repo::Repo<std::string>>(repo::Repo<std::string>(path));
   status_open = repo_->Init();
   if (status_open.ok()) {
     closed_ = false;

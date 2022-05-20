@@ -20,7 +20,7 @@ class Config {
   Config() noexcept = delete;
   // Config(const Config &) = delete;
   // Config &operator=(const Config &) = delete;
-  explicit Config(const std::string &repo_path) noexcept;
+  explicit Config(std::string repo_path) noexcept;
 
   Status TryInit() noexcept;
 
@@ -42,7 +42,7 @@ class Config {
  private:
   std::string repo_path_;
   std::string api_address_;
-  common::logger::Logger logger = common::logger::createLogger("Config logger");
+  common::logger::Logger logger_ = common::logger::createLogger("Config logger");
 };
 
 }  // namespace config

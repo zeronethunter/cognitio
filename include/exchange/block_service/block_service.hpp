@@ -6,6 +6,8 @@
 #ifndef CGNT_EXCHANGE_BLOCK_SERVICE_BLOCK_SERVICE_HPP_
 #define CGNT_EXCHANGE_BLOCK_SERVICE_BLOCK_SERVICE_HPP_
 
+#include <utility>
+
 #include "common/status.hpp"
 #include "common/utils/repo.hpp"
 #include "exchange/block_swap/block_swap.hpp"
@@ -20,6 +22,10 @@ class BlockService {
 
  public:
   BlockService() = default;
+
+  explicit BlockService(std::shared_ptr<repo::Repo<std::string>> repo)
+      : repo_(std::move(repo)) {}
+
   Status Open(const std::filesystem::path& path =
                   std::filesystem::path(common::utils::GetDefaultRepoPath()) /
                   "blocks",
@@ -48,8 +54,8 @@ class BlockService {
   bool closed_ = true;
   bool is_daemon_opened_ = false;
 
-//  std::unique_ptr<BlockSwap> block_swap_;
-  std::unique_ptr<repo::Repo<std::string>> repo_;
+  //  std::unique_ptr<BlockSwap> block_swap_;
+  std::shared_ptr<repo::Repo<std::string>> repo_;
 
   common::logger::Logger logger_ =
       common::logger::createLogger("BlockService logger");
