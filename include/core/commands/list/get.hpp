@@ -16,14 +16,14 @@ namespace commands {
 
 using namespace cli::commands;
 
-class GetMeta : public CmdMeta {
+class GetMetaC : public CmdMeta {
  public:
-  GetMeta() : CmdMeta(std::string("get"), {}, false, true) {}
+  GetMetaC() : CmdMeta(std::string("get"), {}, true, true) {}
 };
 
 class GetCmd : public Command<Context> {
  public:
-  GetCmd() : Command(GetMeta()) {};
+  GetCmd() : Command(GetMetaC()) {};
   void PrintHelp([[maybe_unused]] std::ostream& out) override {}
 
   void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,

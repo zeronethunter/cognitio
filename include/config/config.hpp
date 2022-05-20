@@ -20,7 +20,7 @@ class Config {
   Config() noexcept = delete;
   // Config(const Config &) = delete;
   // Config &operator=(const Config &) = delete;
-  explicit Config(std::string repo_path) noexcept;
+  explicit Config(const std::string &repo_path) noexcept;
 
   Status TryInit() noexcept;
 
@@ -28,7 +28,7 @@ class Config {
 
   [[nodiscard]] std::string Get(const std::string &field) const noexcept;
 
-  Status SetRepoPath(const std::string &repo_path) noexcept;
+  void SetRepoPath(const std::string &repo_path) noexcept;
 
  private:
   [[nodiscard]] bool isConfigCreated(const std::string &path) const noexcept;
@@ -42,7 +42,7 @@ class Config {
  private:
   std::string repo_path_;
   std::string api_address_;
-  common::logger::Logger logger_ = common::logger::createLogger("Config logger");
+  common::logger::Logger logger_;
 };
 
 }  // namespace config

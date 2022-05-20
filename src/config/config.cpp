@@ -3,7 +3,7 @@
 #include <google/protobuf/util/json_util.h>
 
 #include <fstream>
-#include <utility>
+#include "common/status.hpp"
 
 namespace cognitio {
 namespace config {
@@ -12,7 +12,9 @@ bool Config::isConfigCreated(const std::string &path) const noexcept {
   return std::filesystem::exists(std::filesystem::path(path) / "config");
 }
 
-Config::Config(std::string repo_path) noexcept : repo_path_(std::move(repo_path)) {}
+Config::Config(const std::string &repo_path) noexcept : repo_path_(repo_path) {
+  logger_ = common::logger::createLogger("Config logger");
+}
 
 Status Config::createConfig(const std::string &repo_path,
                             const std::string &api_address) const noexcept {
@@ -62,10 +64,12 @@ Status Config::getExistedConfig(const std::string &path) noexcept {
 Status Config::TryInit() noexcept {
   std::filesystem::path config_path(repo_path_);
   config_path /= "config";
+
   if (isConfigCreated(repo_path_)) {
     return getExistedConfig(config_path.string());
   }
-  return createConfig(repo_path_);
+
+  return Status::FAILED;
 }
 
 bool Config::initialized() const noexcept {
@@ -76,6 +80,7 @@ Status Config::Dump() const noexcept {
   if (initialized()) {
     return createConfig(repo_path_, api_address_);
   }
+
   return createConfig(repo_path_);
 }
 
@@ -89,7 +94,7 @@ std::string Config::Get(const std::string &field) const noexcept {
   return {};
 }
 
-Status Config::SetRepoPath(const std::string &repo_path) noexcept {
+void Config::SetRepoPath(const std::string &repo_path) noexcept {
   repo_path_ = repo_path;
 }
 

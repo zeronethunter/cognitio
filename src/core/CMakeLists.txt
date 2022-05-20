@@ -12,6 +12,7 @@ target_link_libraries(${SUBMODULE_NAME} PUBLIC
         ${PROJECT_NAME}_core_context
         ${PROJECT_NAME}_core_api
         ${PROJECT_NAME}_common
+        ${PROJECT_NAME}_repo
 )
 
 if (ENABLE_TESTING MATCHES ON)

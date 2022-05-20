@@ -48,7 +48,8 @@ void LocalAPI::Add(const std::string& path, ResponseEmitter& re) {
 
   std::stringstream buffer_str;
   buffer_str << file.rdbuf();
-  std::vector<uint8_t> buffer(buffer_str.str().begin(), buffer_str.str().end());
+  std::string buf_str = buffer_str.str();
+  std::vector<uint8_t> buffer(buf_str.begin(), buf_str.end());
 
   // Chunking
   auto chunked_data = files::chunker::chunk_fixed_raw(buffer);

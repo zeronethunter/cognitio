@@ -40,9 +40,9 @@ class Cli {
   template <Container T>
   Status parse(T& args, CmdWrapper<Context>& cmdw) const noexcept;
   template <Container T>
-  Status parseCommand(T& args, CmdPtr cmd) const noexcept;
+  Status parseCommand(T& args, CmdPtr &cmd) const noexcept;
   template <Container T>
-  Status parseArguments(T& args, CmdPtr cmd, ArgsArr& arguments) const noexcept;
+  Status parseArguments(T& args, CmdPtr &cmd, ArgsArr& arguments) const noexcept;
   Status handleHelp(CmdWrapper<Context>& cmdw) const noexcept;
 
   std::ostream& out_;

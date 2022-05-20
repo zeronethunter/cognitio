@@ -10,11 +10,12 @@ namespace common {
 namespace utils {
 
 std::string GetDefaultRepoPath() {
-  std::string repo_home = std::string(std::getenv("XDG_DATA_HOME"));
-  if (repo_home.empty()) {
+  auto repo_home_char = std::getenv("XDG_DATA_HOME");
+  std::string repo_home;
+  if (!repo_home_char) {
       repo_home = "~/.cognitio";
   } else {
-      repo_home += "/cognitio";
+      repo_home = std::string(repo_home_char) + "/cognitio";
   }
 
   return repo_home;

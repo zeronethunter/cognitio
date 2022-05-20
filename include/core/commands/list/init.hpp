@@ -28,7 +28,7 @@ class InitCmd : public Command<Context> {
   void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
     auto core = ctx.GetAPI()->GetCore();
-    auto err = core->GetBlockService()->Open(ctx.GetRepoPath());
+    auto err = core->GetRepo()->Init();
     re.SetStatus(StatusCode::OK);
   }
 };

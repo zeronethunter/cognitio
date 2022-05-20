@@ -11,30 +11,34 @@
 #include "config/config.hpp"
 #include "exchange/block_service/block_service.hpp"
 #include "linked_data/merkle_dag.hpp"
+#include "repo/repo.hpp"
 
 namespace cognitio {
 namespace core {
 
 using namespace config;
 
+// TODO add block swap
 class Core {
  public:
   typedef std::shared_ptr<Config> CfgPtr;
-  typedef std::shared_ptr<exchange::BlockService> BsPtr;
+  typedef std::shared_ptr<repo::Repo<std::string>> RepoPtr;
   typedef std::shared_ptr<linked_data::MerkleDag> DagPtr;
 
   explicit Core(CfgPtr cfg) : config_(cfg) {
-    block_service_ = std::make_shared<exchange::BlockService>();
-    dag_ = std::make_shared<linked_data::MerkleDag>(block_service_);
+    repo_ =
+        std::make_shared<repo::Repo<std::string>>(config_->Get("repo_path"));
+    dag_ = std::make_shared<linked_data::MerkleDag>(
+        std::make_shared<exchange::BlockService>(repo_));
   }
 
   DagPtr GetDag() noexcept { return dag_; }
-  BsPtr GetBlockService() noexcept { return block_service_; }
+  RepoPtr GetRepo() noexcept { return repo_; }
   Status RunDaemon() noexcept;
 
  private:
-  BsPtr block_service_;
   CfgPtr config_;
+  RepoPtr repo_;
   DagPtr dag_;
 };
 

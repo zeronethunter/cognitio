@@ -13,7 +13,7 @@ void setGlobalPattern(spdlog::logger& logger) {
 }
 
 void setDebugPattern(spdlog::logger& logger) {
-  logger.set_pattern("[%Y-%m-%d %H:%M:%S.%F][th:%t][%l][%@] %n %v");
+  logger.set_pattern("[%Y-%m-%d %H:%M:%S.%F][th:%t][%l] %n %v");
 }
 
 std::shared_ptr<spdlog::logger> createLogger(const std::string& tag,

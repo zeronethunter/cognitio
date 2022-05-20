@@ -94,31 +94,33 @@ Status Cli<Context>::parse(T& args, CmdWrapper<Context>& cmdw) const noexcept {
     return Status(StatusCode::FAILED, "Options are requred");
   }
 
-  cmdw.env.option = *args.begin();
+  if (args.size()) {
+    cmdw.env.option = *args.begin();
+  }
+
   return Status::OK;
 }
 
 template <class Context>
 template <Container T>
-Status Cli<Context>::parseCommand(T& args, CmdPtr cmd) const noexcept {
+Status Cli<Context>::parseCommand(T& args, CmdPtr& cmd) const noexcept {
   auto current_cmd = root_;
   bool is_found = false;
 
+  auto cmds_names = current_cmd->GetSubCmdsNames();
   do {
-    auto cmds_names = current_cmd->GetSubCmdsNames();
     auto found = std::find(cmds_names.begin(), cmds_names.end(), *args.begin());
-    if (found == cmds_names.end()) {
+    if (found != cmds_names.end()) {
       is_found = true;
-      args.pop_front();
       current_cmd = current_cmd->GetSubCmd(*args.begin());
+      args.pop_front();
     } else {
       is_found = false;
-      size_t next_idx = 1;  // checking the next arg
       std::string prefix = root_->GetArgsPrefix();
-      if (args.size() &&
-          args[next_idx].compare(0, prefix.size(), prefix) != 0 &&
+
+      if (args.size() && args[0].compare(0, prefix.size(), prefix) != 0 &&
           !current_cmd->GetMeta().AreOptionsRequired()) {
-        return Status(StatusCode::FAILED, "Unknown command {}", args[next_idx]);
+        return Status(StatusCode::FAILED, "Unknown command {}", args[0]);
       }
     }
   } while (is_found);
@@ -129,8 +131,12 @@ Status Cli<Context>::parseCommand(T& args, CmdPtr cmd) const noexcept {
 
 template <class Context>
 template <Container T>
-Status Cli<Context>::parseArguments(T& args, CmdPtr cmd,
+Status Cli<Context>::parseArguments(T& args, CmdPtr& cmd,
                                     ArgsArr& arguments) const noexcept {
+  if (!cmd) {
+    return Status::OK;
+  }
+
   // TODO
   arguments = cmd->GetMeta().GetDefaultArgs();
   for (const auto& x : args) {
