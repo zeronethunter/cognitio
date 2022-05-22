@@ -3,18 +3,6 @@
 //  Distributed under the GNU GPLv3 software license, see the accompanying
 //  file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-/*
-bool closed_ = true;
-datastore::Filesystem<std::string> root_;
-blockstorage::Blockstorage blocks_;
-//  pinner::PinManager<Key, Value, Options> pins_;
-//  blockstorage::Blockstorage<Key, Value, Options> pinned_block_storage_;
-Status OpenRoot();
-Status Shurd(const common::Cid& cid);
-//  Status OpenLock();
-//  Status CloseLock();
- */
-
 #include "repo/repo.hpp"
 
 #include <cstdint>
@@ -26,28 +14,6 @@ Status Shurd(const common::Cid& cid);
 namespace cognitio {
 namespace repo {
 
-// template <typename StoreValue>
-// Repo<StoreValue>::Repo(
-//     std::unique_ptr<datastore::Filesystem<StoreValue>> const& root) noexcept
-//     : root_(root) {
-//   Status mkdir_status = root_->MakeDir("blocks");
-//
-//   if (!mkdir_status.ok()) {
-//     logger_->error("Blocks wasn't created.");
-//     return;
-//   }
-//
-//   blockstorage::Blockstorage blocks;
-//   Status open_status = blocks.Open(root_->Root() / "blocks");
-//
-//   if (!open_status.ok()) {
-//     logger_->error("Blocks wasn't opened.");
-//     return;
-//   }
-//
-//   blocks_ = std::make_unique<blockstorage::Blockstorage>(blocks);
-// }
-
 template <typename StoreValue>
 void Repo<StoreValue>::initRepoStorage(const std::filesystem::path& path) {
   datastore::Filesystem<StoreValue> root(path);
@@ -55,6 +21,8 @@ void Repo<StoreValue>::initRepoStorage(const std::filesystem::path& path) {
 
   blockstorage::Blockstorage blocks(path / "blocks");
   blocks_ = std::make_unique<blockstorage::Blockstorage>(std::move(blocks));
+
+  config_ = config::Config(path);
 }
 
 template <typename StoreValue>
@@ -64,18 +32,27 @@ Status Repo<StoreValue>::openRepo() noexcept {
     return status_open;
   }
   status_open = blocks_->Open();
-  return status_open;
+
+  if (!status_open.ok()) {
+    return status_open;
+  }
+
+  Status status_init = config_.TryInit();
+
+  return status_init;
 }
 
 template <typename StoreValue>
 Repo<StoreValue>::Repo(const std::filesystem::path& path) noexcept {
   initRepoStorage(path);
+  logger_ = common::logger::createLogger("Repo logger");
 }
 
 template <typename StoreValue>
 Repo<StoreValue>::Repo(const std::string& name) noexcept {
   std::filesystem::path root(name);
   initRepoStorage(root);
+  logger_ = common::logger::createLogger("Repo logger");
 }
 
 template <typename StoreValue>
@@ -172,7 +149,7 @@ std::vector<uint8_t> Repo<StoreValue>::Get(
   }
 
   logger_->error("Repo is closed");
-  return std::vector<uint8_t>();
+  return {};
 }
 
 template <typename StoreValue>
@@ -194,7 +171,7 @@ bool Repo<StoreValue>::Has(const common::Cid& cid) const noexcept {
 
 template <typename StoreValue>
 bool Repo<StoreValue>::Exists() noexcept {
-  return std::filesystem::exists(root_->Root()) &&
+  return !closed_ && std::filesystem::exists(root_->Root()) &&
          std::filesystem::exists(root_->Root() / "blocks");
 }
 

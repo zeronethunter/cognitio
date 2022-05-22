@@ -12,6 +12,7 @@
 #include "block_storage/block_storage.hpp"
 #include "common/logger/logger.hpp"
 #include "common/utils/repo.hpp"
+#include "config/config.hpp"
 
 // #include "pinner/pin-manager.hpp"
 // #include "repo/gc/gc.hpp"
@@ -33,15 +34,6 @@ namespace repo {
 template <typename StoreValue = std::string>
 class Repo {
  public:
-  /**
-   *  @brief Constructor of repository from Filesystem.
-   *
-   *  @param root filesystem of repository.
-   */
-  explicit Repo(std::unique_ptr<datastore::Filesystem<StoreValue>> const &root)
-
-      noexcept;
-
   /**
    *  @brief Constructor of repository from path.
    *
@@ -135,14 +127,17 @@ class Repo {
 
       noexcept;
 
-  std::string shard(const cognitio::common::Cid &cid, size_t name_length = 2) const noexcept;
+  [[nodiscard]] std::string shard(const cognitio::common::Cid &cid,
+                                  size_t name_length = 2) const noexcept;
 
   void initRepoStorage(const std::filesystem::path &path);
 
   bool closed_ = true;
+
+  config::Config config_;
   std::unique_ptr<datastore::Filesystem<StoreValue>> root_;
   std::unique_ptr<blockstorage::Blockstorage> blocks_;
-  common::logger::Logger logger_ = common::logger::createLogger("Repo logger");
+  common::logger::Logger logger_;
 };
 
 }  // namespace repo
