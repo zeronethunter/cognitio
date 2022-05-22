@@ -17,10 +17,10 @@ namespace config {
 
 class Config {
  public:
-  Config() noexcept = delete;
+  Config() noexcept : repo_path_(std::string()) {}
   // Config(const Config &) = delete;
   // Config &operator=(const Config &) = delete;
-  explicit Config(const std::string &repo_path) noexcept;
+  explicit Config(std::string repo_path) noexcept;
 
   Status TryInit() noexcept;
 

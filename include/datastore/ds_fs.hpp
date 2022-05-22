@@ -42,7 +42,7 @@ class Filesystem : Datastore<common::Cid, Value, Status> {
   Status Open(const std::filesystem::path& path) noexcept override;
 
   Status Open() noexcept {
-    if (std::filesystem::exists(path_)) {
+    if (!std::filesystem::exists(path_)) {
       return Open(path_);
     }
     return {StatusCode::OK, path_.string() + "  is already opened."};

@@ -130,7 +130,7 @@ class Repo {
   [[nodiscard]] std::string shard(const cognitio::common::Cid &cid,
                                   size_t name_length = 2) const noexcept;
 
-  void initRepoStorage(const std::filesystem::path &path);
+  void initRepoStorage(const std::filesystem::path &path) noexcept;
 
   bool closed_ = true;
 

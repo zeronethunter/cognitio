@@ -3,6 +3,8 @@
 #include <google/protobuf/util/json_util.h>
 
 #include <fstream>
+#include <utility>
+
 #include "common/status.hpp"
 
 namespace cognitio {
@@ -12,7 +14,8 @@ bool Config::isConfigCreated(const std::string &path) const noexcept {
   return std::filesystem::exists(std::filesystem::path(path) / "config");
 }
 
-Config::Config(const std::string &repo_path) noexcept : repo_path_(repo_path) {
+Config::Config(std::string repo_path) noexcept
+    : repo_path_(std::move(repo_path)) {
   logger_ = common::logger::createLogger("Config logger");
 }
 
@@ -20,6 +23,8 @@ Status Config::createConfig(const std::string &repo_path,
                             const std::string &api_address) const noexcept {
   std::filesystem::path config_path(repo_path);
   config_path /= "config";
+
+//  std::filesystem::create_directory(repo_path);
 
   ProtoConfig config;
   config.set_repo_path(repo_path);

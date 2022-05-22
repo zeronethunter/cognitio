@@ -15,7 +15,8 @@ namespace cognitio {
 namespace repo {
 
 template <typename StoreValue>
-void Repo<StoreValue>::initRepoStorage(const std::filesystem::path& path) {
+void Repo<StoreValue>::initRepoStorage(
+    const std::filesystem::path& path) noexcept {
   datastore::Filesystem<StoreValue> root(path);
   root_ = std::make_unique<datastore::Filesystem<StoreValue>>(root);
 
@@ -37,7 +38,8 @@ Status Repo<StoreValue>::openRepo() noexcept {
     return status_open;
   }
 
-  Status status_init = config_.TryInit();
+  Status status_init = config_.Dump();
+
 
   return status_init;
 }

@@ -13,9 +13,13 @@ std::string GetDefaultRepoPath() {
   auto repo_home_char = std::getenv("XDG_DATA_HOME");
   std::string repo_home;
   if (!repo_home_char) {
-      repo_home = "~/.cognitio";
+    auto home_tmp_char = std::getenv("HOME");
+    if (!home_tmp_char) {
+      return {};
+    }
+    repo_home = std::string(home_tmp_char) + "/.cognitio";
   } else {
-      repo_home = std::string(repo_home_char) + "/cognitio";
+    repo_home = std::string(repo_home_char) + "/cognitio";
   }
 
   return repo_home;
