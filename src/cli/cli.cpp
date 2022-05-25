@@ -9,10 +9,10 @@
 #include <memory>
 
 #include "cli/commands/command.hpp"
+#include "cli/commands/response_emitter.hpp"
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
 #include "core/commands/list/root.hpp"
-#include "core/commands/local_emitter.hpp"
 
 #define HELP_ARG_MSG "--help"
 #define HELP_OPT_MSG "help"
@@ -55,16 +55,19 @@ Status Cli<Context>::Run(T& args) const {
     return err;
   }
 
-  LocalEmitter re(std::cout);
+  ResponseEmitter re;
   request.cmd->Run(ctx, request.env, re);
   err = re.GetStatus();
   if (!err.ok()) {
-    logger_->error(err.error_message());
+    if (!err.error_message().empty()) {
+      logger_->error(err.error_message());
+    }
+
     return err;
   }
 
   if (re.HaveData()) {
-    re.Emit();
+    re.Emit(std::cout);
   }
 
   return Status::OK;

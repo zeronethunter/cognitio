@@ -14,6 +14,7 @@
 #include "common/status.hpp"
 #include "common/status_code.hpp"
 #include "core/core_api/local_api.hpp"
+#include "core/core_api/remote_api.hpp"
 #include "repo/repo.hpp"
 
 #define CONFIG_ARG "--config"
@@ -54,7 +55,6 @@ Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
     return err;
   }
 
-  // logger_->info("Using {} API", core_api_->GetApiMode());
   return Status::OK;
 }
 
@@ -85,20 +85,39 @@ Status Context::resolveApi(CmdMeta& meta,
                   "Command " + meta.GetName() + "was disabled");
   }
 
-  // Can we just run this locally
-  if (!meta.IsNoLocal()) {
-    core_api_ = std::make_shared<LocalAPI>(Core(repo_path_));
-    return Status::OK;
+  // We're always trying to run it remotely first
+  if (!meta.IsNoRemote()) {
+    std::string api_addr = resolveAddr(env);
+    if (!api_addr.empty()) {
+      auto temp_api = std::make_shared<RemoteAPI>(api_addr);
+      auto err = temp_api->TryPing();
+      if (err.ok()) {
+        logger_->info("Using remote executor");
+        core_api_ = temp_api;
+        return Status::OK;
+      }
+
+      logger_->warn("Falling back to local executor");
+    }
   }
 
-  if (!meta.IsNoRemote() || meta.IsRepoRequired()) {
-    // TODO
-    // core_api_ = std::make_shared<RemoteAPI>(Core(config_));
-    core_api_ = std::make_shared<LocalAPI>(Core(repo_path_));
-    return Status::OK;
+  // Now we just rung it locally
+  core_api_ = std::make_shared<LocalAPI>(Core(repo_path_));
+  return Status::OK;
+}
+
+std::string Context::resolveAddr(CmdEnv& env) const noexcept {
+  for (const auto& x : env.arguments) {
+    if (x.first == "--api") {
+      return x.second;
+    }
   }
 
-  return Status::FAILED;
+  if (config_) {
+    return config_->Get("api_address");
+  }
+
+  return "";
 }
 
 }  // namespace commands

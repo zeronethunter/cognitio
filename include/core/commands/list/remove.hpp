@@ -18,7 +18,7 @@ using namespace cli::commands;
 
 class RmMeta : public CmdMeta {
  public:
-  RmMeta() : CmdMeta(std::string("rm"), {}, true, true) {}
+  RmMeta() : CmdMeta(std::string("rm"), {}, true, false) {}
 };
 
 class RmCmd : public Command<Context> {

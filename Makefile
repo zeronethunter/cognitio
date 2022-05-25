@@ -120,20 +120,12 @@ CLI_PROTO_SRC_DIR=proto/cli
 DATA_PROTO_SRC_DIR=proto/data
 CONFIG_PROTO_SRC_DIR=proto/config
 KADEMLIA_PROTO_SRC_DIR=proto/kademlia
+API_PROTO_SRC_DIR=proto/api
 
 PROTO_OUT_SRC_DIR=src/proto
 PROTO_OUT_HEADER_DIR=include/proto
 
-GRPC_OUT_SRC_DIR=src/grpc
-GRPC_OUT_HEADER_DIR=include/grpc
-
-proto: cli-proto data-proto config-proto
-
-cli-proto:
-	protoc --experimental_allow_proto3_optional -I ${CLI_PROTO_SRC_DIR} --cpp_out=${CLI_PROTO_SRC_DIR} ${CLI_PROTO_SRC_DIR}/*.proto
-	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
-	mv ${CLI_PROTO_SRC_DIR}/*.pb.h ${PROTO_OUT_HEADER_DIR}
-	mv ${CLI_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
+proto: data-proto config-proto api-proto kademlia-proto
 
 data-proto:
 	protoc --experimental_allow_proto3_optional -I ${DATA_PROTO_SRC_DIR} --cpp_out=${DATA_PROTO_SRC_DIR} ${DATA_PROTO_SRC_DIR}/*.proto
@@ -148,17 +140,31 @@ config-proto:
 	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
 
 kademlia-proto:
-	protoc --experimental_allow_proto3_optional -I ${CONFIG_PROTO_SRC_DIR} --cpp_out=${CONFIG_PROTO_SRC_DIR} ${CONFIG_PROTO_SRC_DIR}/*.proto
+	protoc --experimental_allow_proto3_optional -I ${KADEMLIA_PROTO_SRC_DIR} --cpp_out=${KADEMLIA_PROTO_SRC_DIR} ${KADEMLIA_PROTO_SRC_DIR}/*.proto
 	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
-	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.h ${PROTO_OUT_HEADER_DIR}
-	mv ${CONFIG_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
+	mv ${KADEMLIA_PROTO_SRC_DIR}/*.pb.h ${PROTO_OUT_HEADER_DIR}
+	mv ${KADEMLIA_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
 
 # Don't copy this one for usual protobufs. It's only for gRPC
-	protoc -I ${KADEMLIA_PROTO_SRC_DIR} --grpc_out=${KADEMLIA_PROTO_SRC_DIR} --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` \
+	protoc --experimental_allow_proto3_optional -I ${KADEMLIA_PROTO_SRC_DIR} --grpc_out=${KADEMLIA_PROTO_SRC_DIR} --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` \
 		${KADEMLIA_PROTO_SRC_DIR}/*proto
-	mkdir -p ${GRPC_OUT_HEADER_DIR} ${GRC_OUT_SRC_DIR}
-	mv ${KADEMLIA_PROTO_SRC_DIR}/*grpc.pb.h ${GRPC_OUT_HEADER_DIR}
-	mv ${KADEMLIA_PROTO_SRC_DIR}/*grpc.pb.cc ${GRPC_OUT_SRC_DIR}
+	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
+	mv ${KADEMLIA_PROTO_SRC_DIR}/*grpc.pb.h ${PROTO_OUT_HEADER_DIR}
+	mv ${KADEMLIA_PROTO_SRC_DIR}/*grpc.pb.cc ${PROTO_OUT_SRC_DIR}
+
+api-proto:
+# TODO !!!
+	protoc --experimental_allow_proto3_optional -I ${API_PROTO_SRC_DIR} --cpp_out=${API_PROTO_SRC_DIR} ${API_PROTO_SRC_DIR}/*.proto
+	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
+	mv ${API_PROTO_SRC_DIR}/*.pb.h ${PROTO_OUT_HEADER_DIR}
+	mv ${API_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
+
+# Don't copy this one for usual protobufs. It's only for gRPC
+	protoc --experimental_allow_proto3_optional -I ${API_PROTO_SRC_DIR} --grpc_out=${API_PROTO_SRC_DIR} --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` \
+		${API_PROTO_SRC_DIR}/*proto
+	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
+	mv ${API_PROTO_SRC_DIR}/*grpc.pb.h ${PROTO_OUT_HEADER_DIR}
+	mv ${API_PROTO_SRC_DIR}/*grpc.pb.cc ${PROTO_OUT_SRC_DIR}
 
 clean:
 	rm -rf ${BUILD_DIR}

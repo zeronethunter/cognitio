@@ -18,7 +18,7 @@ using namespace cli::commands;
 
 class GetMetaC : public CmdMeta {
  public:
-  GetMetaC() : CmdMeta(std::string("get"), {}, true, true) {}
+  GetMetaC() : CmdMeta(std::string("get"), {}, true, false) {}
 };
 
 class GetCmd : public Command<Context> {

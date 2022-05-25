@@ -8,6 +8,7 @@
 
 #include "cli/commands/command.hpp"
 #include "core/context/context.hpp"
+#include "core/core_api/local_api.hpp"
 
 namespace cognitio {
 namespace core {
@@ -27,7 +28,7 @@ class InitCmd : public Command<Context> {
 
   void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
-    auto core = ctx.GetAPI()->GetCore();
+    auto core = dynamic_cast<LocalAPI*>(ctx.GetAPI().get())->GetCore();
     auto err = core->GetRepo()->Init();
     re.SetStatus(StatusCode::OK);
   }

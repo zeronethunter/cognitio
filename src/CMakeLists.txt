@@ -10,9 +10,9 @@ add_subdirectory(linked_data)
 add_subdirectory(proto)
 add_subdirectory(repo)
 add_subdirectory(cli)
+add_subdirectory(grpc_wrapper)
 
 # add_subdirectory(p2p)
-# add_subdirectory(rpc)
 
 set(MAIN_BIN ${CMAKE_PROJECT_NAME})
 set(${MAIN_BIN}_SOURCES main.cpp)

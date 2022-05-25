@@ -3,37 +3,37 @@
 // Distributed under the GNU GPLv3 software license, see the accompanying
 // file LICENSE or visit <https://www.gnu.org/licenses/gpl-3.0.en.html>
 
-#ifndef CGNT_CORE_CORE_API_LOCAL_API_HPP_
-#define CGNT_CORE_CORE_API_LOCAL_API_HPP_
+#ifndef CGNT_CORE_CORE_API_REMOTE_API_HPP_
+#define CGNT_CORE_CORE_API_REMOTE_API_HPP_
 
 #include <memory>
 
-#include "cli/commands/response_emitter.hpp"
-#include "core/core.hpp"
+#include "common/logger/logger.hpp"
+#include "core/core_api/api_service.hpp"
 #include "core/core_api/core_api.hpp"
-#include "multiformats/cid.hpp"
+#include "grpc_wrapper/client/client.hpp"
+#include "proto/api.grpc.pb.h"
 
 namespace cognitio {
 namespace core {
 namespace core_api {
 
-using namespace cli::commands;
+using namespace rpc::client;
 
-class LocalAPI : public CoreAPI {
+class RemoteAPI final : public CoreAPI {
  public:
-  typedef std::shared_ptr<Core> CorePtr;
+  typedef std::unique_ptr<Client<CoreApiService>> ClientPtr;
 
-  explicit LocalAPI(Core&& core)
-      : core_(std::make_unique<Core>(std::move(core))) {}
-
+  explicit RemoteAPI(const std::string& host_addr);
   void Remove(const common::Cid& cid, ResponseEmitter& re) override;
   void Get(const common::Cid& cid, ResponseEmitter& re) override;
   void Add(const std::string& path, ResponseEmitter& re) override;
-
-  CorePtr GetCore() noexcept { return core_; }
+  Status TryPing() const noexcept;
+  ~RemoteAPI() = default;
 
  private:
-  CorePtr core_;
+  ClientPtr client_;
+  common::logger::Logger logger_;
 };
 
 }  // namespace core_api

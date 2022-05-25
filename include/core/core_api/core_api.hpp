@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "cli/commands/response_emitter.hpp"
-#include "multiformats/cid.hpp"
 #include "core/core.hpp"
+#include "multiformats/cid.hpp"
 
 namespace cognitio {
 namespace core {
@@ -20,19 +20,14 @@ using namespace cli::commands;
 
 class CoreAPI {
  public:
-  typedef std::shared_ptr<Core> CorePtr;
-
-  explicit CoreAPI(Core&& core)
-      : core_(std::make_unique<Core>(std::move(core))) {}
+  CoreAPI() = default;
+  CoreAPI(CoreAPI& api) = delete;
+  CoreAPI& operator=(CoreAPI& api) = delete;
+  ~CoreAPI() = default;
 
   virtual void Remove(const common::Cid& cid, ResponseEmitter& re) = 0;
   virtual void Get(const common::Cid& cid, ResponseEmitter& re) = 0;
   virtual void Add(const std::string& path, ResponseEmitter& re) = 0;
-
-  CorePtr GetCore() noexcept { return core_; }
-
- private:
-  CorePtr core_;
 };
 
 }  // namespace core_api

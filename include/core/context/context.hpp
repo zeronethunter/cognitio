@@ -48,6 +48,7 @@ class Context {
  private:
   std::string getRepoPath(CmdEnv& env) const noexcept;
   Status resolveApi(CmdMeta& meta, CmdEnv& env) noexcept;
+  std::string resolveAddr(CmdEnv& env) const noexcept;
 
   CfgPtr config_ = nullptr;
   ApiPtr core_api_ = nullptr;

@@ -18,7 +18,7 @@ using namespace cli::commands;
 
 class AddMeta : public CmdMeta {
  public:
-  AddMeta() : CmdMeta(std::string("add"), {}, true, true) {}
+  AddMeta() : CmdMeta(std::string("add"), {}, true, false) {}
 };
 
 class AddCmd : public Command<Context> {

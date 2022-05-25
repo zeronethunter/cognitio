@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+service CoreApiService {
+    rpc Ping(StringRequest) returns (StringRequest);
+    rpc Add(StringRequest) returns (ProtoResponse);
+    rpc Get(StringRequest) returns (ProtoResponse);
+    rpc Remove(StringRequest) returns (ProtoResponse);
+}
+
+message StringRequest {
+    string data = 1;
+}
+
+message ProtoResponse {
+    message ResponseStatus {
+        uint32 StatusCode = 1;
+        string StatusMsg = 2;
+    }
+
+    ResponseStatus status = 1;
+    optional bytes data = 2;
+}

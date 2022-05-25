@@ -6,8 +6,10 @@
 #ifndef CGNT_CLI_COMMANDS_RESPONSE_EMITTER_HPP
 #define CGNT_CLI_COMMANDS_RESPONSE_EMITTER_HPP
 
+#include <iostream>
+
 #include "common/status.hpp"
-#include "proto/ProtoResponseEmitter.pb.h"
+#include "proto/api.pb.h"
 
 namespace cognitio {
 namespace cli {
@@ -16,22 +18,23 @@ namespace commands {
 class ResponseEmitter {
  public:
   ResponseEmitter() = default;
+  ResponseEmitter(ProtoResponse&& proto) : proto_(proto) {}
   ResponseEmitter(ResponseEmitter& re) = delete;
   ResponseEmitter& operator=(ResponseEmitter& re) = delete;
   ~ResponseEmitter() = default;
 
-  virtual void Emit() = 0;
   void Append(const std::string& data);
   bool HaveData() const noexcept { return proto_.data().empty(); }
   void SetStatus(StatusCode code, std::string msg = "");
+  void ReplaceProto(const ProtoResponse& proto) { proto_ = proto; }
+  ProtoResponse& GetProto() noexcept { return proto_; }
   Status GetStatus() const noexcept {
     auto code = static_cast<StatusCode>(proto_.status().statuscode());
     auto msg = proto_.status().statusmsg();
     return Status(code, msg);
   }
 
- protected:
-  ProtoResponse& GetProto() noexcept { return proto_; }
+  void Emit(std::ostream& out) { out << proto_.data(); }
 
  private:
   ProtoResponse proto_;

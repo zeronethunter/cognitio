@@ -25,9 +25,8 @@ class Core {
   typedef std::shared_ptr<repo::Repo<std::string>> RepoPtr;
   typedef std::shared_ptr<linked_data::MerkleDag> DagPtr;
 
-  explicit Core(const std::string &repo_path)  {
-    repo_ =
-        std::make_shared<repo::Repo<std::string>>(repo_path);
+  explicit Core(const std::string &repo_path) {
+    repo_ = std::make_shared<repo::Repo<std::string>>(repo_path);
     dag_ = std::make_shared<linked_data::MerkleDag>(
         std::make_shared<exchange::BlockService>(repo_));
   }

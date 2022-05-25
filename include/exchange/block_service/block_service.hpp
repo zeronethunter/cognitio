@@ -24,7 +24,11 @@ class BlockService {
   BlockService() = default;
 
   explicit BlockService(std::shared_ptr<repo::Repo<std::string>> repo)
-      : repo_(std::move(repo)) {}
+      : repo_(std::move(repo)) {
+    if (repo_->Exists()) {
+      closed_ = false;
+    }
+  }
 
   Status Open(const std::filesystem::path& path =
                   std::filesystem::path(common::utils::GetDefaultRepoPath()) /
