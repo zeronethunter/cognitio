@@ -10,6 +10,7 @@
 
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
+#include "repo/gc/gc.hpp"
 
 namespace cognitio {
 namespace repo {
@@ -24,6 +25,10 @@ void Repo<StoreValue>::initRepoStorage(
   blocks_ = std::make_unique<blockstorage::Blockstorage>(std::move(blocks));
 
   config_ = config::Config(path);
+
+  if (Exists()) {
+    closed_ = false;
+  }
 }
 
 template <typename StoreValue>
@@ -39,7 +44,6 @@ Status Repo<StoreValue>::openRepo() noexcept {
   }
 
   Status status_init = config_.Dump();
-
 
   return status_init;
 }
@@ -78,7 +82,7 @@ template <typename StoreValue>
 std::string Repo<StoreValue>::shard(const cognitio::common::Cid& cid,
                                     size_t name_length) const noexcept {
   std::string str_cid = cid.ToString();
-  size_t offset = str_cid.length() - name_length - 1;
+  size_t offset = str_cid.length() - name_length;
   return {str_cid.cbegin() + static_cast<long>(offset), str_cid.cend()};
 }
 
@@ -173,7 +177,7 @@ bool Repo<StoreValue>::Has(const common::Cid& cid) const noexcept {
 
 template <typename StoreValue>
 bool Repo<StoreValue>::Exists() noexcept {
-  return !closed_ && std::filesystem::exists(root_->Root()) &&
+  return std::filesystem::exists(root_->Root()) &&
          std::filesystem::exists(root_->Root() / "blocks");
 }
 

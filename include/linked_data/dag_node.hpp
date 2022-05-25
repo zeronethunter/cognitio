@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "files/unixfs/unixfs.hpp"
+#include "multiformats/cid.hpp"
 #include "proto/ProtoData.pb.h"
 
 namespace cognitio {
@@ -27,13 +27,17 @@ class DagNode {
   explicit DagNode(files::unixfs::UnixFS &&file) : data_(std::move(file)){};
   DagNode &operator=(files::unixfs::UnixFS &&file);
 
-  explicit DagNode(std::vector<uint8_t> &&bytes) {
-    data_.SetData(bytes);
-  }
+  explicit DagNode(std::vector<uint8_t> &&bytes) { data_.SetData(bytes); }
   DagNode &operator=(std::vector<uint8_t> &&bytes);
 
+  /// \brief Construct new node on children and concatenated data
   DagNode(std::vector<uint8_t> &&bytes,
           const std::vector<DagNode> &children_data);
+
+  /// \brief Construct Node on children data
+  explicit DagNode(const std::vector<DagNode> &children);
+
+  void SetData(const std::vector<uint8_t> &bytes) { data_.SetData(bytes); };
 
   /// \return bytes of node
   std::vector<uint8_t> GetContent() const;
@@ -47,11 +51,8 @@ class DagNode {
   /// \return cid of current node
   common::Cid GetCid() const;
 
-  /// \brief insert children
-  // Status InsertSubNode(std::string &&name, DagNode &&children_node);
-
-  const std::vector<std::pair<common::Cid, std::shared_ptr<DagNode>>>
-      &GetChildren() const {
+  std::vector<std::pair<common::Cid, std::shared_ptr<DagNode>>> GetChildren()
+      const {
     return children_;
   };
 

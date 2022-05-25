@@ -16,6 +16,8 @@
 #include "common/utils/hex_util.hpp"
 #include "proto/ProtoData.pb.h"
 
+#define HASH_LENGTH 32
+
 namespace cognitio {
 namespace common {
 
@@ -46,7 +48,7 @@ class Multihash {
 
   Status CreateFromBytes(std::span<uint8_t> &bytes);
 
-  void ToHash(const std::span<uint8_t> &bytes);
+  std::span<uint8_t> ToHash(const std::span<uint8_t> &bytes);
 
   //! \return info about hash type
   const std::span<uint8_t> GetHash() const {
@@ -73,7 +75,7 @@ class Multihash {
     uint8_t hash_offset_;  //! size of non-hash data from the beginning
     size_t hash_size_;
 
-    Data(std::span<const uint8_t> hash);
+    Data(std::span<uint8_t> &hash);
 
     Data(Data &&d) = default;
     Data &operator=(Data &&d) = default;
@@ -82,8 +84,8 @@ class Multihash {
   std::shared_ptr<Data> data_;
 
   Data &data() const { return *data_; };
-  Multihash(const std::span<uint8_t> &hash)
-      : data_(std::make_shared<Data>(hash)){};
+  //  explicit Multihash(std::span<uint8_t> &hash)
+  //      : data_(std::make_shared<Data>(hash)){};
 };
 
 }  // namespace common

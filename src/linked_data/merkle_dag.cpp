@@ -53,7 +53,8 @@ Status MerkleDag::RemoveNode(const common::Cid &cid, bool is_recursive) {
   return Status();
 }
 
-std::vector<DagNode> MerkleDag::DirectedTrasersal(const DagNode &root_node) const {
+std::vector<DagNode> MerkleDag::DirectedTrasersal(
+    const DagNode &root_node) const {
   std::vector<DagNode> result_vec;
   std::stack<DagNode> node_st;
   DagNode current_node = root_node;
@@ -73,7 +74,7 @@ std::vector<DagNode> MerkleDag::DirectedTrasersal(const DagNode &root_node) cons
 std::unique_ptr<DagNode> MerkleDag::buildGraph(
     const std::vector<std::vector<uint8_t>> &chunks) {
   /* initalizing the bottom lay of chunks */
-  int vec_size;
+  size_t vec_size;
   if (chunks.size() < CHUNK_SIZE) {
     vec_size = chunks.size();
   } else {
@@ -94,32 +95,40 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
   }
 
   /* build nodes above bottom lay */
-  std::vector<std::vector<DagNode>> layer_vec(bottom_lay_vec.size());
+  std::vector<std::vector<DagNode>> layer_vec(1);
   std::vector<std::vector<DagNode>> previous_layer_vec =
       std::move(bottom_lay_vec);
+  std::vector<DagNode> last_layer;
   size_t blck_cnt = 0;
-  while (previous_layer_vec.size() != 1) {
-    for (auto chunk_block : previous_layer_vec) {
+  while (last_layer.size() != 1) {
+    for (const auto &chunk_block : previous_layer_vec) {
+      DagNode parent_node(chunk_block);
       std::vector<uint8_t> concatenated_data;
-      for (auto chunk : chunk_block) {
-        concatenated_data.insert(concatenated_data.end(),
-                                 chunk.GetCid().GetBytes().begin(),
-                                 chunk.GetCid().GetBytes().end());
+      auto children = parent_node.GetChildren();
+
+      for (auto &child : children) {
+        std::vector<uint8_t> content = child.second->GetContent();
+        concatenated_data.insert(concatenated_data.end(), content.begin(),
+                                 content.end());
       }
 
-      DagNode parent_node(std::move(concatenated_data), chunk_block);
+      parent_node.SetData(concatenated_data);
+
       layer_vec[blck_cnt].push_back(parent_node);
-      if (blck_cnt == CHUNK_SIZE) {
+      if (parent_node.GetChildren().size() != CHUNK_SIZE) {
         ++blck_cnt;
       }
     }
     previous_layer_vec = std::move(layer_vec);
-    if (previous_layer_vec.size() < CHUNK_SIZE) {
-      layer_vec.resize(previous_layer_vec.size());
+
+    last_layer = previous_layer_vec[previous_layer_vec.size() - 1];
+
+    if (last_layer.size() < CHUNK_SIZE) {
+      layer_vec.resize(1);
     } else {
-      layer_vec.resize((previous_layer_vec.size() % CHUNK_SIZE == 0)
-                           ? previous_layer_vec.size()
-                           : previous_layer_vec.size() + 1);
+      layer_vec.resize((last_layer.size() % CHUNK_SIZE == 0)
+                           ? last_layer.size()
+                           : last_layer.size() + 1);
     }
     blck_cnt = 0;
   }

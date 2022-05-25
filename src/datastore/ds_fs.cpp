@@ -6,6 +6,7 @@
 #include "datastore/ds_fs.hpp"
 
 #include <fstream>
+
 #include "common/status.hpp"
 
 namespace cognitio {
@@ -35,14 +36,14 @@ Status Filesystem<Value>::Put(const common::Cid& key,
     return {StatusCode::ALREADY_EXISTS, " already exists"};
   }
   std::fstream file;
-  file.open(filename, std::ios::binary);
+  file.open((path_ / filename).string(), std::ios::out);
 
   if (!file.is_open()) {
     return {StatusCode::CANCELLED, "Can not create " + filename};
   }
 
   char* bytes = makeCharFromData(value);
-  file.write(bytes, sizeof(Value));
+  file.write(bytes, value.size());
   file.close();
 
   delete[] bytes;
@@ -60,7 +61,7 @@ std::pair<Status, Value> Filesystem<Value>::Get(
   }
 
   std::fstream file;
-  file.open(filename, std::ios::binary);
+  file.open((path_ / filename).string(), std::ios::binary);
 
   if (!file.is_open()) {
     return std::pair<Status, Value>(
@@ -70,7 +71,7 @@ std::pair<Status, Value> Filesystem<Value>::Get(
   Value result;
 
   char* bytes = makeCharFromData(result);
-  file.read(bytes, sizeof(Value));
+  file.read(bytes, result.size());
 
   file.close();
 

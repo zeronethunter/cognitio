@@ -31,5 +31,5 @@ int main(int argc, char *argv[]) {
   // Builing the tree of commands, parsing & running of the argv
   cli::Cli<Context> cli(std::make_shared<RootCmd>(MakeCommands()));
   Status status = cli.Run(args);
-  return status.ok();
+  return !status.ok();
 }

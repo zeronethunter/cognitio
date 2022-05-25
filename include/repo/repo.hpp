@@ -13,9 +13,8 @@
 #include "common/logger/logger.hpp"
 #include "common/utils/repo.hpp"
 #include "config/config.hpp"
-
-// #include "pinner/pin-manager.hpp"
-// #include "repo/gc/gc.hpp"
+#include "repo/gc/gc.hpp"
+#include "repo/pinner/pin-manager.hpp"
 
 namespace cognitio {
 namespace repo {
@@ -137,6 +136,7 @@ class Repo {
   config::Config config_;
   std::unique_ptr<datastore::Filesystem<StoreValue>> root_;
   std::unique_ptr<blockstorage::Blockstorage> blocks_;
+  std::shared_ptr<std::thread> gc;
   common::logger::Logger logger_;
 };
 

@@ -17,12 +17,14 @@ std::vector<Buffer> chunk_fixed_raw(const Buffer& buffer,
   std::vector<Buffer> result;
   while (size >= max_width) {
     result.push_back(
-        Buffer(std::begin(buffer) + i, std::begin(buffer) + max_width + i - 1));
+        Buffer(std::begin(buffer) + static_cast<long>(i),
+               std::begin(buffer) + static_cast<long>(max_width + i) - 1));
     i += max_width;
     size -= max_width;
   }
 
-  result.push_back(Buffer(std::begin(buffer) + i, std::end(buffer)));
+  result.push_back(
+      Buffer(std::begin(buffer) + static_cast<long>(i), std::end(buffer)));
 
   return result;
 }

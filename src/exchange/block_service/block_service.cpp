@@ -25,7 +25,7 @@ Status BlockService::Open(const std::filesystem::path& path,
   return status_open;
 }
 
-Status BlockService::Close() noexcept {}
+// Status BlockService::Close() noexcept { return repo_->Close(); }
 
 std::filesystem::path BlockService::Root() const noexcept {
   if (!is_daemon_opened_) {
