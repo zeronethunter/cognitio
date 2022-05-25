@@ -19,6 +19,13 @@ DagNode::DagNode(std::vector<uint8_t> &&bytes,
   }
 }
 
+DagNode::DagNode(const std::vector<DagNode> &children) {
+  for (const auto &node : children) {
+    children_.push_back(std::make_pair<common::Cid, std::shared_ptr<DagNode>>(
+        GetCid(), std::make_shared<DagNode>(node)));
+  }
+}
+
 std::vector<uint8_t> DagNode::GetContent() const { return data_.GetData(); }
 
 size_t DagNode::Count() const { return children_.size(); }
@@ -27,14 +34,6 @@ common::Cid DagNode::GetCid() const {
   auto content = GetContent();
   return common::Cid(content);
 }
-
-// Status DagNode::InsertSubNode(std::string &&name, DagNode &&children_node) {
-//   auto result = children_.emplace(std::move(name), std::move(children_node));
-//   if (result.second) {
-//     return Status::OK;
-//   }
-//   return Status(CANCELLED, "Duplicate node");
-// }
 
 }  // namespace linked_data
 }  // namespace cognitio

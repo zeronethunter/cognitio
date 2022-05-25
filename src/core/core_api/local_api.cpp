@@ -9,11 +9,11 @@
 #include <sstream>
 #include <utility>
 
-#include "multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "common/status_code.hpp"
 #include "files/chunker/chunker.hpp"
 #include "linked_data/dag_node.hpp"
+#include "multiformats/cid.hpp"
 
 namespace cognitio {
 namespace core {
@@ -52,10 +52,11 @@ void LocalAPI::Add(const std::string& path, ResponseEmitter& re) {
   std::vector<uint8_t> buffer(buf_str.begin(), buf_str.end());
 
   // Chunking
-  auto chunked_data = files::chunker::chunk_fixed_raw(buffer);
+  auto chunked_data = files::chunker::chunk_fixed_raw(buffer, 1000);
 
   // Adding node
-  common::Cid cid; Status err;
+  common::Cid cid;
+  Status err;
   std::tie(err, cid) = GetCore()->GetDag()->Add(chunked_data);
 
   re.SetStatus(err.error_code());

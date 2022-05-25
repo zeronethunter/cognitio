@@ -63,6 +63,9 @@ Status Config::getExistedConfig(const std::string &path) noexcept {
     return {StatusCode::FAILED, "Failed to open config file."};
   }
 
+  repo_path_ = config.repo_path();
+  api_address_ = config.api_adress();
+
   return Status::OK;
 }
 

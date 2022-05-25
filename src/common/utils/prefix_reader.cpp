@@ -46,7 +46,7 @@ State PrefixReader::consume(std::span<uint8_t> &buffer) {
   for (uint8_t element : buffer) {
     ++consumed_counter;
     state = consume(element);
-    if (state == needMoreState) {
+    if (state != needMoreState) {
       break;
     }
   }

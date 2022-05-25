@@ -6,8 +6,8 @@
 #ifndef CGNT_REPO_GC_GC_HPP_
 #define CGNT_REPO_GC_GC_HPP_
 
-#include <coroutine>
 #include <set>
+#include <thread>
 
 #include "repo/pinner/pin-manager.hpp"
 
@@ -24,7 +24,7 @@ namespace garbage {
  */
 void GcInit(const pinner::PinManager& pins,
             const blockstorage::Blockstorage& blockstorage,
-            const datastore::Filesystem<std::string>& root);
+            const datastore::Filesystem<std::string>& root) noexcept;
 
 /**
  *  @brief  Pins set of blocks in datastore.
@@ -36,7 +36,7 @@ void GcInit(const pinner::PinManager& pins,
 std::set<common::Cid> CreateMarkedSet(
     const pinner::PinManager& pins,
     const blockstorage::Blockstorage& blockstorage,
-    const datastore::Filesystem<std::string>& root);
+    const datastore::Filesystem<std::string>& root) noexcept;
 
 /**
  *  @brief  Remove block in block_storage.
@@ -45,7 +45,7 @@ std::set<common::Cid> CreateMarkedSet(
  *  @param blockstorage where to delete.
  */
 void RemoveBlock(const common::Cid& cid,
-                 const blockstorage::Blockstorage& blockstorage);
+                 const blockstorage::Blockstorage& blockstorage) noexcept;
 
 /**
  *  @brief  Delete Unpinned blocks in block_storage.
@@ -54,7 +54,7 @@ void RemoveBlock(const common::Cid& cid,
  *  @param blockstorage where to delete.
  */
 void DeleteUnmarkedBlocks(const blockstorage::Blockstorage& blockstorage,
-                          const std::set<common::Cid>& marked_set);
+                          const std::set<common::Cid>& marked_set) noexcept;
 
 }  // namespace garbage
 }  // namespace repo

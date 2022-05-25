@@ -6,7 +6,11 @@
 #ifndef CNGT_REPO_PINNER_PIN_MANAGER_HPP_
 #define CNGT_REPO_PINNER_PIN_MANAGER_HPP_
 
+#include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <set>
+#include <utility>
 
 #include "datastore/ds_fs.hpp"
 #include "repo/block_storage/block_storage.hpp"
@@ -20,14 +24,21 @@ namespace pinner {
  *  Pins and Unpins blocks, so the Garbage Collector doesn't remove them
  */
 class PinManager {
-  typedef std::set<common::Cid> Pins;
-  typedef std::unique_ptr<blockstorage::Blockstorage> PinStore;
+  typedef std::set<std::string> Pins;
+  typedef std::filesystem::path PinStore;
 
  public:
-  PinManager() = default;
+  PinManager() = delete;
 
-  PinManager(PinStore&& pinstore, const Pins& pins = Pins())
-      : pinstore_(std::move(pinstore)), pins_(pins) {}
+  explicit PinManager(PinStore& pinstore, const Pins& pins = Pins()) noexcept
+      : pinstore_(std::move(pinstore)),
+        logger_(common::logger::createLogger("Pinner logger")) {
+    if (!pins.empty()) {
+      pins_ = pins;
+    } else {
+      getPinsSet();
+    }
+  }
 
   PinManager(const PinManager& pin_manager) = delete;
   PinManager& operator=(const PinManager& pin_manager) = delete;
@@ -37,23 +48,27 @@ class PinManager {
    *
    *  @param cid key to pin.
    */
-  void PinDirectly(const common::Cid& cid);
-  /**
-   *  @brief  Put key to pinstore recursively.
-   *
-   *  @param cid key to pin recursively.
-   */
-  void PinRecursively(const common::Cid& cid);
+  void Pin(const common::Cid& cid) noexcept;
   /**
    *  @brief  Delete key in pinstore.
    *
    *  @param cid key to unpin.
    */
-  void UnPin(const common::Cid& cid);
+  void UnPin(const common::Cid& cid) noexcept;
 
  private:
+  std::string getPins() noexcept;
+
+  void getPinsSet() noexcept;
+
+  void clearFile() noexcept;
+
+  void addPins(const std::string& str_cid) noexcept;
+
   PinStore pinstore_;
   Pins pins_;
+
+  common::logger::Logger logger_;
 };
 
 }  // namespace pinner
