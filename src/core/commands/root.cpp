@@ -9,6 +9,7 @@
 #include "core/commands/list/get.hpp"
 #include "core/commands/list/init.hpp"
 #include "core/commands/list/remove.hpp"
+#include "core/commands/list/daemon.hpp"
 
 namespace cognitio {
 namespace core {
@@ -22,16 +23,7 @@ RootCmd MakeCommands() {
   cmd.AddSubCmd(std::make_shared<GetCmd>());
   cmd.AddSubCmd(std::make_shared<AddCmd>());
   cmd.AddSubCmd(std::make_shared<RmCmd>());
-  // cmd.AddSubCmd(std::make_unique<DaemonCmd>(new DaemonCmd()));
-
-  // Working with remote repo
-
-  /*
-  cmd.AddSubCmd(std::make_unique<PinCmd>(new PinCmd()));
-  cmd.GetSubCmd("pin")->AddSubCmd(std::make_unique<PinGetCmd>(new PinGetCmd()));
-  cmd.GetSubCmd("pin")->AddSubCmd(std::make_unique<PinAddCmd>(new PinAddCmd()));
-  cmd.GetSubCmd("pin")->AddSubCmd(std::make_unique<PinRmCmd>(new PinRmCmd()));
-  */
+  cmd.AddSubCmd(std::make_shared<DaemonCmd>());
 
   return cmd;
 }

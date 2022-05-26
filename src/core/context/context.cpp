@@ -8,11 +8,13 @@
 #include <algorithm>
 #include <cstdlib>
 #include <filesystem>
+#include <mutex>
 #include <utility>
 
 #include "cli/commands/command.hpp"
 #include "common/status.hpp"
 #include "common/status_code.hpp"
+#include "config/config.hpp"
 #include "core/core_api/local_api.hpp"
 #include "core/core_api/remote_api.hpp"
 #include "repo/repo.hpp"
@@ -23,34 +25,26 @@ namespace cognitio {
 namespace core {
 namespace commands {
 
-void Context::SetConfig(Config&& conf) noexcept {
-  config_ = std::make_shared<Config>(std::move(conf));
-}
-
-//////////////////////////////////////////////////////////////
-// void Context::SetAPI(CoreAPI&& api) noexcept {           //
-//   core_api_ = std::make_shared<CoreAPI>(std::move(api)); //
-// }                                                        //
-//////////////////////////////////////////////////////////////
-
 Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
   repo_path_ = getRepoPath(env);
   logger_->debug("Found repo path: {}", repo_path_);
 
-  config_ = std::make_shared<Config>(repo_path_);
-  auto err = config_->TryInit();
+  config_.SetRepoPath(repo_path_);
+  auto err = config_.TryInit();
   if (meta.GetName() != "init") {
     if (!err.ok()) {
       logger_->error("Repo is not initialized. Use 'cognitio init'");
       return Status::FAILED;
     }
 
-    if (config_->Get("repo_path").empty()) {
-      config_->SetRepoPath(repo_path_);
+    if (config_.Get("repo_path").empty()) {
+      config_.SetRepoPath(repo_path_);
     }
   }
 
+  core_ = std::make_shared<Core>(repo_path_);
   err = resolveApi(meta, env);
+
   if (!err.ok() || !core_api_) {
     return err;
   }
@@ -101,8 +95,8 @@ Status Context::resolveApi(CmdMeta& meta,
     }
   }
 
-  // Now we just rung it locally
-  core_api_ = std::make_shared<LocalAPI>(Core(repo_path_));
+  // Now we just run it locally
+  core_api_ = std::make_shared<LocalAPI>(core_);
   return Status::OK;
 }
 
@@ -113,11 +107,7 @@ std::string Context::resolveAddr(CmdEnv& env) const noexcept {
     }
   }
 
-  if (config_) {
-    return config_->Get("api_address");
-  }
-
-  return "";
+  return config_.Get("api_address");
 }
 
 }  // namespace commands

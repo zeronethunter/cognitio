@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "common/status.hpp"
+#include "common/status_code.hpp"
 #include "proto/api.pb.h"
 
 namespace cognitio {
@@ -25,6 +26,7 @@ class ResponseEmitter {
 
   void Append(const std::string& data);
   bool HaveData() const noexcept { return proto_.data().empty(); }
+  void SetStatus(Status& err);
   void SetStatus(StatusCode code, std::string msg = "");
   void ReplaceProto(const ProtoResponse& proto) { proto_ = proto; }
   ProtoResponse& GetProto() noexcept { return proto_; }

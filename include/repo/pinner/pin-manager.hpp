@@ -14,6 +14,7 @@
 
 #include "datastore/ds_fs.hpp"
 #include "repo/block_storage/block_storage.hpp"
+#include "common/logger/logger.hpp"
 
 namespace cognitio {
 namespace repo {

@@ -5,6 +5,9 @@
 
 #include "grpc_wrapper/server/server.hpp"
 
+#include <grpcpp/health_check_service_interface.h>
+#include <grpcpp/impl/grpc_library.h>
+
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
 #include "common/status_code.hpp"
@@ -14,21 +17,21 @@ namespace rpc {
 namespace server {
 
 Server::Server(Server &&other) noexcept
-    : services_(std::move(other.services_)),
+    :  // services_(std::move(other.services_)),
       thread_(std::move(other.thread_)),
       server_(std::move(other.server_)) {}
 
 Server &Server::operator=(Server &&other) noexcept {
   if (this != &other) {
-    services_ = std::move(other.services_);
+    // services_ = std::move(other.services_);
     thread_ = std::move(other.thread_);
     server_ = std::move(other.server_);
   }
   return *this;
 }
 
-Status Server::Run() {
-  init();
+Status Server::Run(std::vector<ServiceInfo> &services) {
+  init(services);
   logger_->debug("Starting server");
   thread_ = std::thread(std::thread(&Server::launch_and_wait, this));
 
@@ -56,11 +59,12 @@ void Server::Shutdown() {
   }
 }
 
-void Server::init() {
-  for (const auto &service : services_) {
+void Server::init(std::vector<ServiceInfo> &services) {
+  grpc::EnableDefaultHealthCheckService(true);
+  for (const auto &service : services) {
     try {
-      builder_.AddListeningPort(service.address,
-                                grpc::InsecureServerCredentials());
+      auto str = service.address;
+      builder_.AddListeningPort(str, grpc::InsecureServerCredentials());
     } catch (...) {
       logger_->error("Wrong format of the address: {}", service.address);
     }
@@ -75,6 +79,7 @@ void Server::launch_and_wait() {
     server_ = builder_.BuildAndStart();
     ready_ = true;
   }
+
   cv_.notify_one();
   if (server_ != nullptr) {
     server_->Wait();

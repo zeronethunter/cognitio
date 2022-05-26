@@ -23,6 +23,11 @@ void ResponseEmitter::SetStatus(StatusCode code, std::string msg) {
   proto_.mutable_status()->set_statusmsg(msg);
 }
 
+void ResponseEmitter::SetStatus(Status& err) {
+  proto_.mutable_status()->set_statuscode(to_underlying(err.error_code()));
+  proto_.mutable_status()->set_statusmsg(err.error_message());
+}
+
 }  // namespace commands
 }  // namespace cli
 }  // namespace cognitio

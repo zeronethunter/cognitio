@@ -3,6 +3,7 @@
 #include <google/protobuf/util/json_util.h>
 
 #include <fstream>
+#include <mutex>
 #include <utility>
 
 #include "common/status.hpp"
@@ -105,6 +106,10 @@ std::string Config::Get(const std::string &field) const noexcept {
 void Config::SetRepoPath(const std::string &repo_path) noexcept {
   repo_path_ = repo_path;
 }
+
+// Static members
+std::once_flag Config::flag_;
+std::shared_ptr<Config> Config::instance_ = nullptr;
 
 }  // namespace config
 }  // namespace cognitio

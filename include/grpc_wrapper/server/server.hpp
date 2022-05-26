@@ -33,22 +33,22 @@ struct ServiceInfo {
 class Server {
  public:
   Server() = default;
-  explicit Server(std::vector<ServiceInfo> &services) noexcept
-      : services_(services) {}
+  // explicit Server(std::vector<ServiceInfo> &services) noexcept
+  //     : services_(services) {}
 
   Server(Server &&other) noexcept;
   Server &operator=(Server &&other) noexcept;
 
-  Status Run();
+  Status Run(std::vector<ServiceInfo> &services);
   void Shutdown();
 
  private:
-  void init();
+  void init(std::vector<ServiceInfo>& services);
   void launch_and_wait();
   inline bool is_ready() const noexcept { return ready_; }
 
  private:
-  std::vector<ServiceInfo> services_;
+//  std::vector<ServiceInfo> services_;
 
   std::thread thread_;
   grpc::ServerBuilder builder_;

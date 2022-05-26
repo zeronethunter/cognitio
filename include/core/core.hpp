@@ -8,8 +8,10 @@
 
 #include <memory>
 
+#include "common/logger/logger.hpp"
 #include "config/config.hpp"
 #include "exchange/block_service/block_service.hpp"
+#include "grpc_wrapper/server/server.hpp"
 #include "linked_data/merkle_dag.hpp"
 #include "repo/repo.hpp"
 
@@ -21,24 +23,30 @@ using namespace config;
 // TODO add block swap
 class Core {
  public:
-  typedef std::shared_ptr<Config> CfgPtr;
   typedef std::shared_ptr<repo::Repo<std::string>> RepoPtr;
   typedef std::shared_ptr<linked_data::MerkleDag> DagPtr;
+  typedef std::unique_ptr<rpc::server::Server> ServerPtr;
 
-  explicit Core(const std::string &repo_path) {
+  explicit Core(const std::string& repo_path) {
     repo_ = std::make_shared<repo::Repo<std::string>>(repo_path);
     dag_ = std::make_shared<linked_data::MerkleDag>(
         std::make_shared<exchange::BlockService>(repo_));
+
+    server_ = std::make_unique<rpc::server::Server>();
+    logger_ = common::logger::createLogger("core");
   }
 
   DagPtr GetDag() noexcept { return dag_; }
   RepoPtr GetRepo() noexcept { return repo_; }
-  Status RunDaemon() noexcept;
+  Status RunDaemon(std::vector<rpc::server::ServiceInfo> &vec) noexcept;
+  void Shutdown() noexcept;
 
  private:
-  // CfgPtr config_;
+  ServerPtr server_;
   RepoPtr repo_;
   DagPtr dag_;
+
+  common::logger::Logger logger_;
 };
 
 }  // namespace core

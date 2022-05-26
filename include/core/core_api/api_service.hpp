@@ -13,6 +13,8 @@
 #include <memory>
 
 #include "cli/commands/response_emitter.hpp"
+#include "common/logger/logger.hpp"
+#include "core/core_api/core_api.hpp"
 #include "core/core_api/local_api.hpp"
 #include "multiformats/cid.hpp"
 #include "proto/api.grpc.pb.h"
@@ -22,24 +24,28 @@ namespace cognitio {
 namespace core {
 namespace core_api {
 
+using namespace cli::commands;
+
 class ApiService final : public CoreApiService::Service {
  public:
-  typedef std::shared_ptr<LocalAPI> ApiPtr;
-
-  explicit ApiService(ApiPtr api) : api_(api) {}
+  explicit ApiService(LocalAPI& api) : api_(api) {
+    logger_ = common::logger::createLogger("api_service");
+  }
 
   grpc::Status Add([[maybe_unused]] grpc::ServerContext* context,
                    const StringRequest* request, ProtoResponse* resp) override {
+    logger_->debug("Recieved request for adding blocks");
     ResponseEmitter re;
-    api_->Add(request->data(), re);
+    api_.Add(request->data(), re);
     *resp = re.GetProto();
     return grpc::Status::OK;
   }
 
   grpc::Status Get([[maybe_unused]] grpc::ServerContext* context,
                    const StringRequest* request, ProtoResponse* resp) override {
+    logger_->debug("Recieved request for getting blocks");
     ResponseEmitter re;
-    api_->Get(common::Cid(request->data()), re);
+    api_.Get(common::Cid(request->data()), re);
     *resp = re.GetProto();
     return grpc::Status::OK;
   }
@@ -47,8 +53,9 @@ class ApiService final : public CoreApiService::Service {
   grpc::Status Remove([[maybe_unused]] grpc::ServerContext* context,
                       const StringRequest* request,
                       ProtoResponse* resp) override {
+    logger_->debug("Recieved request for removing blocks");
     ResponseEmitter re;
-    api_->Remove(common::Cid(request->data()), re);
+    api_.Remove(common::Cid(request->data()), re);
     *resp = re.GetProto();
     return grpc::Status::OK;
   }
@@ -56,12 +63,14 @@ class ApiService final : public CoreApiService::Service {
   grpc::Status Ping([[maybe_unused]] grpc::ServerContext* context,
                     [[maybe_unused]] const StringRequest* request,
                     StringRequest* resp) override {
+    logger_->debug("Recieved ping");
     resp->set_data(std::string("World"));
     return grpc::Status::OK;
   }
 
  private:
-  ApiPtr api_;
+  LocalAPI& api_;
+  common::logger::Logger logger_;
 };
 
 }  // namespace core_api

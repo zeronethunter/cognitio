@@ -20,7 +20,7 @@ namespace core {
 namespace core_api {
 
 void LocalAPI::Remove(const common::Cid& cid, ResponseEmitter& re) {
-  auto err = GetCore()->GetDag()->RemoveNode(cid);
+  auto err = core_->GetDag()->RemoveNode(cid);
   re.SetStatus(err.error_code());
   if (!err.error_message().empty()) {
     re.Append(err.error_message());
@@ -30,7 +30,7 @@ void LocalAPI::Remove(const common::Cid& cid, ResponseEmitter& re) {
 void LocalAPI::Get(const common::Cid& cid, ResponseEmitter& re) {
   Status err;
   linked_data::DagNode nd;
-  std::tie(err, nd) = GetCore()->GetDag()->GetNode(cid);
+  std::tie(err, nd) = core_->GetDag()->GetNode(cid);
 
   if (!err.error_message().empty()) {
     re.Append(err.error_message());
@@ -57,7 +57,7 @@ void LocalAPI::Add(const std::string& path, ResponseEmitter& re) {
   // Adding node
   common::Cid cid;
   Status err;
-  std::tie(err, cid) = GetCore()->GetDag()->Add(chunked_data);
+  std::tie(err, cid) = core_->GetDag()->Add(chunked_data);
 
   re.SetStatus(err.error_code());
   if (!err.error_message().empty()) {
@@ -68,6 +68,6 @@ void LocalAPI::Add(const std::string& path, ResponseEmitter& re) {
     re.Append("\nCID: " + cid.ToString());
   }
 }
-}  // namespace core_api
+}  // namespace core_->pi
 }  // namespace core
 }  // namespace cognitio

@@ -64,7 +64,7 @@ Status Cli<Context>::Run(T& args) const {
     }
 
     return err;
-  }
+  };
 
   if (re.HaveData()) {
     re.Emit(std::cout);
@@ -107,28 +107,27 @@ Status Cli<Context>::parse(T& args, CmdWrapper<Context>& cmdw) const noexcept {
 template <class Context>
 template <Container T>
 Status Cli<Context>::parseCommand(T& args, CmdPtr& cmd) const noexcept {
-  auto current_cmd = root_;
+  cmd = root_;
   bool is_found = false;
 
-  auto cmds_names = current_cmd->GetSubCmdsNames();
+  auto cmds_names = cmd->GetSubCmdsNames();
   do {
     auto found = std::find(cmds_names.begin(), cmds_names.end(), *args.begin());
     if (found != cmds_names.end()) {
       is_found = true;
-      current_cmd = current_cmd->GetSubCmd(*args.begin());
+      cmd = cmd->GetSubCmd(*args.begin());
       args.pop_front();
     } else {
       is_found = false;
       std::string prefix = root_->GetArgsPrefix();
 
       if (args.size() && args[0].compare(0, prefix.size(), prefix) != 0 &&
-          !current_cmd->GetMeta().AreOptionsRequired()) {
-        return Status(StatusCode::FAILED, "Unknown command {}", args[0]);
+          !cmd->GetMeta().AreOptionsRequired()) {
+        return Status(StatusCode::FAILED, "Unknown command", args[0]);
       }
     }
-  } while (is_found);
+  } while (is_found && args.size());
 
-  cmd = current_cmd;
   return Status::OK;
 }
 

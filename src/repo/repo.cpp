@@ -10,6 +10,7 @@
 
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
+#include "config/config.hpp"
 #include "repo/gc/gc.hpp"
 
 namespace cognitio {
@@ -23,8 +24,6 @@ void Repo<StoreValue>::initRepoStorage(
 
   blockstorage::Blockstorage blocks(path / "blocks");
   blocks_ = std::make_unique<blockstorage::Blockstorage>(std::move(blocks));
-
-  config_ = config::Config(path);
 
   if (Exists()) {
     closed_ = false;
@@ -49,15 +48,16 @@ Status Repo<StoreValue>::openRepo() noexcept {
 }
 
 template <typename StoreValue>
-Repo<StoreValue>::Repo(const std::filesystem::path& path) noexcept {
+Repo<StoreValue>::Repo(const std::filesystem::path& path) noexcept
+    : config_(config::Config::GetInstance()) {
   initRepoStorage(path);
   logger_ = common::logger::createLogger("Repo logger");
 }
 
 template <typename StoreValue>
-Repo<StoreValue>::Repo(const std::string& name) noexcept {
-  std::filesystem::path root(name);
-  initRepoStorage(root);
+Repo<StoreValue>::Repo(const std::string& name) noexcept
+    : config_(config::Config::GetInstance()) {
+  initRepoStorage(std::filesystem::path(name));
   logger_ = common::logger::createLogger("Repo logger");
 }
 

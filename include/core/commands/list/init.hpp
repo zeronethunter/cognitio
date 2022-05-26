@@ -23,14 +23,13 @@ class InitMeta : public CmdMeta {
 
 class InitCmd : public Command<Context> {
  public:
-  InitCmd() : Command(InitMeta()) {};
+  InitCmd() : Command(InitMeta()){};
   void PrintHelp([[maybe_unused]] std::ostream& out) override {}
 
   void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
-    auto core = dynamic_cast<LocalAPI*>(ctx.GetAPI().get())->GetCore();
-    auto err = core->GetRepo()->Init();
-    re.SetStatus(StatusCode::OK);
+    auto err = ctx.GetCore()->GetRepo()->Init();
+    re.SetStatus(err);
   }
 };
 

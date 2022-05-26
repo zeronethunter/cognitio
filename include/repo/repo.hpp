@@ -121,6 +121,8 @@ class Repo {
     return root_->Root();
   }
 
+  config::Config &GetConfig() noexcept { return config_; }
+
  private:
   Status openRepo()
 
@@ -133,7 +135,7 @@ class Repo {
 
   bool closed_ = true;
 
-  config::Config config_;
+  config::Config &config_;
   std::unique_ptr<datastore::Filesystem<StoreValue>> root_;
   std::unique_ptr<blockstorage::Blockstorage> blocks_;
   std::shared_ptr<std::thread> gc;

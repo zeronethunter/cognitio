@@ -12,9 +12,9 @@
 #include "cli/commands/command.hpp"
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
+#include "config/config.hpp"
 #include "core/core.hpp"
 #include "core/core_api/core_api.hpp"
-#include "config/config.hpp"
 
 namespace cognitio {
 namespace core {
@@ -28,21 +28,19 @@ class Context {
  public:
   typedef std::shared_ptr<Config> CfgPtr;
   typedef std::shared_ptr<CoreAPI> ApiPtr;
+  typedef std::shared_ptr<Core> CorePtr;
 
   Context() = default;
   Context(Context& ctx) = delete;
   Context& operator=(Context& ctx) = delete;
   ~Context() = default;
 
-  bool IsInitialized() const noexcept { return config_ && core_api_; }
+  bool IsInitialized() const noexcept { return core_api_.get(); }
   const std::string& GetRepoPath() const noexcept { return repo_path_; }
 
-  // TODO: redirect to core_api->Core->Repo->Config
-  CfgPtr GetConfig() noexcept { return config_; }
+  Config& GetConfig() noexcept { return config_; }
+  CorePtr GetCore() noexcept { return core_; }
   ApiPtr GetAPI() noexcept { return core_api_; }
-  void SetConfig(Config&& conf) noexcept;
-  // void SetAPI(CoreAPI&& api) noexcept;
-
   Status Init(CmdMeta& meta, CmdEnv& env) noexcept;
 
  private:
@@ -50,10 +48,11 @@ class Context {
   Status resolveApi(CmdMeta& meta, CmdEnv& env) noexcept;
   std::string resolveAddr(CmdEnv& env) const noexcept;
 
-  CfgPtr config_ = nullptr;
+  CorePtr core_ = nullptr;
   ApiPtr core_api_ = nullptr;
   std::string repo_path_ = "";
   Logger logger_ = createLogger("context");
+  Config& config_ = Config::GetInstance();
 };
 
 }  // namespace commands

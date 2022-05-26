@@ -23,13 +23,10 @@ class LocalAPI : public CoreAPI {
  public:
   typedef std::shared_ptr<Core> CorePtr;
 
-  explicit LocalAPI(Core&& core)
-      : core_(std::make_unique<Core>(std::move(core))) {}
-
+  explicit LocalAPI(CorePtr core) : core_(core) {}
   void Remove(const common::Cid& cid, ResponseEmitter& re) override;
   void Get(const common::Cid& cid, ResponseEmitter& re) override;
   void Add(const std::string& path, ResponseEmitter& re) override;
-
   CorePtr GetCore() noexcept { return core_; }
 
  private:
