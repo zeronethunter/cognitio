@@ -29,10 +29,11 @@ Cid::Cid(std::vector<uint8_t> &bytes) {
   content_type_ = CodeType::SHA2_256;
 }
 
-Cid::Cid(std::string_view str_view) {
-  content_address_.CreateFromHex(str_view);
-  str_cid_ = content_address_.ToHex();
-  bytes_view_ = content_address_.ToBuffer();
+Cid::Cid(std::string_view str_view)
+    : str_cid_(str_view), bytes_view_(str_view.begin(), str_view.end()) {
+  //  content_address_.CreateFromHex(str_view);
+  //  str_cid_ = content_address_.ToHex();
+  //  bytes_view_ = content_address_.ToBuffer();
   content_type_ = CodeType::SHA2_256;
 }
 

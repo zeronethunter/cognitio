@@ -29,14 +29,13 @@ void LocalAPI::Remove(const common::Cid& cid, ResponseEmitter& re) {
 
 void LocalAPI::Get(const common::Cid& cid, ResponseEmitter& re) {
   Status err;
-  linked_data::DagNode nd;
-  std::tie(err, nd) = core_->GetDag()->GetNode(cid);
+  std::vector<uint8_t> nd;
+  std::tie(err, nd) = core_->GetDag()->Get(cid);
 
   if (!err.error_message().empty()) {
     re.Append(err.error_message());
   } else {
-    auto content = nd.GetContent();
-    re.Append(std::string(content.begin(), content.end()));
+    re.Append(std::string(nd.begin(), nd.end()));
   }
 }
 void LocalAPI::Add(const std::string& path, ResponseEmitter& re) {

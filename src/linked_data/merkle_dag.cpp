@@ -26,8 +26,8 @@ std::pair<Status, common::Cid> MerkleDag::Add(
     Status status_code = block_service_->Put(block);
     if (!status_code.ok()) {
       if (status_code.error_code() == StatusCode::ALREADY_EXISTS) {
-        logger_->error("This block is already exists.",
-                       status_code.error_message());
+        logger_->warn("This block is already exists.",
+                      status_code.error_message());
         continue;
       }
       return std::pair<Status, common::Cid>(status_code, common::Cid());
@@ -35,6 +35,31 @@ std::pair<Status, common::Cid> MerkleDag::Add(
   }
 
   return std::pair<Status, common::Cid>(Status::OK, merkle_root_->GetCid());
+}
+
+std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
+    const common::Cid &cid) const {
+  logger_->debug("Starting getting node.");
+  std::pair<Status, DagNode> getter = GetNode(cid);
+  if (!getter.first.ok()) {
+    logger_->error("Cannot find Node with cid: {}", cid.ToString());
+    return std::pair<Status, std::vector<uint8_t>>(StatusCode::FAILED,
+                                                   std::vector<uint8_t>());
+  }
+  logger_->debug("Found node successfully.");
+  DagNode getting_node = getter.second;
+  std::vector<DagNode> collected_data = CollectNodes(getting_node);
+
+  std::vector<uint8_t> concatenated_bytes;
+
+  for (const DagNode &node : collected_data) {
+    concatenated_bytes.insert(concatenated_bytes.end(),
+                              node.GetContent().begin(),
+                              node.GetContent().end());
+  }
+
+  return std::pair<Status, std::vector<uint8_t>>(Status::OK,
+                                                 concatenated_bytes);
 }
 
 std::pair<Status, DagNode> MerkleDag::GetNode(
@@ -73,6 +98,10 @@ std::vector<DagNode> MerkleDag::CollectNodes(const DagNode &root_node) const {
 
   result_vec.push_back(root_node);
 
+  if (root_node.GetChildren().empty()) {
+    return result_vec;
+  }
+
   do {
     for (const auto &node : current_node.GetChildren()) {
       result_vec.push_back(*node.second);
@@ -92,6 +121,10 @@ std::vector<ProtoBlock> MerkleDag::CollectBlocks(
   DagNode current_node = root_node;
 
   result_vec.push_back(ProtoBlock(root_node.GetCid(), root_node));
+
+  if (root_node.GetChildren().empty()) {
+    return result_vec;
+  }
 
   do {
     for (const auto &node : current_node.GetChildren()) {

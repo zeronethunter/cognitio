@@ -43,7 +43,7 @@ class MerkleDag {
   std::pair<Status, DagNode> GetNode(const common::Cid &cid) const;
 
   /// \brief gets name of file by Cid
-  std::string Get(const common::Cid &cid);
+  std::pair<Status, std::vector<uint8_t>> Get(const common::Cid &cid) const;
 
   /// \brief Removes Node from Dag by Cid
   Status RemoveNode(const common::Cid &cid, bool is_recursive = true);
