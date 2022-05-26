@@ -16,12 +16,25 @@ Status MerkleDag::AddNode(const DagNode &node) {
 
 std::pair<Status, common::Cid> MerkleDag::Add(
     const std::vector<std::vector<uint8_t>> &chunks) {
+  logger_->debug("Adding file is starting...");
   if (!merkle_root_) {
     merkle_root_ = buildGraph(chunks);
   }
-  return std::pair<Status, common::Cid>(
-      block_service_->Put(ProtoBlock(merkle_root_->GetCid(), *merkle_root_)),
-      merkle_root_->GetCid());
+
+  std::vector<ProtoBlock> blocks_vec = CollectBlocks(*merkle_root_);
+  for (const ProtoBlock &block : blocks_vec) {
+    Status status_code = block_service_->Put(block);
+    if (!status_code.ok()) {
+      if (status_code.error_code() == StatusCode::ALREADY_EXISTS) {
+        logger_->error("This block is already exists.",
+                       status_code.error_message());
+        continue;
+      }
+      return std::pair<Status, common::Cid>(status_code, common::Cid());
+    }
+  }
+
+  return std::pair<Status, common::Cid>(Status::OK, merkle_root_->GetCid());
 }
 
 std::pair<Status, DagNode> MerkleDag::GetNode(
@@ -40,7 +53,7 @@ Status MerkleDag::RemoveNode(const common::Cid &cid, bool is_recursive) {
     return block_service_->Delete(cid);
   }
   DagNode to_delete_node = GetNode(cid).second;
-  std::vector<DagNode> to_delete_vec = DirectedTrasersal(to_delete_node);
+  std::vector<DagNode> to_delete_vec = CollectNodes(to_delete_node);
 
   for (DagNode node : to_delete_vec) {
     if (!block_service_->Delete(node.GetCid()).ok()) {
@@ -53,15 +66,37 @@ Status MerkleDag::RemoveNode(const common::Cid &cid, bool is_recursive) {
   return Status();
 }
 
-std::vector<DagNode> MerkleDag::DirectedTrasersal(
-    const DagNode &root_node) const {
+std::vector<DagNode> MerkleDag::CollectNodes(const DagNode &root_node) const {
   std::vector<DagNode> result_vec;
   std::stack<DagNode> node_st;
   DagNode current_node = root_node;
 
+  result_vec.push_back(root_node);
+
   do {
     for (const auto &node : current_node.GetChildren()) {
       result_vec.push_back(*node.second);
+      node_st.push(*node.second);
+    }
+    current_node = node_st.top();
+    node_st.pop();
+  } while (!node_st.empty());
+
+  return result_vec;
+}
+
+std::vector<ProtoBlock> MerkleDag::CollectBlocks(
+    const DagNode &root_node) const {
+  std::vector<ProtoBlock> result_vec;
+  std::stack<DagNode> node_st;
+  DagNode current_node = root_node;
+
+  result_vec.push_back(ProtoBlock(root_node.GetCid(), root_node));
+
+  do {
+    for (const auto &node : current_node.GetChildren()) {
+      //      result_vec.push_back(*node.second);
+      result_vec.emplace_back(node.second->GetCid(), *node.second);
       node_st.push(*node.second);
     }
     current_node = node_st.top();
@@ -76,7 +111,7 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
   /* initalizing the bottom lay of chunks */
   size_t vec_size;
   if (chunks.size() < CHUNK_SIZE) {
-    vec_size = chunks.size();
+    vec_size = 1;
   } else {
     vec_size = (chunks.size() % CHUNK_SIZE == 0)
                    ? chunks.size() / CHUNK_SIZE
@@ -100,7 +135,7 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
       std::move(bottom_lay_vec);
   std::vector<DagNode> last_layer;
   size_t blck_cnt = 0;
-  while (last_layer.size() != 1) {
+  do {
     for (const auto &chunk_block : previous_layer_vec) {
       DagNode parent_node(chunk_block);
       std::vector<uint8_t> concatenated_data;
@@ -121,8 +156,6 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
     }
     previous_layer_vec = std::move(layer_vec);
 
-    last_layer = previous_layer_vec[previous_layer_vec.size() - 1];
-
     if (last_layer.size() < CHUNK_SIZE) {
       layer_vec.resize(1);
     } else {
@@ -131,7 +164,7 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
                            : last_layer.size() + 1);
     }
     blck_cnt = 0;
-  }
+  } while (previous_layer_vec.size() != 1);
   return std::make_unique<DagNode>(previous_layer_vec[0][0]);
 }
 

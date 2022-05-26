@@ -27,7 +27,7 @@ namespace chunker {
  */
 template <typename Buffer>
 std::vector<Buffer> chunk_fixed_raw(const Buffer& blocks,
-                                    size_t max_width = 262144) noexcept;
+                                    size_t max_width = 5000) noexcept;
 
 }  // namespace chunker
 }  // namespace files

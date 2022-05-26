@@ -16,10 +16,6 @@ enum StatusCode {
   INVALID_ARGUMENT = 4,
   NOT_FOUND = 5,
   ALREADY_EXISTS = 6,
-  PERMISSION_DENIED = 7,
-  OUT_OF_RANGE = 8,
-  UNIMPLEMENTED = 9,
-  INTERNAL = 10,
 };
 
 }  // namespace cognitio
