@@ -32,7 +32,12 @@ Status Core::RunDaemon(std::vector<rpc::server::ServiceInfo> &vec) noexcept {
   return Status::OK;
 }
 
-void Core::Shutdown() noexcept { return; }
+void Core::Shutdown() noexcept {
+  logger_->info("Shutting down daemon...");
+  if (server_) {
+    server_->Shutdown();
+  }
+}
 
 }  // namespace core
 }  // namespace cognitio

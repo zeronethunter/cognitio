@@ -17,3 +17,9 @@ include_directories(
         PUBLIC $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
 )
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    include_directories(
+        $<$BUILD_INTERFACE:/System/Volumes/Data/opt/local/libexec/boost/1.76/include>
+    )
+endif()
