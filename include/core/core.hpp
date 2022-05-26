@@ -42,6 +42,8 @@ class Core {
   void Shutdown() noexcept;
 
  private:
+  void listen_shutdown();
+
   ServerPtr server_;
   RepoPtr repo_;
   DagPtr dag_;

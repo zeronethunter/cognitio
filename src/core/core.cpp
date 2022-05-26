@@ -5,6 +5,7 @@
 
 #include "core/core.hpp"
 
+#include <csignal>
 #include <memory>
 
 #include "common/status.hpp"
@@ -12,6 +13,20 @@
 
 namespace cognitio {
 namespace core {
+
+static std::atomic<bool> shutdown = false;
+void signal_handler([[maybe_unused]] int signal) { shutdown = true; }
+
+void Core::listen_shutdown() {
+  while (true) {
+    if (shutdown) {
+      Shutdown();
+      break;
+    }
+
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+  }
+}
 
 Status Core::RunDaemon(std::vector<rpc::server::ServiceInfo> &vec) noexcept {
   if (server_) {
@@ -29,6 +44,9 @@ Status Core::RunDaemon(std::vector<rpc::server::ServiceInfo> &vec) noexcept {
   // ...
 
   logger_->info("Daemon is running");
+  std::signal(SIGINT, signal_handler);
+  auto shutdown_thread = std::thread(&Core::listen_shutdown, this);
+  shutdown_thread.join();
   return Status::OK;
 }
 

@@ -8,7 +8,6 @@
 
 #include <grpcpp/impl/service_type.h>
 
-#include <csignal>
 #include <memory>
 
 #include "cli/commands/command.hpp"
@@ -21,20 +20,6 @@ namespace core {
 namespace commands {
 
 using namespace cli::commands;
-
-static std::atomic<bool> shutdown = false;
-void signal_handler([[maybe_unused]] int signal) { shutdown = true; }
-
-void listen_shutdown(Context::CorePtr core) {
-  while (true) {
-    if (shutdown) {
-      core->Shutdown();
-      break;
-    }
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-  }
-}
 
 class DaemonMeta : public CmdMeta {
  public:
@@ -53,13 +38,9 @@ class DaemonCmd : public Command<Context> {
         ApiService(*dynamic_cast<LocalAPI*>(ctx.GetAPI().get()));
     std::string api_addr = ctx.GetConfig().Get("api_address");
     std::vector<rpc::server::ServiceInfo> services({{api_addr, &api_service_}});
-    auto err = ctx.GetCore()->RunDaemon(services);
-    if (err.ok()) {
-      std::signal(SIGINT, signal_handler);
-      auto shutdown_thread = std::thread(&listen_shutdown, ctx.GetCore());
-      shutdown_thread.join();
-    }
 
+    // blocking call
+    auto err = ctx.GetCore()->RunDaemon(services);
     re.SetStatus(err);
   }
 
