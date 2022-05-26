@@ -62,15 +62,13 @@ Status Cli<Context>::Run(T& args) const {
     if (!err.error_message().empty()) {
       logger_->error(err.error_message());
     }
-
-    return err;
   };
 
   if (re.HaveData()) {
     re.Emit(std::cout);
   }
 
-  return Status::OK;
+  return err;
 }
 
 template <class Context>

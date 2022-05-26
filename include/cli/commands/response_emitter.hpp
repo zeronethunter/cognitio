@@ -25,7 +25,7 @@ class ResponseEmitter {
   ~ResponseEmitter() = default;
 
   void Append(const std::string& data);
-  bool HaveData() const noexcept { return proto_.data().empty(); }
+  bool HaveData() const noexcept { return !proto_.data().empty(); }
   void SetStatus(Status& err);
   void SetStatus(StatusCode code, std::string msg = "");
   void ReplaceProto(const ProtoResponse& proto) { proto_ = proto; }

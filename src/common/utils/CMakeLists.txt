@@ -20,6 +20,6 @@ include_directories(
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     include_directories(
-        $<$BUILD_INTERFACE:/System/Volumes/Data/opt/local/libexec/boost/1.76/include>
+        $<BUILD_INTERFACE:/System/Volumes/Data/opt/local/libexec/boost/1.76/include>
     )
 endif()

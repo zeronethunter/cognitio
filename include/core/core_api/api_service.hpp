@@ -34,7 +34,7 @@ class ApiService final : public CoreApiService::Service {
 
   grpc::Status Add([[maybe_unused]] grpc::ServerContext* context,
                    const StringRequest* request, ProtoResponse* resp) override {
-    logger_->debug("Recieved request for adding blocks");
+    logger_->info("Recieved request for adding blocks");
     ResponseEmitter re;
     api_.Add(request->data(), re);
     *resp = re.GetProto();
@@ -43,7 +43,7 @@ class ApiService final : public CoreApiService::Service {
 
   grpc::Status Get([[maybe_unused]] grpc::ServerContext* context,
                    const StringRequest* request, ProtoResponse* resp) override {
-    logger_->debug("Recieved request for getting blocks");
+    logger_->info("Recieved request for getting blocks");
     ResponseEmitter re;
     api_.Get(common::Cid(request->data()), re);
     *resp = re.GetProto();
@@ -53,7 +53,7 @@ class ApiService final : public CoreApiService::Service {
   grpc::Status Remove([[maybe_unused]] grpc::ServerContext* context,
                       const StringRequest* request,
                       ProtoResponse* resp) override {
-    logger_->debug("Recieved request for removing blocks");
+    logger_->info("Recieved request for removing blocks");
     ResponseEmitter re;
     api_.Remove(common::Cid(request->data()), re);
     *resp = re.GetProto();
@@ -63,7 +63,7 @@ class ApiService final : public CoreApiService::Service {
   grpc::Status Ping([[maybe_unused]] grpc::ServerContext* context,
                     [[maybe_unused]] const StringRequest* request,
                     StringRequest* resp) override {
-    logger_->debug("Recieved ping");
+    logger_->info("Recieved ping");
     resp->set_data(std::string("World"));
     return grpc::Status::OK;
   }

@@ -56,7 +56,7 @@ class Config {
   Status getExistedConfig(const std::string &path) noexcept;
   [[nodiscard]] Status createConfig(
       const std::string &repo_path,
-      const std::string &api_address = "127.0.0.1::10000") const noexcept;
+      const std::string &api_address = "127.0.0.1:50050") const noexcept;
   [[nodiscard]] bool initialized() const noexcept;
   [[nodiscard]] bool isConfigCreated(const std::string &path) const noexcept;
 
