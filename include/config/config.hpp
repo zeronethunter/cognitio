@@ -63,8 +63,8 @@ class Config {
   static std::once_flag flag_;
   static std::shared_ptr<Config> instance_;
 
-  std::string repo_path_ = "";
-  std::string api_address_ = "";
+  std::string repo_path_;
+  std::string api_address_;
   common::logger::Logger logger_ = common::logger::createLogger("config");
 };
 

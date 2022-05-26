@@ -13,7 +13,7 @@ namespace cognitio {
 namespace datastore {
 
 template <typename Value>
-Status Filesystem<Value>::Open(const std::filesystem::path& path) noexcept {
+Status Filesystem<Value>::Open(const std::filesystem::path &path) noexcept {
   path_ = path;
   if (!std::filesystem::exists(path)) {
     if (std::filesystem::create_directory(path_)) {
@@ -29,8 +29,8 @@ template <typename Value>
 Status Filesystem<Value>::Close() noexcept {}
 
 template <typename Value>
-Status Filesystem<Value>::Put(const common::Cid& key,
-                              const Value& value) noexcept {
+Status Filesystem<Value>::Put(const common::Cid &key,
+                              const Value &value) noexcept {
   std::string filename = key.ToString();
   if (std::filesystem::exists(path_ / filename)) {
     return {StatusCode::ALREADY_EXISTS, " already exists"};
@@ -42,8 +42,10 @@ Status Filesystem<Value>::Put(const common::Cid& key,
     return {StatusCode::CANCELLED, "Can not create " + filename};
   }
 
-  char* bytes = makeCharFromData(value);
+  char *bytes = makeCharFromData(value);
+
   file.write(bytes, value.size());
+
   file.close();
 
   delete[] bytes;
@@ -53,7 +55,7 @@ Status Filesystem<Value>::Put(const common::Cid& key,
 
 template <typename Value>
 std::pair<Status, Value> Filesystem<Value>::Get(
-    const common::Cid& key) const noexcept {
+    const common::Cid &key) const noexcept {
   std::string filename = key.ToString();
   if (!std::filesystem::exists(path_ / filename)) {
     return std::pair<Status, Value>({StatusCode::NOT_FOUND, " not found"},
@@ -61,27 +63,29 @@ std::pair<Status, Value> Filesystem<Value>::Get(
   }
 
   std::fstream file;
-  file.open((path_ / filename).string(), std::ios::binary);
+  file.open((path_ / filename).string(), std::ios::in | std::ios::binary);
 
   if (!file.is_open()) {
     return std::pair<Status, Value>(
         {StatusCode::CANCELLED, "Can not create " + filename}, Value());
   }
 
-  Value result;
+  std::stringstream bytes;
 
-  char* bytes = makeCharFromData(result);
-  file.read(bytes, result.size());
+  bytes << file.rdbuf();
+
+  std::string str_bytes = bytes.str();
 
   file.close();
 
-  delete[] bytes;
-
-  return std::pair<Status, Value>(Status::OK, result);
+  return std::pair<Status, Value>(Status::OK,
+                                  {str_bytes.cbegin(), str_bytes.cend()});
 }
 
 template <typename Value>
-Status Filesystem<Value>::Delete(const common::Cid& key) noexcept {
+Status Filesystem<Value>::Delete(const common::Cid &key)
+
+    noexcept {
   std::string filename = key.ToString();
   if (std::filesystem::remove(path_ / filename)) {
     return Status::OK;
@@ -91,8 +95,8 @@ Status Filesystem<Value>::Delete(const common::Cid& key) noexcept {
 
 template <typename Value>
 Status Filesystem<Value>::PutMany(
-    const std::set<std::pair<common::Cid, Value>>& source) noexcept {
-  for (const auto& input : source) {
+    const std::set<std::pair<common::Cid, Value>> &source) noexcept {
+  for (const auto &input : source) {
     Status err = Put(input.first, input.second);
     if (!err.ok()) {
       return err;
@@ -103,9 +107,9 @@ Status Filesystem<Value>::PutMany(
 
 template <typename Value>
 std::pair<Status, std::set<Value>> Filesystem<Value>::GetMany(
-    const std::set<common::Cid>& source) const noexcept {
+    const std::set<common::Cid> &source) const noexcept {
   std::set<Value> result;
-  for (const auto& key : source) {
+  for (const auto &key : source) {
     std::pair<Status, Value> it = Get(key);
     result.insert(it.second);
     if (!it.first.ok()) {
@@ -117,8 +121,8 @@ std::pair<Status, std::set<Value>> Filesystem<Value>::GetMany(
 
 template <typename Value>
 Status Filesystem<Value>::DeleteMany(
-    const std::set<common::Cid>& source) noexcept {
-  for (const auto& key : source) {
+    const std::set<common::Cid> &source) noexcept {
+  for (const auto &key : source) {
     Status err = Delete(key);
     if (!err.ok()) {
       return err;
@@ -126,9 +130,10 @@ Status Filesystem<Value>::DeleteMany(
   }
   return Status::OK;
 }
+
 template <typename Value>
-char* Filesystem<Value>::makeCharFromData(const Value& value) const noexcept {
-  char* result = new char[value.size()];
+char *Filesystem<Value>::makeCharFromData(const Value &value) const noexcept {
+  char *result = new char[value.size()];
   for (size_t i = 0; i < value.size(); ++i) {
     result[i] = value[i];
   }
