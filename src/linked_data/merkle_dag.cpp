@@ -64,8 +64,9 @@ std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
 
 std::pair<Status, DagNode> MerkleDag::GetNode(
     const cognitio::common::Cid &cid) const {
-  std::vector<uint8_t> bytes = block_service_->Get(cid).GetNode().GetContent();
-  DagNode node(std::move(bytes));
+//  std::vector<uint8_t> bytes = block_service_->Get(cid).GetNode().GetContent();
+  DagNode node(block_service_->Get(cid).GetNode());
+//  DagNode node(std::move(bytes));
   if (!node.GetCid().ToString().empty()) {
     return std::pair<Status, DagNode>(Status(), std::move(node));
   }

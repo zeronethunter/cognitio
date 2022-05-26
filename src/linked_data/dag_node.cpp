@@ -35,5 +35,15 @@ common::Cid DagNode::GetCid() const {
   return common::Cid(content);
 }
 
+std::unique_ptr<Node> DagNode::EncodeProtoNode() const {
+  Node package_node;
+  package_node.set_data(data_.EncodeMessage());
+
+  for (size_t i = 0; i < children_.size(); ++i) {
+    package_node.set_cid(i, children_[i].first.ToString());
+  }
+  return std::make_unique<Node>(package_node);
+}
+
 }  // namespace linked_data
 }  // namespace cognitio
