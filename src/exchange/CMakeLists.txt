@@ -1,2 +1,2 @@
 add_subdirectory(block_service)
-# add_subdirectory(block_swap)
+add_subdirectory(block_swap)

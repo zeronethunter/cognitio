@@ -8,6 +8,7 @@
 
 #include <cstdint>
 
+#include "config/config.hpp"
 #include "kademlia/identifier.hpp"
 #include "kademlia/kademlia.hpp"
 #include "linked_data/proto_block.hpp"
@@ -26,11 +27,17 @@ class BlockSwap {
   explicit BlockSwap(RepoPtr ptr, KademliaPtr kad)
       : repo_(ptr), dht_(kad), id_(rand()) {}
 
-  ~BlockSwap();
+  ~BlockSwap() { Shutdown(); }
 
   void Run() noexcept;
-  void Shutdown() noexcept { dht_->Shutdown(); }
+  void Shutdown() noexcept {
+    if (IsAlive()) {
+      dht_->Shutdown();
+    }
+  }
+
   bool IsAlive() const noexcept { return dht_ && dht_->IsAlive(); }
+  KademliaPtr GetDht() noexcept { return dht_; }
 
   linked_data::ProtoBlock Get(const common::Cid& cid) noexcept;
   Status Add(const common::Cid& cid) noexcept;

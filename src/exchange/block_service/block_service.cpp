@@ -35,7 +35,7 @@ Status BlockService::Put(const ProtoBlock& block) noexcept {
   //             block.GetNode().GetContent()) : repo_->Add(block.GetCid(),
   //             block.GetNode().GetContent())
 
-  return repo_->Add(block.GetCid(), block.GetNode().GetContent());
+  return repo_->Add(block);
 }
 
 linked_data::ProtoBlock BlockService::Get(

@@ -20,9 +20,9 @@ class Identifier {
       boost::multiprecision::unchecked, void>>
       numeric_type;
 
-  Identifier();
-  Identifier(Identifier::numeric_type val);
-  ~Identifier();
+  Identifier() : val_(0) {}
+  Identifier(Identifier::numeric_type val) : val_(val) {}
+  ~Identifier() = default;
 
   static Identifier FromString(std::string src);
   Identifier::numeric_type value() const;

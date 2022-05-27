@@ -32,7 +32,11 @@ void Kademlia::Shutdown() noexcept {
   }
 }
 
-Kademlia::~Kademlia() { Shutdown(); }
+Kademlia::~Kademlia() {
+  if (IsAlive()) {
+    Shutdown();
+  }
+}
 
 Identifier Kademlia::GetId() const noexcept { return info_.id(); }
 ConnectionInfo Kademlia::GetAddress() const noexcept { return info_; }
@@ -40,7 +44,7 @@ RoutingTable& Kademlia::GetRoutingTable() noexcept { return routing_table_; }
 bool Kademlia::IsAlive() const noexcept { return alive_; }
 
 void Kademlia::Run() noexcept {
-  main_thread_ = std::thread(&Kademlia::mainThread, *this);
+  main_thread_ = std::thread(&Kademlia::mainThread, this);
 }
 
 void Kademlia::pingAndUpdate(std::vector<ConnectionInfo>& targets) noexcept {
@@ -51,6 +55,7 @@ void Kademlia::pingAndUpdate(std::vector<ConnectionInfo>& targets) noexcept {
     auto proto = info_.GetProto();
     pingQuery.set_magic(utils::generate_magic());
     pingQuery.set_allocated_caller(&proto);
+    [[maybe_unused]] auto v = pingQuery.release_caller();
 
     if (client.Ping(pingQuery)) {
       routing_table_.update(peer);
@@ -103,12 +108,14 @@ FindNodeAnswer Kademlia::findNode(ConnectionInfo& caller, ConnectionInfo& node,
 
     FindNodeAnswer postSearch(destination);
     for (auto peer : closestPeers) {
-      KademliaClient client(info_.GetAddress());
+      KademliaClient client(peer.GetAddress());
 
       FindNodeRequest findQuery;
-      findQuery.set_allocated_caller(&caller.GetProto());
+      auto proto = caller.GetProto();
+      findQuery.set_allocated_caller(&proto);
       findQuery.set_destination(destination);
       postSearch.merge(client.FindNode(findQuery));
+      [[maybe_unused]] auto v = findQuery.release_caller();
     }
 
     closestPeers.merge(postSearch);
@@ -134,10 +141,12 @@ Status Kademlia::Add(std::string key, std::string value) {
   StoreRequest storeQuery;
   storeQuery.set_key(key);
   storeQuery.set_value(value);
+  auto proto = info_.GetProto();
   storeQuery.set_magic(utils::generate_magic());
-  storeQuery.set_allocated_caller(&info_.GetProto());
+  storeQuery.set_allocated_caller(&proto);
 
   auto is_ok = client.Store(storeQuery);
+  [[maybe_unused]] auto v = storeQuery.release_caller();
   return is_ok ? Status::OK : Status::FAILED;
 }
 
@@ -163,10 +172,13 @@ std::string Kademlia::Get(std::string key) {
   ConnectionInfo peer = findResult.getNodes()[0];
   KademliaClient client(peer.GetAddress());
   GetRequest getQuery;
+  auto proto = info_.GetProto();
   getQuery.set_key(key);
   getQuery.set_magic(utils::generate_magic());
-  getQuery.set_allocated_caller(&info_.GetProto());
-  return client.Get(getQuery);
+  getQuery.set_allocated_caller(&proto);
+  auto to_ret = client.Get(getQuery);
+  [[maybe_unused]] auto v = getQuery.release_caller();
+  return to_ret;
 }
 
 void Kademlia::StoreRequested(const std::string& key,
@@ -176,6 +188,19 @@ void Kademlia::StoreRequested(const std::string& key,
 
 std::string Kademlia::GetRequested(const std::string& key) {
   return repo_.get(key);
+}
+
+void Kademlia::refreshNodes() noexcept {
+  reference_nodes_.clear();
+  std::vector<Identifier> distances =
+      Identifier::GetDirectReferenceIds(info_.id());
+
+  for (const auto& d : distances) {
+    FindNodeAnswer findNodeAnswer = routing_table_.findClosest(d);
+    if (findNodeAnswer.size() > 0) {
+      reference_nodes_.push_back(findNodeAnswer.getNodes()[0]);
+    }
+  }
 }
 
 }  // namespace kademlia

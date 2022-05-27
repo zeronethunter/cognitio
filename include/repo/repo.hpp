@@ -131,6 +131,9 @@ class Repo {
   }
 
   config::Config &GetConfig() noexcept { return config_; }
+  std::shared_ptr<config::Config> GetForkedConfig() noexcept {
+    return config_.getForkedInstance();
+  }
 
  private:
   Status openRepo()

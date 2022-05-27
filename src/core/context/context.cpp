@@ -27,10 +27,11 @@ namespace commands {
 
 Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
   repo_path_ = getRepoPath(env);
-  logger_->debug("Found repo path: {}", repo_path_);
+  logger_->debug("Checking repo path: {}", repo_path_);
 
   config_.SetRepoPath(repo_path_);
   auto err = config_.TryInit();
+
   if (meta.GetName() != "init") {
     if (!err.ok()) {
       logger_->error("Repo is not initialized. Use 'cognitio init'");
@@ -53,6 +54,11 @@ Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
 }
 
 std::string Context::getRepoPath(CmdEnv& env) const noexcept {
+  // TODO: it's not ok to hard code like that
+  if (env.arguments.contains("--repo")) {
+    return env.arguments.at("--repo");
+  }
+
   auto cgnt_home = std::getenv("CGNT_HOME");
   if (cgnt_home) {
     return std::string(cgnt_home);
@@ -84,6 +90,7 @@ Status Context::resolveApi(CmdMeta& meta,
     std::string api_addr = resolveAddr(env);
     if (!api_addr.empty()) {
       auto temp_api = std::make_shared<RemoteAPI>(api_addr);
+      logger_->info("Trying to connect to daemon with address {}", api_addr);
       auto err = temp_api->TryPing();
       if (err.ok()) {
         logger_->info("Using remote executor");
@@ -91,7 +98,7 @@ Status Context::resolveApi(CmdMeta& meta,
         return Status::OK;
       }
 
-      logger_->warn("Falling back to local executor");
+      logger_->warn("Failed to connect. Falling back to local executor");
     }
   }
 

@@ -8,6 +8,7 @@ set(${SUBMODULE_NAME}_SOURCES core.cpp)
 add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 target_link_libraries(${SUBMODULE_NAME} PUBLIC
         ${PROJECT_NAME}_grpc_server
+        ${PROJECT_NAME}_block_swap
         ${PROJECT_NAME}_cli_commands
         ${PROJECT_NAME}_core_commands
         ${PROJECT_NAME}_core_context

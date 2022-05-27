@@ -104,15 +104,19 @@ std::string Config::Get(const std::string &field) const noexcept {
   if (field == "repo_path") {
     return repo_path_;
   }
+
   if (field == "api_address") {
     return api_address_;
   }
+
   if (field == "dht_address") {
     return dht_address_;
   }
+
   if (field == "bootstrap_node_address") {
     return bootstrap_node_address_;
   }
+
   return {};
 }
 

@@ -1,8 +1,14 @@
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_kademlia)
-set(${SUBMODULE_NAME}_SOURCES kademlia.cpp)
+set(${SUBMODULE_NAME}_SOURCES bucket.cpp identifier.cpp
+        kademlia.cpp routing_table.cpp rpc/service.cpp
+        rpc/client.cpp models/find_node_answ.cpp)
 
-add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
+add_library(
+        ${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES}
+)
+
 target_link_libraries(${SUBMODULE_NAME} PUBLIC
+        ${PROJECT_NAME}_grpc_client
         ${PROJECT_NAME}_common
         ${PROJECT_NAME}_proto
 )

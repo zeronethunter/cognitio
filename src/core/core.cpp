@@ -36,12 +36,14 @@ Status Core::RunDaemon(std::vector<rpc::server::ServiceInfo> &vec) noexcept {
       logger_->error("Unable to start the server...");
       return Status(StatusCode::FAILED, "Server starting error");
     }
+
+    logger_->info("Server is running...");
+
+    block_swap_->Run();
+    logger_->info("Block swap is running");
   } else {
     return Status(StatusCode::FAILED, "Server wasn't initialized");
   }
-
-  // TODO: Start pinner and gc
-  // ...
 
   logger_->info("Daemon is running");
   std::signal(SIGINT, signal_handler);
@@ -54,6 +56,10 @@ void Core::Shutdown() noexcept {
   logger_->info("Shutting down daemon...");
   if (server_) {
     server_->Shutdown();
+  }
+
+  if (block_swap_) {
+    block_swap_->Shutdown();
   }
 }
 

@@ -11,7 +11,7 @@ namespace cognitio {
 namespace kademlia {
 
 RoutingTable::RoutingTable(const Identifier& ownerID) : ownerId_(ownerID) {
-  for (Identifier::numeric_type i = 0; i <= Kademlia::GUID_SPACE; i++) {
+  for (Identifier::numeric_type i = 0; i <= GUID_SPACE; i++) {
     buckets_.push_back(Bucket(i));
   }
 }
@@ -53,7 +53,7 @@ FindNodeAnswer RoutingTable::findClosest(const Identifier& destinationId) {
   }
 
   int bucketId = (int)targetBucket.getId().value();
-  for (int i = 1; answer.size() < Kademlia::K_SIZE &&
+  for (int i = 1; answer.size() < K_SIZE &&
                   ((bucketId - i) >= 0 || (bucketId + i) < buckets_.size());
        i++) {
     // Check the previous buckets

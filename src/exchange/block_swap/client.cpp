@@ -17,14 +17,14 @@ linked_data::ProtoBlock BlockSwapClient::GetNode(const std::string& cid) {
   auto stub = client_.GetStub();
   grpc::ClientContext context;
 
-  GetNodeRequest req;
+  GetBlockRequest req;
   req.set_cid(cid);
 
-  ::Block proto;
-  auto err = stub->GetNode(&context, req, &proto);
+  GetBlockResponse resp;
+  auto err = stub->GetBlock(&context, req, &resp);
   if (err.ok()) {
     linked_data::ProtoBlock block;
-    block.FromProtoMessage(std::make_unique<::Block>(proto));
+    block.FromProtoMessage(std::make_unique<::Block>(resp.block()));
     return block;
   }
 

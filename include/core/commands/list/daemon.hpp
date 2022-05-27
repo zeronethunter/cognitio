@@ -11,9 +11,13 @@
 #include <memory>
 
 #include "cli/commands/command.hpp"
+#include "common/logger/logger.hpp"
 #include "core/context/context.hpp"
 #include "core/core_api/api_service.hpp"
 #include "core/core_api/local_api.hpp"
+#include "exchange/block_swap/rpc/service.hpp"
+#include "kademlia/rpc/service.hpp"
+#include "proto/ProtoData.grpc.pb.h"
 
 namespace cognitio {
 namespace core {
@@ -34,10 +38,29 @@ class DaemonCmd : public Command<Context> {
   void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
     // Server initialization
-    auto api_service_ =
-        ApiService(*dynamic_cast<LocalAPI*>(ctx.GetAPI().get()));
-    std::string api_addr = ctx.GetConfig().Get("api_address");
-    std::vector<rpc::server::ServiceInfo> services({{api_addr, &api_service_}});
+    auto api_service = ApiService(*dynamic_cast<LocalAPI*>(ctx.GetAPI().get()));
+
+    std::string api_addr;
+    if (env.arguments.contains("--api")) {
+      api_addr = env.arguments.at("--api");
+    } else {
+      api_addr = ctx.GetConfig().Get("api_address");
+    }
+
+    std::string dht_addr = ctx.GetConfig().Get("dht_address");
+
+    auto block_swap_service =
+        exchange::BlockSwapServiceImpl(ctx.GetCore()->GetRepo());
+    auto dht_service =
+        kademlia::KademliaServiceImpl(ctx.GetCore()->GetBlockSwap()->GetDht());
+
+    std::vector<rpc::server::ServiceInfo> services(
+        {{api_addr, &api_service},
+         {dht_addr, &block_swap_service},
+         {dht_addr, &dht_service}});
+
+    logger_->debug("API address: {},\nBlockSwap address: {},\nDHT address: {}",
+                   api_addr, dht_addr, dht_addr);
 
     // blocking call
     auto err = ctx.GetCore()->RunDaemon(services);
@@ -45,6 +68,7 @@ class DaemonCmd : public Command<Context> {
   }
 
  private:
+  Logger logger_ = createLogger("daemon_cmd");
 };
 
 }  // namespace commands

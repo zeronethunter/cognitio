@@ -1,6 +1,7 @@
 add_subdirectory(common)
 add_subdirectory(multiformats)
 
+add_subdirectory(grpc_wrapper)
 add_subdirectory(config)
 add_subdirectory(core)
 add_subdirectory(datastore)
@@ -11,9 +12,6 @@ add_subdirectory(proto)
 add_subdirectory(kademlia)
 add_subdirectory(repo)
 add_subdirectory(cli)
-add_subdirectory(grpc_wrapper)
-
-# add_subdirectory(p2p)
 
 set(MAIN_BIN ${CMAKE_PROJECT_NAME})
 set(${MAIN_BIN}_SOURCES main.cpp)

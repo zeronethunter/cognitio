@@ -22,9 +22,9 @@ class BlockService {
  public:
   // BlockService() = default;
 
-  explicit BlockService(std::shared_ptr<repo::Repo<std::string>> repo)
-      : repo_(std::move(repo)) {
-
+  explicit BlockService(std::shared_ptr<repo::Repo<std::string>> repo,
+                        std::shared_ptr<BlockSwap> bs)
+      : block_swap_(bs), repo_(std::move(repo)) {
     if (repo_->Exists()) {
       closed_ = false;
     }

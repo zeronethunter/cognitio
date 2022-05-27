@@ -6,16 +6,28 @@
 #include "exchange/block_swap/rpc/service.hpp"
 
 #include <grpcpp/support/status.h>
+
+#include "linked_data/proto_block.hpp"
 #include "multiformats/cid.hpp"
 
 namespace cognitio {
 namespace exchange {
 
-grpc::Status BlockSwapServiceImpl::GetBlock(::grpc::ServerContext *context,
-                                            const GetBlockRequest *req,
-                                            GetBlockResponse *resp) {
-  // TODO:
-  auto block = repo_->Get(common::Cid(req->cid()));
+grpc::Status BlockSwapServiceImpl::GetBlock(
+    [[maybe_unused]] ::grpc::ServerContext *context, const GetBlockRequest *req,
+    GetBlockResponse *resp) {
+  linked_data::ProtoBlock block;
+  auto cid = common::Cid(req->cid());
+
+  if (repo_->Has(cid)) {
+    block = repo_->Get(common::Cid(cid));
+    *resp->mutable_block() = *block.ToProtoMessage().get();
+    resp->set_ok(true);
+  } else {
+    resp->set_ok(false);
+  }
+
+  return grpc::Status::OK;
 }
 
 }  // namespace exchange

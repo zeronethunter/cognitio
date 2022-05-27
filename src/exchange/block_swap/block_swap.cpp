@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "common/status.hpp"
 #include "exchange/block_swap/client.hpp"
 #include "kademlia/connection_info.hpp"
 #include "kademlia/identifier.hpp"
@@ -21,18 +22,17 @@ namespace cognitio {
 namespace exchange {
 
 void BlockSwap::Run() noexcept {
-  auto conf = repo_->GetConfig();
   kademlia::ConnectionInfo info;
-  info.InitWithString(id_, conf.Get("dht_address"));
+  info.InitWithString(id_, repo_->GetConfig().Get("dht_address"));
+
   if (!dht_) {
     dht_ = std::make_shared<kademlia::Kademlia>(info);
   }
 
   dht_->Run();
-
   kademlia::ConnectionInfo boostrap;
   boostrap.InitWithString(kademlia::Identifier(rand()),
-                          conf.Get("bootstrap_node_address"));
+                          repo_->GetConfig().Get("bootstrap_node_address"));
   dht_->Bootstrap(boostrap);
 }
 
@@ -48,16 +48,16 @@ linked_data::ProtoBlock BlockSwap::Get(const common::Cid& cid) noexcept {
 }
 
 Status BlockSwap::Add(const common::Cid& cid) noexcept {
-  auto conf = repo_->GetConfig();
   std::string my_address;
-  if (conf.IsLocal()) {
-    my_address = conf.Get("dht_address");
+  if (repo_->GetConfig().IsLocal()) {
+    my_address = repo_->GetConfig().Get("dht_address");
   } else {
     // TODO:
-    my_address = conf.Get("dht_address");
+    my_address = repo_->GetConfig().Get("dht_address");
   }
 
   dht_->Add(cid.ToString(), my_address);
+  return Status::OK;
 }
 
 }  // namespace exchange

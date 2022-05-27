@@ -38,10 +38,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
   # Sanitizers options
   # It's not a great idea to use sanitizers under Valgrind !!!
   # (The ones which are ON can be combined with each other)
-  option(ENABLE_LSAN "Build with LeakSanitizer" OFF)
-  option(ENABLE_ASAN "Build with AdressSanitizer" OFF)
+  option(ENABLE_LSAN "Build with LeakSanitizer" ON)
+  option(ENABLE_ASAN "Build with AdressSanitizer" ON)
   option(ENABLE_TSAN "Build with ThreadSanitizer" OFF)
-  option(ENABLE_UBSAN "Build with UndefinedBehavior" OFF)
+  option(ENABLE_UBSAN "Build with UndefinedBehavior" ON)
 endif()
 
 # Dependencies

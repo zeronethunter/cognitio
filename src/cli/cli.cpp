@@ -137,10 +137,14 @@ Status Cli<Context>::parseArguments(T& args, CmdPtr& cmd,
     return Status::OK;
   }
 
-  // TODO
-  arguments = cmd->GetMeta().GetDefaultArgs();
-  for (const auto& x : args) {
-    arguments.insert({x, "true"});
+  std::string prefix = root_->GetArgsPrefix();
+  for (size_t i = 0; i < args.size(); ++i) {
+    if (args.size() && args[0].compare(0, prefix.size(), prefix) == 0) {
+      if (args.size() > 2) {
+        arguments.insert({args[0], args[1]});
+        args.erase(args.begin(), args.begin() + 2);
+      }
+    }
   }
 
   return Status::OK;
