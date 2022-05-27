@@ -5,6 +5,7 @@
 
 #include "linked_data/merkle_dag.hpp"
 
+#include <queue>
 #include <stack>
 
 namespace cognitio {
@@ -40,19 +41,22 @@ std::pair<Status, common::Cid> MerkleDag::Add(
 std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
     const common::Cid &cid) const {
   logger_->debug("Starting getting node.");
-  std::pair<Status, DagNode> getter = GetNode(cid);
-  if (!getter.first.ok()) {
+
+  /* getting root node from unix fs */
+  std::pair<Status, DagNode> root_getter = GetNode(cid);
+
+  if (!root_getter.first.ok()) {
     logger_->error("Cannot find Node with cid: {}", cid.ToString());
     return std::pair<Status, std::vector<uint8_t>>(StatusCode::FAILED,
                                                    std::vector<uint8_t>());
   }
   logger_->debug("Found node successfully.");
-  DagNode getting_node = getter.second;
-  std::vector<DagNode> collected_data = CollectNodes(getting_node);
+
+  std::vector<DagNode> collected_nodes = getSubNodes(root_getter.second);
 
   std::vector<uint8_t> concatenated_bytes;
 
-  for (const DagNode &node : collected_data) {
+  for (const DagNode &node : collected_nodes) {
     concatenated_bytes.insert(concatenated_bytes.end(),
                               node.GetContent().begin(),
                               node.GetContent().end());
@@ -64,9 +68,8 @@ std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
 
 std::pair<Status, DagNode> MerkleDag::GetNode(
     const cognitio::common::Cid &cid) const {
-//  std::vector<uint8_t> bytes = block_service_->Get(cid).GetNode().GetContent();
-  DagNode node(block_service_->Get(cid).GetNode());
-//  DagNode node(std::move(bytes));
+  std::vector<uint8_t> bytes = block_service_->Get(cid).GetNode().GetContent();
+  DagNode node(std::move(bytes));
   if (!node.GetCid().ToString().empty()) {
     return std::pair<Status, DagNode>(Status(), std::move(node));
   }
@@ -80,7 +83,7 @@ Status MerkleDag::RemoveNode(const common::Cid &cid, bool is_recursive) {
   }
 
   DagNode to_delete_node = GetNode(cid).second;
-  std::vector<DagNode> to_delete_vec = CollectNodes(to_delete_node);
+  std::vector<DagNode> to_delete_vec = getSubNodes(to_delete_node);
 
   for (DagNode node : to_delete_vec) {
     if (!block_service_->Delete(node.GetCid()).ok()) {
@@ -90,7 +93,35 @@ Status MerkleDag::RemoveNode(const common::Cid &cid, bool is_recursive) {
   if (!block_service_->Delete(to_delete_node.GetCid()).ok()) {
     return Status(StatusCode::FAILED, "Can't find node with this CID");
   }
-  return Status();
+
+  return Status::OK;
+}
+
+std::vector<DagNode> MerkleDag::getSubNodes(const DagNode &root) const {
+  std::vector<DagNode> collected_nodes = CollectNodes(root);
+  std::stack<DagNode> dag_st;
+
+  std::for_each(collected_nodes.end(), collected_nodes.begin(),
+                [&](const DagNode &node) { dag_st.push(node); });
+
+  do {
+    DagNode current_node = dag_st.top();
+    dag_st.pop();
+    std::vector<DagNode> children_vec =
+        CollectNodes(GetNode(current_node.GetCid()).second);
+
+    /* push children in stack */
+    std::for_each(children_vec.end(), children_vec.begin(),
+                  [&](const DagNode &node) { dag_st.push(node); });
+
+    /* push nodes in result vector */
+    std::for_each(children_vec.begin(), children_vec.end(),
+                  [&](const DagNode &node) {
+                    collected_nodes.push_back(node);
+                  });
+  } while (!dag_st.empty());
+
+  return collected_nodes;
 }
 
 std::vector<DagNode> MerkleDag::CollectNodes(const DagNode &root_node) const {

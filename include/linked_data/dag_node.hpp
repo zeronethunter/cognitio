@@ -42,7 +42,9 @@ class DagNode {
   /// \return bytes of node
   std::vector<uint8_t> GetContent() const;
 
-  Status DecodeProtoNode(const Node &node) { return Status::OK; }
+  Status SetChild();
+
+  Status DecodeProtoNode(const Node &node);
   std::unique_ptr<Node> EncodeProtoNode() const;
 
   /// \return size of node's children
@@ -56,7 +58,7 @@ class DagNode {
     return children_;
   };
 
- private:
+ protected:
   files::unixfs::UnixFS data_;
   std::vector<std::pair<common::Cid, std::shared_ptr<DagNode>>> children_;
 };

@@ -62,6 +62,8 @@ class MerkleDag {
 
   std::unique_ptr<DagNode> buildGraph(
       const std::vector<std::vector<uint8_t>> &chunks);
+
+  std::vector<DagNode> getSubNodes(const DagNode &root) const;
 };
 
 }  // namespace linked_data
