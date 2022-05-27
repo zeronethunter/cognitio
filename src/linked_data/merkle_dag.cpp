@@ -101,7 +101,7 @@ std::vector<DagNode> MerkleDag::getSubNodes(const DagNode &root) const {
   std::vector<DagNode> collected_nodes = CollectNodes(root);
   std::stack<DagNode> dag_st;
 
-  std::for_each(collected_nodes.end(), collected_nodes.begin(),
+  std::for_each(collected_nodes.rbegin(), collected_nodes.rend(),
                 [&](const DagNode &node) { dag_st.push(node); });
 
   do {
@@ -111,7 +111,7 @@ std::vector<DagNode> MerkleDag::getSubNodes(const DagNode &root) const {
         CollectNodes(GetNode(current_node.GetCid()).second);
 
     /* push children in stack */
-    std::for_each(children_vec.end(), children_vec.begin(),
+    std::for_each(children_vec.rbegin(), children_vec.rend(),
                   [&](const DagNode &node) { dag_st.push(node); });
 
     /* push nodes in result vector */
