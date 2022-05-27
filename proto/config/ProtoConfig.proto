@@ -3,4 +3,5 @@ syntax = "proto3";
 message ProtoConfig {
   string repo_path = 1;
   string api_adress = 2;
+  string dht_adress = 3;
 }

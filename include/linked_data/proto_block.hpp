@@ -34,8 +34,8 @@ class ProtoBlock {
    *  @param bytes to save in member. May be empty.
    *  @param cid to save in member.
    */
-  explicit ProtoBlock(Cid cid, DagNode node = DagNode()) noexcept
-      : cid_(std::move(cid)), node_(std::move(node)) {}
+  explicit ProtoBlock(Cid cid, const DagNode& node = DagNode()) noexcept
+      : cid_(std::move(cid)), node_(node) {}
 
   /**
    *  @brief  Convert block to proto Block message.

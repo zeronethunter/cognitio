@@ -4,7 +4,7 @@ namespace cognitio {
 namespace linked_data {
 
 std::unique_ptr<Block> ProtoBlock::ToProtoMessage() {
-  ::Block new_block;
+  Block new_block;
   std::unique_ptr<Node> new_node = node_.EncodeProtoNode();
 
   new_block.set_cid(cid_.ToString());

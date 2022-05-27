@@ -21,15 +21,17 @@ Config::Config(std::string repo_path) noexcept
 }
 
 Status Config::createConfig(const std::string &repo_path,
-                            const std::string &api_address) const noexcept {
+                            const std::string &api_address,
+                            const std::string &dht_address) const noexcept {
   std::filesystem::path config_path(repo_path);
   config_path /= "config";
 
-//  std::filesystem::create_directory(repo_path);
+  //  std::filesystem::create_directory(repo_path);
 
   ProtoConfig config;
   config.set_repo_path(repo_path);
   config.set_api_adress(api_address);
+  config.set_dht_adress(dht_address);
 
   std::fstream config_file(config_path.string(), std::ios::out);
 
@@ -66,6 +68,7 @@ Status Config::getExistedConfig(const std::string &path) noexcept {
 
   repo_path_ = config.repo_path();
   api_address_ = config.api_adress();
+  dht_address_ = config.dht_adress();
 
   return Status::OK;
 }

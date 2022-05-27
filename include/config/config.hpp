@@ -30,9 +30,7 @@ class Config {
 
  public:
   static Config &GetInstance() noexcept {
-    std::call_once(flag_, []() {
-      Config::instance_.reset(new Config());
-    });
+    std::call_once(flag_, []() { Config::instance_.reset(new Config()); });
 
     return *Config::instance_;
   }
@@ -56,7 +54,8 @@ class Config {
   Status getExistedConfig(const std::string &path) noexcept;
   [[nodiscard]] Status createConfig(
       const std::string &repo_path,
-      const std::string &api_address = "127.0.0.1:50050") const noexcept;
+      const std::string &api_address = "127.0.0.1:50050",
+      const std::string &dht_address = "127.0.0.1:30050") const noexcept;
   [[nodiscard]] bool initialized() const noexcept;
   [[nodiscard]] bool isConfigCreated(const std::string &path) const noexcept;
 
@@ -65,6 +64,8 @@ class Config {
 
   std::string repo_path_;
   std::string api_address_;
+  std::string dht_address_;
+
   common::logger::Logger logger_ = common::logger::createLogger("config");
 };
 
