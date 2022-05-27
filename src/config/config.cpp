@@ -24,6 +24,7 @@ Status Config::createConfig(
     const std::string &repo_path, const std::string &api_address,
     const std::string &dht_address,
     const std::string &bootstrap_node_address) const noexcept {
+  logger_->debug("Making config.");
   std::filesystem::path config_path(repo_path);
   config_path /= "config";
 
@@ -50,10 +51,13 @@ Status Config::createConfig(
   config_file.write(json_config.c_str(),
                     static_cast<long>(json_config.length()));
 
+  logger_->debug("Config successfully created.");
   return Status::OK;
 }
 
 Status Config::getExistedConfig(const std::string &path) noexcept {
+  logger_->debug("Getting existed config.");
+
   std::fstream config_file(path, std::ios::in);
 
   if (!config_file.is_open()) {
@@ -74,14 +78,18 @@ Status Config::getExistedConfig(const std::string &path) noexcept {
   dht_address_ = config.dht_address();
   bootstrap_node_address_ = config.bootstrap_node_address();
 
+  logger_->debug("Successfully got config");
   return Status::OK;
 }
 
 Status Config::TryInit() noexcept {
+  logger_->debug("Trying to init config.");
+
   std::filesystem::path config_path(repo_path_);
   config_path /= "config";
 
   if (isConfigCreated(repo_path_)) {
+    logger_->info("Found config in {}", repo_path_);
     return getExistedConfig(config_path.string());
   }
 
@@ -93,10 +101,12 @@ bool Config::initialized() const noexcept {
 }
 
 Status Config::Dump() const noexcept {
+  logger_->debug("Dumping config in {}", repo_path_);
+
   if (initialized()) {
+    logger_->info("Found config in {}", repo_path_);
     return createConfig(repo_path_, api_address_);
   }
-
   return createConfig(repo_path_);
 }
 

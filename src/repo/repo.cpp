@@ -32,6 +32,8 @@ void Repo<StoreValue>::initRepoStorage(
 
 template <typename StoreValue>
 Status Repo<StoreValue>::openRepo() noexcept {
+  logger_->debug("Opening repo.");
+
   Status status_open = root_->Open();
   if (!status_open.ok()) {
     return status_open;
@@ -69,9 +71,14 @@ Status Repo<StoreValue>::Init() noexcept {
     return Status::FAILED;
   }
 
+  logger_->debug("Repo initializing");
+
   if (!Exists()) {
+    logger_->info("Repo not found. Creating one.");
     initRepoStorage(root_->Root());
     err = openRepo();
+  } else {
+    logger_->info("Repo was found in here {}", root_->Root().string());
   }
 
   closed_ = false;
@@ -88,6 +95,7 @@ std::string Repo<StoreValue>::shard(const cognitio::common::Cid& cid,
 
 template <typename StoreValue>
 Status Repo<StoreValue>::Add(const ProtoBlock& block) noexcept {
+  logger_->debug("Adding block to repo.");
   std::unique_ptr<Block> proto_block = block.ToProtoMessage();
 
   std::stringstream dump;
@@ -95,44 +103,55 @@ Status Repo<StoreValue>::Add(const ProtoBlock& block) noexcept {
   proto_block->SerializeToOstream(&dump);
 
   std::string dump_str = dump.str();
+  if (dump_str.empty()) {
+    logger_->warn("Block is empty.");
+  }
 
+  logger_->debug("Successfully added block.");
   return addByKey(block.GetCid(), {dump_str.begin(), dump_str.end()});
 }
 
 template <typename StoreValue>
 linked_data::ProtoBlock Repo<StoreValue>::Get(
     const common::Cid& key) const noexcept {
-  std::vector<uint8_t> content = getByKey(key);
+  if (!closed_) {
+    logger_->debug("Getting block from repo.");
+    std::vector<uint8_t> content = getByKey(key);
 
-  std::stringstream data(std::string(content.cbegin(), content.cend()));
+    std::stringstream data(std::string(content.cbegin(), content.cend()));
 
-  std::unique_ptr<Block> proto_block;
-  proto_block->ParseFromIstream(&data);
+    std::unique_ptr<Block> proto_block;
+    proto_block->ParseFromIstream(&data);
 
-  ProtoBlock result;
-  result.FromProtoMessage(proto_block);
+    if (!proto_block->IsInitialized()) {
+      logger_->warn("Block is not initialized.");
+    }
 
-  return result;
+    ProtoBlock result;
+    result.FromProtoMessage(proto_block);
+
+    logger_->debug("Successfully get block.");
+    return result;
+  }
+  logger_->error("Open repo before getting.");
+  return {};
 }
 
 template <typename StoreValue>
 Status Repo<StoreValue>::addByKey(const common::Cid& cid,
                                   const std::vector<uint8_t>& data) noexcept {
-  if (!closed_) {
-    std::string name_of_shard = shard(cid);
+  std::string name_of_shard = shard(cid);
 
-    blockstorage::Blockstorage block(blocks_->Root() / name_of_shard);
-    Status is_opened = block.Open();
+  blockstorage::Blockstorage block(blocks_->Root() / name_of_shard);
+  Status is_opened = block.Open();
 
-    if (!is_opened.ok()) {
-      return is_opened;
-    }
-
-    Status is_added = block.Put(cid, data);
-
-    return is_added;
+  if (!is_opened.ok()) {
+    return is_opened;
   }
-  return {StatusCode::CANCELLED, "Open repo before adding."};
+
+  Status is_added = block.Put(cid, data);
+
+  return is_added;
 }
 
 template <typename StoreValue>

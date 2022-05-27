@@ -155,7 +155,6 @@ class Repo {
   config::Config &config_;
   std::unique_ptr<datastore::Filesystem<StoreValue>> root_;
   std::unique_ptr<blockstorage::Blockstorage> blocks_;
-  std::shared_ptr<std::thread> gc;
   common::logger::Logger logger_;
 };
 

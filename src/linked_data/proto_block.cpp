@@ -10,7 +10,7 @@ std::unique_ptr<Block> ProtoBlock::ToProtoMessage() const noexcept {
   new_block.set_cid(cid_.ToString());
   new_block.set_allocated_node(new_node.get());
 
-  return std::make_unique<::Block>(new_block);
+  return std::make_unique<Block>(new_block);
 }
 
 Status ProtoBlock::FromProtoMessage(
