@@ -43,7 +43,6 @@ Status Config::createConfig(
   }
 
   std::string json_config;
-  google::protobuf::util::JsonOptions opts;
   if (!google::protobuf::util::MessageToJsonString(config, &json_config).ok()) {
     return {StatusCode::FAILED, "Failed to open config file."};
   }
@@ -51,7 +50,7 @@ Status Config::createConfig(
   config_file.write(json_config.c_str(),
                     static_cast<long>(json_config.length()));
 
-  logger_->debug("Config successfully created.");
+  logger_->debug("Config successfully created, path: {}", config_path.string());
   return Status::OK;
 }
 

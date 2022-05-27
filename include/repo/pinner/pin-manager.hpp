@@ -12,9 +12,9 @@
 #include <set>
 #include <utility>
 
+#include "common/logger/logger.hpp"
 #include "datastore/ds_fs.hpp"
 #include "repo/block_storage/block_storage.hpp"
-#include "common/logger/logger.hpp"
 
 namespace cognitio {
 namespace repo {
@@ -33,7 +33,7 @@ class PinManager {
 
   explicit PinManager(PinStore& pinstore, const Pins& pins = Pins()) noexcept
       : pinstore_(std::move(pinstore)),
-        logger_(common::logger::createLogger("Pinner logger")) {
+        logger_(common::logger::createLogger("pinner")) {
     if (!pins.empty()) {
       pins_ = pins;
     } else {

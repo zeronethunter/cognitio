@@ -25,17 +25,21 @@ namespace unixfs {
  */
 class UnixFS {
  public:
+  /**
+   *  @brief  Operator inequality.
+   */
   bool operator!=(const UnixFS& rhs_unix_fs) {
-    return (is_created_ != rhs_unix_fs.is_created_) &&
-           (data_type_ != rhs_unix_fs.data_type_) &&
+    return (data_type_ != rhs_unix_fs.data_type_) &&
            (data_ != rhs_unix_fs.data_) &&
            (filesize_ != rhs_unix_fs.filesize_) &&
            (blocksizes_ != rhs_unix_fs.blocksizes_);
   }
 
+  /**
+   *  @brief  Operator copy.
+   */
   UnixFS& operator=(const UnixFS& rhs_unix_fs) {
     if (&rhs_unix_fs != this) {
-      is_created_ = rhs_unix_fs.is_created_;
       data_type_ = rhs_unix_fs.data_type_;
       data_ = rhs_unix_fs.data_;
       filesize_ = rhs_unix_fs.filesize_;
@@ -123,14 +127,12 @@ class UnixFS {
   [[nodiscard]] Data_DataType stringToDatatype(
       const std::string& type) const noexcept;
 
-  bool is_created_ = false;
   std::string data_type_;
   std::vector<uint8_t> data_;
   uint64_t filesize_;
   std::vector<uint64_t> blocksizes_;
 
-  common::logger::Logger logger_ =
-      common::logger::createLogger("UnixFSDecodeMessage");
+  common::logger::Logger logger_ = common::logger::createLogger("unixfs");
 };
 
 }  // namespace unixfs

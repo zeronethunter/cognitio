@@ -64,7 +64,7 @@ class BlockService {
   std::shared_ptr<repo::Repo<std::string>> repo_;
 
   common::logger::Logger logger_ =
-      common::logger::createLogger("BlockService logger");
+      common::logger::createLogger("block-service");
 };
 
 }  // namespace exchange

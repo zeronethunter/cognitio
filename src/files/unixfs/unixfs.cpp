@@ -27,24 +27,20 @@ Data_DataType UnixFS::stringToDatatype(const std::string& type) const noexcept {
 }
 
 std::unique_ptr<Data> UnixFS::EncodeMessage() const noexcept {
-  if (is_created_) {
-    Data message;
-    message.set_type(stringToDatatype(data_type_));
-    if (!data_.empty()) {
-      message.set_data(std::string(data_.begin(), data_.end()));
-    }
-    if (filesize_) {
-      message.set_filesize(filesize_);
-    }
-    if (!blocksizes_.empty()) {
-      for (const uint64_t& blocksize : blocksizes_) {
-        message.add_blocksizes(blocksize);
-      }
-    }
-    return std::make_unique<Data>(message);
+  Data message;
+  message.set_type(stringToDatatype(data_type_));
+  if (!data_.empty()) {
+    message.set_data(std::string(data_.begin(), data_.end()));
   }
-  logger_->error("Can't encode data message. Create it first.");
-  return {};
+  if (filesize_) {
+    message.set_filesize(filesize_);
+  }
+  if (!blocksizes_.empty()) {
+    for (const uint64_t& blocksize : blocksizes_) {
+      message.add_blocksizes(blocksize);
+    }
+  }
+  return std::make_unique<Data>(message);
 }
 
 Status UnixFS::DecodeMessage(const Data& encoded) noexcept {
@@ -66,7 +62,6 @@ Status UnixFS::DecodeMessage(const Data& encoded) noexcept {
       data_ =
           std::vector<uint8_t>(encoded.data().cbegin(), encoded.data().cend());
     }
-    is_created_ = true;
     return Status::OK;
   }
   logger_->error("Can't decode data message. Initialize it first.");
@@ -98,7 +93,6 @@ Status UnixFS::CreateUnixFS(const std::string& datatype, uint64_t filesize,
   } else {
     return {StatusCode::INVALID_ARGUMENT, "Empty data"};
   }
-  is_created_ = true;
   return Status::OK;
 }
 

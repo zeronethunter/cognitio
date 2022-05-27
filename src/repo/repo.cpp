@@ -53,14 +53,14 @@ template <typename StoreValue>
 Repo<StoreValue>::Repo(const std::filesystem::path& path) noexcept
     : config_(config::Config::GetInstance()) {
   initRepoStorage(path);
-  logger_ = common::logger::createLogger("Repo logger");
+  logger_ = common::logger::createLogger("repo");
 }
 
 template <typename StoreValue>
 Repo<StoreValue>::Repo(const std::string& name) noexcept
     : config_(config::Config::GetInstance()) {
   initRepoStorage(std::filesystem::path(name));
-  logger_ = common::logger::createLogger("Repo logger");
+  logger_ = common::logger::createLogger("repo");
 }
 
 template <typename StoreValue>
@@ -77,8 +77,11 @@ Status Repo<StoreValue>::Init() noexcept {
     logger_->info("Repo not found. Creating one.");
     initRepoStorage(root_->Root());
     err = openRepo();
+    if (err.ok()) {
+      logger_->info("Successfully created here: {}", root_->Root().string());
+    }
   } else {
-    logger_->info("Repo was found in here {}", root_->Root().string());
+    logger_->info("Repo was found in here: {}", root_->Root().string());
   }
 
   closed_ = false;
