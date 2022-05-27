@@ -31,7 +31,7 @@ class DagNode {
   DagNode &operator=(std::vector<uint8_t> &&bytes);
 
   /// \brief Construct new node on children and concatenated data
-  DagNode(std::vector<uint8_t> &&bytes,
+  DagNode(std::vector<uint8_t> &bytes,
           const std::vector<DagNode> &children_data);
 
   /// \brief Construct Node on children data

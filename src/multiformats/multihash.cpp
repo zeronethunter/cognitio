@@ -54,8 +54,12 @@ Status Multihash::CreateFromBytes(std::span<uint8_t> &bytes) {
   std::string bytes_str(bytes.begin(), bytes.end());
   sha.update(bytes_str);
 
-  std::unique_ptr<uint8_t> digest(sha.digest());
-  std::span<uint8_t> hash_bytes(digest.get(), HASH_LENGTH);
+  uint8_t *digest = sha.digest();
+//  std::unique_ptr<uint8_t> digest(sha.digest());
+  std::span<uint8_t> hash_bytes(digest, HASH_LENGTH);
+  delete[] digest;
+
+  bytes = hash_bytes;
 
   if (hash_bytes.size() < min_hash_length_) {
     return Status(StatusCode::CANCELLED, "Hash size is short");

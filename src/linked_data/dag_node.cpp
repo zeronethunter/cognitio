@@ -10,7 +10,7 @@
 namespace cognitio {
 namespace linked_data {
 
-DagNode::DagNode(std::vector<uint8_t> &&bytes,
+DagNode::DagNode(std::vector<uint8_t> &bytes,
                  const std::vector<DagNode> &children_data) {
   data_.SetData(bytes);
   for (const auto &node : children_data) {
@@ -51,8 +51,11 @@ Status DagNode::DecodeProtoNode(const Node &node) {
 std::unique_ptr<Node> DagNode::EncodeProtoNode() const {
   Node package_node;
   package_node.set_allocated_data(data_.EncodeMessage().get());
+  std::vector<std::string> cid_vec;
   for (size_t i = 0; i < children_.size(); ++i) {
-    package_node.set_cid(i, children_[i].first.ToString());
+    std::string cid_str = children_[i].first.ToString();
+    auto cid = package_node.add_cid();
+    *cid = cid_str;
   }
   return std::make_unique<Node>(package_node);
 }
