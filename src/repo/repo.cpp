@@ -102,7 +102,6 @@ Status Repo<StoreValue>::Add(const ProtoBlock& block) noexcept {
   std::unique_ptr<Block> proto_block = block.ToProtoMessage();
 
   std::stringstream dump;
-
   proto_block->SerializeToOstream(&dump);
 
   std::string dump_str = dump.str();
@@ -121,10 +120,11 @@ linked_data::ProtoBlock Repo<StoreValue>::Get(
     logger_->debug("Getting block from repo.");
     std::vector<uint8_t> content = getByKey(key);
 
-    std::stringstream data(std::string(content.cbegin(), content.cend()));
-
+    std::stringstream data(std::string(content.begin(), content.end()));
     std::unique_ptr<Block> proto_block;
-    proto_block->ParseFromIstream(&data);
+
+    // proto_block->ParseFromIstream(&data);
+    proto_block->ParseFromString(std::string(content.begin(), content.end()));
 
     if (!proto_block->IsInitialized()) {
       logger_->warn("Block is not initialized.");
@@ -136,6 +136,7 @@ linked_data::ProtoBlock Repo<StoreValue>::Get(
     logger_->debug("Successfully get block.");
     return result;
   }
+
   logger_->error("Open repo before getting.");
   return {};
 }

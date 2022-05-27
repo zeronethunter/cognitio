@@ -55,9 +55,7 @@ Status Multihash::CreateFromBytes(std::span<uint8_t> &bytes) {
   sha.update(bytes_str);
 
   uint8_t *digest = sha.digest();
-  //  std::unique_ptr<uint8_t> digest(sha.digest());
   std::span<uint8_t> hash_bytes(digest, HASH_LENGTH);
-  delete[] digest;
 
   bytes = hash_bytes;
 
@@ -91,6 +89,8 @@ Status Multihash::CreateFromBytes(std::span<uint8_t> &bytes) {
 
   //  Multihash(hash);
   data_ = std::make_shared<Data>(hash);
+
+  delete[] digest;
   return Status::OK;
 }
 
