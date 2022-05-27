@@ -34,14 +34,16 @@ common::Cid DagNode::GetCid() const {
   auto content = GetContent();
   return common::Cid(content);
 }
+Status DagNode::DecodeProtoNode(const Node &node) {
+  data_ = node.data();
+  children_.resize(0);
 
-std::unique_ptr<Node> DagNode::EncodeProtoNode() const {
-  Node package_node;
-  package_node.set_allocated_data(data_.EncodeMessage().get());
-  for (size_t i = 0; i < children_.size(); ++i) {
-    package_node.set_cid(i, children_[i].first.ToString());
+  for (const auto &child : node.cid()) {
+    children_.emplace_back(common::Cid(child),
+                           std::make_shared<DagNode>(DagNode()));
   }
-  return std::make_unique<Node>(package_node);
+
+  return Status::OK;
 }
 
 }  // namespace linked_data
