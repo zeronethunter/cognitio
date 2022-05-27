@@ -50,13 +50,15 @@ Status DagNode::DecodeProtoNode(const Node &node) {
 
 std::unique_ptr<Node> DagNode::EncodeProtoNode() const {
   Node package_node;
-  package_node.set_allocated_data(data_.EncodeMessage().get());
+  auto msg = data_.EncodeMessage();
+  package_node.set_allocated_data(msg.get());
   std::vector<std::string> cid_vec;
   for (size_t i = 0; i < children_.size(); ++i) {
     std::string cid_str = children_[i].first.ToString();
     auto cid = package_node.add_cid();
     *cid = cid_str;
   }
+  msg.release();
   return std::make_unique<Node>(package_node);
 }
 

@@ -30,9 +30,7 @@ class UnixFS {
    */
   bool operator!=(const UnixFS& rhs_unix_fs) {
     return (data_type_ != rhs_unix_fs.data_type_) &&
-           (data_ != rhs_unix_fs.data_) &&
-           (filesize_ != rhs_unix_fs.filesize_) &&
-           (blocksizes_ != rhs_unix_fs.blocksizes_);
+           (data_ != rhs_unix_fs.data_) && (filesize_ != rhs_unix_fs.filesize_);
   }
 
   /**
@@ -43,7 +41,6 @@ class UnixFS {
       data_type_ = rhs_unix_fs.data_type_;
       data_ = rhs_unix_fs.data_;
       filesize_ = rhs_unix_fs.filesize_;
-      blocksizes_ = rhs_unix_fs.blocksizes_;
     }
     return *this;
   }
@@ -72,30 +69,7 @@ class UnixFS {
    *  @return a Status.
    */
   Status CreateUnixFS(const std::string& datatype, uint64_t filesize,
-                      const std::vector<uint64_t>& blocksizes,
                       const std::vector<uint8_t>& data) noexcept;
-  /**
-   *  @brief  Adder for blocksize.
-   *  @param  size_in_bytes size in bytes to add.
-   */
-  void AddBlockSize(uint64_t size_in_bytes) noexcept {
-    blocksizes_.push_back(size_in_bytes);
-  }
-  /**
-   *  @brief  Get block size by index.
-   *  @param  index index of size to get.
-   *  @return size.
-   */
-  [[nodiscard]] size_t GetBlockSize(size_t index) const noexcept {
-    return blocksizes_.at(index);
-  }
-  /**
-   *  @brief  Get vector of block sizes.
-   *  @return vector of block sizes.
-   */
-  [[nodiscard]] std::vector<uint64_t> GetBlockSize() const noexcept {
-    return blocksizes_;
-  }
   /**
    *  @brief  Get file size.
    */
@@ -127,10 +101,9 @@ class UnixFS {
   [[nodiscard]] Data_DataType stringToDatatype(
       const std::string& type) const noexcept;
 
-  std::string data_type_;
+  std::string data_type_ = "file";
   std::vector<uint8_t> data_;
   uint64_t filesize_;
-  std::vector<uint64_t> blocksizes_;
 
   common::logger::Logger logger_ = common::logger::createLogger("unixfs");
 };

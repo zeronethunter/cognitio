@@ -16,7 +16,6 @@ message Data {
   DataType Type = 1;
   bytes Data = 2;
   uint64 filesize = 3;
-  repeated uint64 blocksizes = 4;
 }
 
 message Node {

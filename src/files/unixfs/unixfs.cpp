@@ -35,11 +35,6 @@ std::unique_ptr<Data> UnixFS::EncodeMessage() const noexcept {
   if (filesize_) {
     message.set_filesize(filesize_);
   }
-  if (!blocksizes_.empty()) {
-    for (const uint64_t& blocksize : blocksizes_) {
-      message.add_blocksizes(blocksize);
-    }
-  }
   return std::make_unique<Data>(message);
 }
 
@@ -49,11 +44,6 @@ Status UnixFS::DecodeMessage(const Data& encoded) noexcept {
       data_type_ = Data_DataType_Name(encoded.type());
     } else {
       return {StatusCode::INVALID_ARGUMENT, "Data type is invalid."};
-    }
-    if (!encoded.blocksizes().empty()) {
-      for (const uint64_t& blocksize : encoded.blocksizes()) {
-        blocksizes_.push_back(blocksize);
-      }
     }
     if (encoded.filesize()) {
       filesize_ = encoded.filesize();
@@ -69,7 +59,6 @@ Status UnixFS::DecodeMessage(const Data& encoded) noexcept {
 }
 
 Status UnixFS::CreateUnixFS(const std::string& datatype, uint64_t filesize,
-                            const std::vector<uint64_t>& blocksizes,
                             const std::vector<uint8_t>& data) noexcept {
   int type = stringToDatatype(datatype);
   if (Data_DataType_IsValid(type)) {
@@ -82,11 +71,6 @@ Status UnixFS::CreateUnixFS(const std::string& datatype, uint64_t filesize,
     filesize_ = filesize;
   } else {
     return {StatusCode::INVALID_ARGUMENT, "Empty filesize"};
-  }
-  if (!blocksizes.empty()) {
-    blocksizes_ = blocksizes;
-  } else {
-    return {StatusCode::INVALID_ARGUMENT, "Empty blocksizes"};
   }
   if (!data.empty()) {
     data_ = data;
