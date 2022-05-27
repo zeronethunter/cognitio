@@ -115,10 +115,9 @@ std::vector<DagNode> MerkleDag::getSubNodes(const DagNode &root) const {
                   [&](const DagNode &node) { dag_st.push(node); });
 
     /* push nodes in result vector */
-    std::for_each(children_vec.begin(), children_vec.end(),
-                  [&](const DagNode &node) {
-                    collected_nodes.push_back(node);
-                  });
+    std::for_each(
+        children_vec.begin(), children_vec.end(),
+        [&](const DagNode &node) { collected_nodes.push_back(node); });
   } while (!dag_st.empty());
 
   return collected_nodes;
@@ -150,10 +149,10 @@ std::vector<DagNode> MerkleDag::CollectNodes(const DagNode &root_node) const {
 std::vector<ProtoBlock> MerkleDag::CollectBlocks(
     const DagNode &root_node) const {
   std::vector<ProtoBlock> result_vec;
-  std::stack<DagNode> node_st;
+  std::queue<DagNode> node_queue;
   DagNode current_node = root_node;
 
-  result_vec.push_back(ProtoBlock(root_node.GetCid(), root_node));
+  result_vec.emplace_back(root_node.GetCid(), root_node);
 
   if (root_node.GetChildren().empty()) {
     return result_vec;
@@ -163,11 +162,11 @@ std::vector<ProtoBlock> MerkleDag::CollectBlocks(
     for (const auto &node : current_node.GetChildren()) {
       //      result_vec.push_back(*node.second);
       result_vec.emplace_back(node.second->GetCid(), *node.second);
-      node_st.push(*node.second);
+      node_queue.push(*node.second);
     }
-    current_node = node_st.top();
-    node_st.pop();
-  } while (!node_st.empty());
+    current_node = node_queue.front();
+    node_queue.pop();
+  } while (!node_queue.empty());
 
   return result_vec;
 }
@@ -199,8 +198,8 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
   std::vector<std::vector<DagNode>> layer_vec(1);
   std::vector<std::vector<DagNode>> previous_layer_vec =
       std::move(bottom_lay_vec);
-  std::vector<DagNode> last_layer;
   size_t blck_cnt = 0;
+
   do {
     for (const auto &chunk_block : previous_layer_vec) {
       DagNode parent_node(chunk_block);
@@ -216,22 +215,33 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
       parent_node.SetData(concatenated_data);
 
       layer_vec[blck_cnt].push_back(parent_node);
-      if (parent_node.GetChildren().size() != CHUNK_SIZE) {
+      if (layer_vec[blck_cnt].size() == CHUNK_SIZE) {
         ++blck_cnt;
       }
     }
     previous_layer_vec = std::move(layer_vec);
 
-    if (last_layer.size() < CHUNK_SIZE) {
+    if (previous_layer_vec.size() < CHUNK_SIZE) {
       layer_vec.resize(1);
     } else {
-      layer_vec.resize((last_layer.size() % CHUNK_SIZE == 0)
-                           ? last_layer.size()
-                           : last_layer.size() + 1);
+      layer_vec.resize((previous_layer_vec.size() % CHUNK_SIZE == 0)
+                           ? previous_layer_vec.size()
+                           : previous_layer_vec.size() + 1);
     }
     blck_cnt = 0;
   } while (previous_layer_vec.size() != 1);
-  return std::make_unique<DagNode>(previous_layer_vec[0][0]);
+
+  std::vector<uint8_t> concatenated_bytes;
+  for (auto &child : previous_layer_vec[0]) {
+    std::vector<uint8_t> content = child.GetContent();
+    concatenated_bytes.insert(concatenated_bytes.end(), content.begin(),
+                              content.end());
+  }
+
+  merkle_root_ =
+      std::make_unique<DagNode>(concatenated_bytes, previous_layer_vec[0]);
+
+  return std::make_unique<DagNode>(concatenated_bytes, previous_layer_vec[0]);
 }
 
 }  // namespace linked_data

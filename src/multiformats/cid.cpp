@@ -20,7 +20,7 @@ Cid::Cid(std::span<uint8_t> &bytes) {
   content_type_ = CodeType::SHA2_256;
 }
 
-Cid::Cid(std::vector<uint8_t> &bytes) {
+Cid::Cid(const std::vector<uint8_t> &bytes) {
   std::vector<uint8_t> copy_to_vec(bytes);
   std::span<uint8_t> sp(copy_to_vec);
   content_address_.CreateFromBytes(sp);
