@@ -7,6 +7,9 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <ios>
+#include <sstream>
+#include <type_traits>
 
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
@@ -101,9 +104,10 @@ Status Repo<StoreValue>::Add(const ProtoBlock& block) noexcept {
   logger_->debug("Adding block to repo.");
   std::unique_ptr<Block> proto_block = block.ToProtoMessage();
 
-  std::stringstream dump;
-  proto_block->SerializeToOstream(&dump);
+  std::stringstream dump(std::ios_base::out | std::ios_base::trunc |
+                         std::ios_base::binary);
 
+  proto_block->SerializeToOstream(&dump);
   std::string dump_str = dump.str();
   if (dump_str.empty()) {
     logger_->warn("Block is empty.");
@@ -120,11 +124,11 @@ linked_data::ProtoBlock Repo<StoreValue>::Get(
     logger_->debug("Getting block from repo.");
     std::vector<uint8_t> content = getByKey(key);
 
-    std::stringstream data(std::string(content.begin(), content.end()));
-    std::unique_ptr<Block> proto_block;
+    std::unique_ptr<Block> proto_block = std::make_unique<Block>();
+    std::stringstream data(std::string(content.begin(), content.end()),
+                           std::ios_base::in | std::ios_base::binary);
 
-    // proto_block->ParseFromIstream(&data);
-    proto_block->ParseFromString(std::string(content.begin(), content.end()));
+    proto_block->ParseFromIstream(&data);
 
     if (!proto_block->IsInitialized()) {
       logger_->warn("Block is not initialized.");
@@ -195,7 +199,6 @@ std::vector<uint8_t> Repo<StoreValue>::getByKey(
     }
 
     blockstorage::Blockstorage block(blocks_->Root() / name_of_shard);
-
     std::pair<Status, std::vector<uint8_t>> result = block.Get(cid);
 
     if (!result.first.ok()) {

@@ -25,6 +25,9 @@ namespace unixfs {
  */
 class UnixFS {
  public:
+    UnixFS() = default;
+    ~UnixFS() = default;
+
   /**
    *  @brief  Operator inequality.
    */

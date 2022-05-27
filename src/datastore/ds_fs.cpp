@@ -36,20 +36,18 @@ Status Filesystem<Value>::Put(const common::Cid &key,
     return {StatusCode::ALREADY_EXISTS, " already exists"};
   }
   std::fstream file;
-  file.open((path_ / filename).string(), std::ios::out);
+  file.open((path_ / filename).string(),
+            std::ios::out | std::ios::trunc | std::ios::binary);
 
   if (!file.is_open()) {
     return {StatusCode::CANCELLED, "Can not create " + filename};
   }
 
   char *bytes = makeCharFromData(value);
-
   file.write(bytes, value.size());
-
   file.close();
 
   delete[] bytes;
-
   return Status::OK;
 }
 
