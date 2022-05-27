@@ -20,9 +20,10 @@ Config::Config(std::string repo_path) noexcept
   logger_ = common::logger::createLogger("Config logger");
 }
 
-Status Config::createConfig(const std::string &repo_path,
-                            const std::string &api_address,
-                            const std::string &dht_address) const noexcept {
+Status Config::createConfig(
+    const std::string &repo_path, const std::string &api_address,
+    const std::string &dht_address,
+    const std::string &bootstrap_node_address) const noexcept {
   std::filesystem::path config_path(repo_path);
   config_path /= "config";
 
@@ -30,8 +31,9 @@ Status Config::createConfig(const std::string &repo_path,
 
   ProtoConfig config;
   config.set_repo_path(repo_path);
-  config.set_api_adress(api_address);
-  config.set_dht_adress(dht_address);
+  config.set_api_address(api_address);
+  config.set_dht_address(dht_address);
+  config.set_bootstrap_node_address(bootstrap_node_address);
 
   std::fstream config_file(config_path.string(), std::ios::out);
 
@@ -40,6 +42,7 @@ Status Config::createConfig(const std::string &repo_path,
   }
 
   std::string json_config;
+  google::protobuf::util::JsonOptions opts;
   if (!google::protobuf::util::MessageToJsonString(config, &json_config).ok()) {
     return {StatusCode::FAILED, "Failed to open config file."};
   }
@@ -67,8 +70,9 @@ Status Config::getExistedConfig(const std::string &path) noexcept {
   }
 
   repo_path_ = config.repo_path();
-  api_address_ = config.api_adress();
-  dht_address_ = config.dht_adress();
+  api_address_ = config.api_address();
+  dht_address_ = config.dht_address();
+  bootstrap_node_address_ = config.bootstrap_node_address();
 
   return Status::OK;
 }
@@ -102,6 +106,12 @@ std::string Config::Get(const std::string &field) const noexcept {
   }
   if (field == "api_address") {
     return api_address_;
+  }
+  if (field == "dht_address") {
+    return dht_address_;
+  }
+  if (field == "bootstrap_node_address") {
+    return bootstrap_node_address_;
   }
   return {};
 }

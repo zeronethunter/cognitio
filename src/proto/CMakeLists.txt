@@ -1,15 +1,15 @@
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_proto)
 set(${SUBMODULE_NAME}_SOURCES ProtoConfig.pb.cc
-  ProtoData.pb.cc api.grpc.pb.cc api.pb.cc
-  kademlia.grpc.pb.cc kademlia.pb.cc )
+        ProtoData.pb.cc
+        kademlia.grpc.pb.cc kademlia.pb.cc)
 
-find_package(Protobuf REQUIRED)
+find_package(Protobuf)
 find_package(gRPC REQUIRED)
 
 add_library(${SUBMODULE_NAME} STATIC ${${SUBMODULE_NAME}_SOURCES})
 target_link_libraries(
-  ${SUBMODULE_NAME} PUBLIC
-  ${Protobuf_LIBRARIES} gRPC::grpc++
+        ${SUBMODULE_NAME} PUBLIC
+        ${Protobuf_LIBRARIES} gRPC::grpc++
 )
 
 if (ENABLE_TESTING MATCHES ON)

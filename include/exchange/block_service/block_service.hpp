@@ -11,7 +11,6 @@
 #include "common/status.hpp"
 #include "common/utils/repo.hpp"
 #include "exchange/block_swap/block_swap.hpp"
-#include "linked_data/proto_block.hpp"
 #include "repo/repo.hpp"
 
 namespace cognitio {
@@ -30,12 +29,13 @@ class BlockService {
     }
   }
 
+  // TODO: Переделать логику открытия...
   Status Open(const std::filesystem::path& path =
                   std::filesystem::path(common::utils::GetDefaultRepoPath()) /
                   "blocks",
               bool is_daemon_opened = false) noexcept;
 
-  Status Close() noexcept;
+  Status Close() noexcept { return repo_->Close(); }
 
   [[nodiscard]] std::filesystem::path Root() const noexcept;
 
@@ -55,11 +55,6 @@ class BlockService {
   Status DeleteMany(const std::vector<common::Cid>& source) noexcept;
 
  private:
-  [[nodiscard]] std::string createMeta(
-      const linked_data::DagNode& node) const noexcept;
-  [[nodiscard]] std::vector<linked_data::DagNode> getMeta(
-      const std::string& content) const noexcept;
-
   bool closed_ = true;
   bool is_daemon_opened_ = false;
 

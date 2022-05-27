@@ -13,6 +13,7 @@
 #include "common/logger/logger.hpp"
 #include "common/utils/repo.hpp"
 #include "config/config.hpp"
+#include "linked_data/proto_block.hpp"
 #include "repo/gc/gc.hpp"
 #include "repo/pinner/pin-manager.hpp"
 
@@ -33,6 +34,8 @@ namespace repo {
 template <typename StoreValue = std::string>
 class Repo {
  public:
+  typedef linked_data::ProtoBlock ProtoBlock;
+
   /**
    *  @brief Constructor of repository from path.
    *
@@ -64,7 +67,11 @@ class Repo {
    */
   Status Close()
 
-      noexcept;
+      noexcept {
+    closed_ = true;
+
+    return Status::OK;
+  }
 
   /**
    *  @brief Add value by key in repo.
@@ -72,7 +79,7 @@ class Repo {
    *  @param cid the key that will be used to put value.
    *  @param data block of bytes.
    */
-  Status Add(const common::Cid &cid, const std::vector<uint8_t> &data)
+  Status Add(const ProtoBlock &block)
 
       noexcept;
 
@@ -83,7 +90,9 @@ class Repo {
    */
   Status Delete(const common::Cid &cid)
 
-      noexcept;
+      noexcept {
+    return deleteByKey(cid);
+  }
 
   /**
    *  @brief Get value by key in repo.
@@ -92,7 +101,7 @@ class Repo {
    *
    *  @return vector of bytes.
    */
-  [[nodiscard]] std::vector<uint8_t> Get(const common::Cid &cid) const
+  [[nodiscard]] ProtoBlock Get(const common::Cid &cid) const
 
       noexcept;
 
@@ -132,6 +141,15 @@ class Repo {
                                   size_t name_length = 2) const noexcept;
 
   void initRepoStorage(const std::filesystem::path &path) noexcept;
+  [[nodiscard]] std::vector<linked_data::DagNode> getMeta(
+      const std::string &content) const noexcept;
+  [[nodiscard]] std::string createMeta(
+      const linked_data::DagNode &node) const noexcept;
+  Status addByKey(const common::Cid &cid,
+                  const std::vector<uint8_t> &data) noexcept;
+  Status deleteByKey(const common::Cid &cid) noexcept;
+  [[nodiscard]] std::vector<uint8_t> getByKey(
+      const common::Cid &cid) const noexcept;
 
   bool closed_ = true;
 
