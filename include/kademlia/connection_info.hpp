@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "common/status.hpp"
 #include "kademlia/identifier.hpp"
 #include "proto/kademlia.pb.h"
 
@@ -22,6 +23,24 @@ class ConnectionInfo {
     proto_.set_id(id);
     proto_.set_ip(ip);
     proto_.set_port(port);
+  }
+
+  // id, address:port
+  Status InitWithString(Identifier id, std::string info) {
+    std::string address = info.substr(0, info.find(':'));
+    assert(!address.empty());
+    uint32_t port;
+    try {
+      port =
+          static_cast<uint32_t>(atoi(info.substr(info.find(':') + 1).c_str()));
+    } catch (...) {
+      return Status::FAILED;
+    }
+
+    proto_.set_id(id);
+    proto_.set_ip(address);
+    proto_.set_port(port);
+    return Status::OK;
   }
 
   Identifier id() const noexcept {

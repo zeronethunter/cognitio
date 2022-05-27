@@ -19,8 +19,11 @@
 namespace cognitio {
 namespace kademlia {
 
-Kademlia::Kademlia(Identifier id, std::string& address, uint32_t port)
-    : routing_table_(id), alive_(false), info_(id, address, port) {}
+Kademlia::Kademlia(ConnectionInfo& my_node)
+    : repo_(my_node.id()),
+      routing_table_(my_node.id()),
+      alive_(false),
+      info_(my_node) {}
 
 void Kademlia::Shutdown() noexcept {
   alive_ = false;
@@ -164,6 +167,15 @@ std::string Kademlia::Get(std::string key) {
   getQuery.set_magic(utils::generate_magic());
   getQuery.set_allocated_caller(&info_.GetProto());
   return client.Get(getQuery);
+}
+
+void Kademlia::StoreRequested(const std::string& key,
+                              const std::string& value) {
+  repo_.store(key, value);
+}
+
+std::string Kademlia::GetRequested(const std::string& key) {
+  return repo_.get(key);
 }
 
 }  // namespace kademlia

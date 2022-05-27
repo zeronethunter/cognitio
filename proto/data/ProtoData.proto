@@ -1,5 +1,9 @@
 syntax = "proto3";
 
+service BlockSwapService {
+    rpc GetBlock(GetBlockRequest) returns (GetBlockResponse);
+}
+
 message Data {
   enum DataType {
     Raw = 0;
@@ -8,6 +12,7 @@ message Data {
     Metadata = 3;
     Symlink = 4;
   }
+
   DataType Type = 1;
   bytes Data = 2;
   uint64 filesize = 3;
@@ -22,4 +27,13 @@ message Node {
 message Block {
   bytes Cid = 1;
   Node Node = 2;
+}
+
+message GetBlockRequest {
+    bytes Cid = 1;
+}
+
+message GetBlockResponse {
+    bool ok = 1;
+    optional Block block = 2;
 }

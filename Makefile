@@ -134,6 +134,12 @@ data-proto:
 	mv ${DATA_PROTO_SRC_DIR}/*.pb.h ${PROTO_OUT_HEADER_DIR}
 	mv ${DATA_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
 
+	protoc --experimental_allow_proto3_optional -I ${DATA_PROTO_SRC_DIR} --grpc_out=${DATA_PROTO_SRC_DIR} --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` \
+		${DATA_PROTO_SRC_DIR}/*proto
+	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
+	mv ${DATA_PROTO_SRC_DIR}/*grpc.pb.h ${PROTO_OUT_HEADER_DIR}
+	mv ${DATA_PROTO_SRC_DIR}/*grpc.pb.cc ${PROTO_OUT_SRC_DIR}
+
 config-proto:
 	protoc --experimental_allow_proto3_optional -I ${CONFIG_PROTO_SRC_DIR} --cpp_out=${CONFIG_PROTO_SRC_DIR} ${CONFIG_PROTO_SRC_DIR}/*.proto
 	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}

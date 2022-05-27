@@ -12,6 +12,7 @@
 #include "common/status.hpp"
 #include "kademlia/connection_info.hpp"
 #include "kademlia/identifier.hpp"
+#include "kademlia/repository.hpp"
 #include "kademlia/routing_table.hpp"
 #include "repo/repo.hpp"
 
@@ -20,7 +21,7 @@ namespace kademlia {
 
 class Kademlia {
  public:
-  explicit Kademlia(Identifier id, std::string& address, uint32_t port);
+  explicit Kademlia(ConnectionInfo& my_node);
 
   void Run() noexcept;
   void Shutdown() noexcept;
@@ -35,6 +36,9 @@ class Kademlia {
   Status Add(std::string key, std::string value);
   std::string Get(std::string key);
 
+  void StoreRequested(const std::string& key, const std::string& value);
+  std::string GetRequested(const std::string& key);
+
   ~Kademlia();
 
  private:
@@ -42,8 +46,9 @@ class Kademlia {
   void refreshNodes() noexcept;
   void pingAndUpdate(std::vector<ConnectionInfo>& targets) noexcept;
   FindNodeAnswer findNode(ConnectionInfo& caller, ConnectionInfo& node,
-                          Identifier &destination);
+                          Identifier& destination);
 
+  KademliaRepository<std::string> repo_;
   RoutingTable routing_table_;
   std::atomic<bool> alive_;
   ConnectionInfo info_;

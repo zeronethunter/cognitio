@@ -49,6 +49,7 @@ class Config {
   [[nodiscard]] Status Dump() const noexcept;
   [[nodiscard]] std::string Get(const std::string &field) const noexcept;
   void SetRepoPath(const std::string &repo_path) noexcept;
+  bool IsLocal() const noexcept { return true; }
 
  private:
   Status getExistedConfig(const std::string &path) noexcept;
