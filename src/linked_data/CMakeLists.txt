@@ -9,6 +9,7 @@ target_link_libraries(${SUBMODULE_NAME} PUBLIC
         ${PROJECT_NAME}_block_service
         ${PROJECT_NAME}_common
         ${PROJECT_NAME}_proto
+        ${PROJECT_NAME}_unixfs
 )
 
 if (ENABLE_TESTING MATCHES ON)

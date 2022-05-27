@@ -1,6 +1,6 @@
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_proto)
 set(${SUBMODULE_NAME}_SOURCES ProtoConfig.pb.cc
-        ProtoData.pb.cc
+        ProtoData.pb.cc api.pb.cc api.grpc.pb.cc
         kademlia.grpc.pb.cc kademlia.pb.cc)
 
 find_package(Protobuf)

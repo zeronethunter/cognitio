@@ -42,7 +42,7 @@ class DagNode {
   /// \return bytes of node
   std::vector<uint8_t> GetContent() const;
 
-  Status DecodeProtoNode(const Node &node);
+  Status DecodeProtoNode(const Node &node) { return Status::OK; }
   std::unique_ptr<Node> EncodeProtoNode() const;
 
   /// \return size of node's children

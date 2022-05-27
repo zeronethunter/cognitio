@@ -22,6 +22,7 @@ Data_DataType UnixFS::stringToDatatype(const std::string& type) const noexcept {
     return Data_DataType_Symlink;
   } else {
     logger_->error("Can't decode data message. Wrong type {}.", type);
+    return Data_DataType_File;
   }
 }
 
@@ -41,9 +42,9 @@ std::unique_ptr<Data> UnixFS::EncodeMessage() const noexcept {
       }
     }
     return std::make_unique<Data>(message);
-  } else {
-    logger_->error("Can't encode data message. Create it first.");
   }
+  logger_->error("Can't encode data message. Create it first.");
+  return {};
 }
 
 Status UnixFS::DecodeMessage(const Data& encoded) noexcept {
@@ -67,9 +68,9 @@ Status UnixFS::DecodeMessage(const Data& encoded) noexcept {
     }
     is_created_ = true;
     return Status::OK;
-  } else {
-    logger_->error("Can't decode data message. Initialize it first.");
   }
+  logger_->error("Can't decode data message. Initialize it first.");
+  return Status::FAILED;
 }
 
 Status UnixFS::CreateUnixFS(const std::string& datatype, uint64_t filesize,
