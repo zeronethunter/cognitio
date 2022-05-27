@@ -141,13 +141,12 @@ class Repo {
                                   size_t name_length = 2) const noexcept;
 
   void initRepoStorage(const std::filesystem::path &path) noexcept;
-  [[nodiscard]] std::vector<linked_data::DagNode> getMeta(
-      const std::string &content) const noexcept;
-  [[nodiscard]] std::string createMeta(
-      const linked_data::DagNode &node) const noexcept;
+
   Status addByKey(const common::Cid &cid,
                   const std::vector<uint8_t> &data) noexcept;
+
   Status deleteByKey(const common::Cid &cid) noexcept;
+
   [[nodiscard]] std::vector<uint8_t> getByKey(
       const common::Cid &cid) const noexcept;
 

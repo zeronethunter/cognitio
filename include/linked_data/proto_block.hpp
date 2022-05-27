@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "multiformats/cid.hpp"
 #include "linked_data/dag_node.hpp"
+#include "multiformats/cid.hpp"
 #include "proto/ProtoData.pb.h"
 
 namespace cognitio::linked_data {
@@ -34,7 +34,7 @@ class ProtoBlock {
    *  @param bytes to save in member. May be empty.
    *  @param cid to save in member.
    */
-  explicit ProtoBlock(Cid cid, const DagNode& node = DagNode()) noexcept
+  explicit ProtoBlock(Cid cid, const DagNode &node = DagNode()) noexcept
       : cid_(std::move(cid)), node_(node) {}
 
   /**
@@ -42,14 +42,14 @@ class ProtoBlock {
    *
    *  @return shared ptr on proto Block class.
    */
-  ProtoBlockPtr ToProtoMessage();
+  [[nodiscard]] ProtoBlockPtr ToProtoMessage() const noexcept;
 
   /**
    *  @brief  Read from proto Block message.
    *
    *  @param proto_block message.
    */
-  Status FromProtoMessage(const ProtoBlockPtr &proto_block);
+  Status FromProtoMessage(const ProtoBlockPtr &proto_block) noexcept;
 
   /**
    *  @brief  Get node from Block.
@@ -89,6 +89,6 @@ class ProtoBlock {
   DagNode node_;
 };
 
-}  // namespace cognitio
+}  // namespace cognitio::linked_data
 
 #endif  // CGNT_LINKED_DATA_BLOCK_HPP_

@@ -87,55 +87,16 @@ std::string Repo<StoreValue>::shard(const cognitio::common::Cid& cid,
 }
 
 template <typename StoreValue>
-std::string Repo<StoreValue>::createMeta(
-    const linked_data::DagNode& node) const noexcept {
-  std::string cid = node.GetCid().ToString();
-
-  auto children_nodes = node.GetChildren();
-
-  std::string meta;
-
-  std::for_each(
-      children_nodes.cbegin(), children_nodes.cend(),
-      [&meta](auto const& pair) { meta += pair.first.ToString() + ' '; });
-
-  meta[meta.length() - 1] = '\n';
-
-  return meta;
-}
-
-template <typename StoreValue>
 Status Repo<StoreValue>::Add(const ProtoBlock& block) noexcept {
-  // is_daemon_opened_
-  //             ? block_swap_->Put(block.GetCid(),
-  //             block.GetNode().GetContent()) : repo_->Add(block.GetCid(),
-  //             block.GetNode().GetContent())
-  std::string meta_data = createMeta(block.GetNode());
-  std::vector<uint8_t> meta(meta_data.cbegin(), meta_data.cend());
+  std::unique_ptr<Block> proto_block = block.ToProtoMessage();
 
-  std::vector<uint8_t> content = block.GetNode().GetContent();
+  std::stringstream dump;
 
-  meta.insert(meta.end(), content.cbegin(), content.cend());
+  proto_block->SerializeToOstream(&dump);
 
-  return addByKey(block.GetCid(), meta);
-}
+  std::string dump_str = dump.str();
 
-template <typename StoreValue>
-std::vector<linked_data::DagNode> Repo<StoreValue>::getMeta(
-    const std::string& content) const noexcept {
-  std::string meta = content.substr(0, content.find('\n') - 1);
-  meta += ' ';
-
-  std::vector<linked_data::DagNode> result;
-
-  size_t pos;
-  while ((pos = meta.find(' ')) != std::string::npos) {
-    common::Cid cid(meta.substr(0, pos - 1));
-    meta.erase(pos);
-    result.emplace_back(cid.GetBytes());
-  }
-
-  return result;
+  return addByKey(block.GetCid(), {dump_str.begin(), dump_str.end()});
 }
 
 template <typename StoreValue>
@@ -143,14 +104,15 @@ linked_data::ProtoBlock Repo<StoreValue>::Get(
     const common::Cid& key) const noexcept {
   std::vector<uint8_t> content = getByKey(key);
 
-  std::vector<linked_data::DagNode> children =
-      getMeta({content.cbegin(), content.cend()});
+  std::stringstream data(std::string(content.cbegin(), content.cend()));
 
-  ProtoBlock block;
-  block.SetNode(linked_data::DagNode(children));
-  block.SetCid(key);
+  std::unique_ptr<Block> proto_block;
+  proto_block->ParseFromIstream(&data);
 
-  return block;
+  ProtoBlock result;
+  result.FromProtoMessage(proto_block);
+
+  return result;
 }
 
 template <typename StoreValue>

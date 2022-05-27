@@ -37,8 +37,7 @@ common::Cid DagNode::GetCid() const {
 
 std::unique_ptr<Node> DagNode::EncodeProtoNode() const {
   Node package_node;
-  package_node.set_data(data_.EncodeMessage());
-
+  package_node.set_allocated_data(data_.EncodeMessage().get());
   for (size_t i = 0; i < children_.size(); ++i) {
     package_node.set_cid(i, children_[i].first.ToString());
   }

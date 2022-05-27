@@ -16,7 +16,7 @@ message Data {
 
 message Node {
   repeated bytes Cid = 1;
-  optional bytes Data = 2;
+  optional Data Data = 2;
 }
 
 message Block {
