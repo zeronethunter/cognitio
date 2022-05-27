@@ -25,6 +25,25 @@ namespace unixfs {
  */
 class UnixFS {
  public:
+  bool operator!=(const UnixFS& rhs_unix_fs) {
+    return (is_created_ != rhs_unix_fs.is_created_) &&
+           (data_type_ != rhs_unix_fs.data_type_) &&
+           (data_ != rhs_unix_fs.data_) &&
+           (filesize_ != rhs_unix_fs.filesize_) &&
+           (blocksizes_ != rhs_unix_fs.blocksizes_);
+  }
+
+  UnixFS& operator=(const UnixFS& rhs_unix_fs) {
+    if (&rhs_unix_fs != this) {
+      is_created_ = rhs_unix_fs.is_created_;
+      data_type_ = rhs_unix_fs.data_type_;
+      data_ = rhs_unix_fs.data_;
+      filesize_ = rhs_unix_fs.filesize_;
+      blocksizes_ = rhs_unix_fs.blocksizes_;
+    }
+    return *this;
+  }
+
   /**
    *  @brief  Encode a data to protobuf.
    *  @param  data vector of bytes.

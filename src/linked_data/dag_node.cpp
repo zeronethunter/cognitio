@@ -35,7 +35,9 @@ common::Cid DagNode::GetCid() const {
   return common::Cid(content);
 }
 Status DagNode::DecodeProtoNode(const Node &node) {
-  data_ = node.data();
+  files::unixfs::UnixFS unixfs_data;
+  unixfs_data.DecodeMessage(node.data());
+  data_ = unixfs_data;
   children_.resize(0);
 
   for (const auto &child : node.cid()) {
@@ -44,6 +46,15 @@ Status DagNode::DecodeProtoNode(const Node &node) {
   }
 
   return Status::OK;
+}
+
+std::unique_ptr<Node> DagNode::EncodeProtoNode() const {
+  Node package_node;
+  package_node.set_allocated_data(data_.EncodeMessage().get());
+  for (size_t i = 0; i < children_.size(); ++i) {
+    package_node.set_cid(i, children_[i].first.ToString());
+  }
+  return std::make_unique<Node>(package_node);
 }
 
 }  // namespace linked_data
