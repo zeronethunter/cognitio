@@ -25,8 +25,15 @@ namespace unixfs {
  */
 class UnixFS {
  public:
-    UnixFS() = default;
-    ~UnixFS() = default;
+  UnixFS() = default;
+  ~UnixFS() = default;
+
+  UnixFS(const UnixFS& other) {
+    data_type_ = other.data_type_;
+    data_ = other.data_;
+    filesize_ = other.filesize_;
+    logger_ = common::logger::createLogger("unixfs");
+  }
 
   /**
    *  @brief  Operator inequality.
