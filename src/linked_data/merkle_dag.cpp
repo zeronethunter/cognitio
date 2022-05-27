@@ -78,6 +78,7 @@ Status MerkleDag::RemoveNode(const common::Cid &cid, bool is_recursive) {
   if (!is_recursive) {
     return block_service_->Delete(cid);
   }
+
   DagNode to_delete_node = GetNode(cid).second;
   std::vector<DagNode> to_delete_vec = CollectNodes(to_delete_node);
 

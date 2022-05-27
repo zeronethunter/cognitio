@@ -20,10 +20,11 @@ class BlockService {
   typedef linked_data::ProtoBlock ProtoBlock;
 
  public:
-  BlockService() = default;
+  // BlockService() = default;
 
   explicit BlockService(std::shared_ptr<repo::Repo<std::string>> repo)
       : repo_(std::move(repo)) {
+
     if (repo_->Exists()) {
       closed_ = false;
     }
@@ -32,10 +33,11 @@ class BlockService {
   // TODO: Переделать логику открытия...
   Status Open(const std::filesystem::path& path =
                   std::filesystem::path(common::utils::GetDefaultRepoPath()) /
-                  "blocks",
-              bool is_daemon_opened = false) noexcept;
+                  "blocks") noexcept;
 
   Status Close() noexcept { return repo_->Close(); }
+
+  void SetDaemonStatus(bool status) noexcept { is_daemon_opened_ = status; }
 
   [[nodiscard]] std::filesystem::path Root() const noexcept;
 
@@ -58,7 +60,7 @@ class BlockService {
   bool closed_ = true;
   bool is_daemon_opened_ = false;
 
-  //  std::shared_ptr<BlockSwap> block_swap_;
+  std::shared_ptr<BlockSwap> block_swap_;
   std::shared_ptr<repo::Repo<std::string>> repo_;
 
   common::logger::Logger logger_ =

@@ -5,28 +5,26 @@
 
 #include "common/logger/logger.hpp"
 
+#include <spdlog/common.h>
+
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace {
-void setGlobalPattern(spdlog::logger& logger) {
-  logger.set_pattern("[%Y-%m-%d %H:%M:%S.%F][%n] %v");
-}
-
-void setDebugPattern(spdlog::logger& logger) {
-  logger.set_pattern("[%Y-%m-%d %H:%M:%S.%F][th:%t][%l][%n] %v");
-}
 
 std::shared_ptr<spdlog::logger> createLogger(const std::string& tag,
                                              bool debug_mode) {
   auto logger = spdlog::stdout_color_mt(tag);
   if (debug_mode) {
-    setDebugPattern(*logger);
+    logger->set_level(spdlog::level::trace);
+    logger->set_pattern("[%Y-%m-%d %H:%M:%S.%F][th:%t][%l][%n] %v");
   } else {
-    setGlobalPattern(*logger);
+    logger->set_level(spdlog::level::info);
+    logger->set_pattern("[%Y-%m-%d %H:%M:%S.%F][%n] %v");
   }
 
   return logger;
 }
+
 }  // namespace
 
 namespace cognitio {

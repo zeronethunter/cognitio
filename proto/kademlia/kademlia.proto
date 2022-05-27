@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-service Communication{
-	rpc ping(PingRequest) returns (PingResponse);
-	rpc find_node(FindNodeRequest) returns (FindNodeResponse);
-	rpc store(StoreRequest) returns (StoreResponse);
-	rpc get(GetRequest) returns (GetResponse);
+service KademliaService {
+	rpc Ping(PingRequest) returns (PingResponse);
+	rpc FindNode(FindNodeRequest) returns (FindNodeResponse);
+	rpc Store(StoreRequest) returns (StoreResponse);
+	rpc Get(GetRequest) returns (GetResponse);
 }
 
 message ConnectionInfo{

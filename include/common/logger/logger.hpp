@@ -13,6 +13,7 @@ namespace common {
 namespace logger {
 
 using Logger = std::shared_ptr<spdlog::logger>;
+
 //! \brief Provide logger object
 //! \param tag - tagging name for identifying logger
 //! \return logger object

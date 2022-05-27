@@ -5,13 +5,11 @@ namespace exchange {
 
 using namespace datastore;
 
-Status BlockService::Open(const std::filesystem::path& path,
-                          bool is_daemon_opened) noexcept {
-  Status status_open;
-  is_daemon_opened_ = is_daemon_opened;
+Status BlockService::Open(const std::filesystem::path& path) noexcept {
   repo_ =
       std::make_shared<repo::Repo<std::string>>(repo::Repo<std::string>(path));
-  status_open = repo_->Init();
+
+  auto status_open = repo_->Init();
   if (status_open.ok()) {
     closed_ = false;
   }
@@ -23,6 +21,7 @@ std::filesystem::path BlockService::Root() const noexcept {
     if (repo_->Exists()) {
       return repo_->Root();
     }
+
     logger_->error("Can't get root. Open repo first.");
     return {};
   }
@@ -31,10 +30,12 @@ std::filesystem::path BlockService::Root() const noexcept {
 }
 
 Status BlockService::Put(const ProtoBlock& block) noexcept {
-  if (!closed_) {
-    return repo_->Add(block);
-  }
-  return {StatusCode::FAILED, "Failed to store block."};
+  // is_daemon_opened_
+  //             ? block_swap_->Put(block.GetCid(),
+  //             block.GetNode().GetContent()) : repo_->Add(block.GetCid(),
+  //             block.GetNode().GetContent())
+
+  return repo_->Add(block.GetCid(), block.GetNode().GetContent());
 }
 
 linked_data::ProtoBlock BlockService::Get(

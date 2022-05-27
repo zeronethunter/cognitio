@@ -6,10 +6,35 @@
 #ifndef CGNT_EXCHANGE_BLOCK_SWAP_BLOCK_SWAP_HPP_
 #define CGNT_EXCHANGE_BLOCK_SWAP_BLOCK_SWAP_HPP_
 
+#include <cstdint>
+#include "kademlia/identifier.hpp"
+#include "kademlia/kademlia.hpp"
+#include "linked_data/proto_block.hpp"
+#include "multiformats/cid.hpp"
+#include "repo/repo.hpp"
+
 namespace cognitio {
 namespace exchange {
 
-class BlockSwap {};
+class BlockSwap {
+ public:
+  typedef std::shared_ptr<repo::Repo<std::string>> RepoPtr;
+  typedef std::shared_ptr<kademlia::Kademlia> KademliaPtr;
+
+  explicit BlockSwap(RepoPtr ptr) : repo_(ptr), dht_(nullptr) {}
+
+  void Run() noexcept;
+  void Shutdown() noexcept;
+  bool IsAlive() const noexcept;
+
+  linked_data::ProtoBlock Get(const common::Cid& cid) noexcept;
+  Status Add(const common::Cid& cid) noexcept;
+
+ private:
+  RepoPtr repo_;
+  KademliaPtr dht_;
+  kademlia::Identifier id_;
+};
 
 }  // namespace exchange
 }  // namespace cognitio
