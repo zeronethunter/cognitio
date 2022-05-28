@@ -28,13 +28,15 @@ class Core {
   typedef std::unique_ptr<rpc::server::Server> ServerPtr;
   typedef std::shared_ptr<linked_data::MerkleDag> DagPtr;
   typedef std::shared_ptr<exchange::BlockSwap> BsPtr;
+  typedef std::shared_ptr<exchange::BlockService> BlockServicePtr;
 
   explicit Core(const std::string& repo_path) {
     repo_ = std::make_shared<repo::Repo<std::string>>(repo_path);
     block_swap_ = std::make_shared<exchange::BlockSwap>(repo_);
-    dag_ = std::make_shared<linked_data::MerkleDag>(
-        std::make_shared<exchange::BlockService>(repo_, block_swap_));
+    block_service_ =
+        std::make_shared<exchange::BlockService>(repo_, block_swap_);
 
+    dag_ = std::make_shared<linked_data::MerkleDag>(block_service_);
     server_ = std::make_unique<rpc::server::Server>();
     logger_ = common::logger::createLogger("core");
   }
@@ -48,6 +50,7 @@ class Core {
  private:
   void listen_shutdown();
 
+  BlockServicePtr block_service_;
   BsPtr block_swap_;
   ServerPtr server_;
   RepoPtr repo_;

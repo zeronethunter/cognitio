@@ -1,5 +1,9 @@
 #include "exchange/block_service/block_service.hpp"
 
+#include "common/status.hpp"
+#include "common/status_code.hpp"
+#include "linked_data/proto_block.hpp"
+
 namespace cognitio {
 namespace exchange {
 
@@ -17,33 +21,33 @@ Status BlockService::Open(const std::filesystem::path& path) noexcept {
 }
 
 std::filesystem::path BlockService::Root() const noexcept {
-  if (!is_daemon_opened_) {
-    if (repo_->Exists()) {
-      return repo_->Root();
-    }
-
-    logger_->error("Can't get root. Open repo first.");
-    return {};
+  if (repo_->Exists()) {
+    return repo_->Root();
   }
-  logger_->info("Daemon is opened. Can't get root.");
+
+  logger_->error("Can't get root. Open repo first.");
   return {};
 }
 
 Status BlockService::Put(const ProtoBlock& block) noexcept {
-  // is_daemon_opened_
-  //             ? block_swap_->Put(block.GetCid(),
-  //             block.GetNode().GetContent()) : repo_->Add(block.GetCid(),
-  //             block.GetNode().GetContent())
+  if (is_daemon_opened_) {
+    block_swap_->Add(block.GetCid());
+  }
 
   return repo_->Add(block);
 }
 
 linked_data::ProtoBlock BlockService::Get(
     const common::Cid& key) const noexcept {
+  linked_data::ProtoBlock bl;
   if (!closed_) {
-    return repo_->Get(key);
+    bl = repo_->Get(key);
+    if (!bl.IsInitialized()) {
+      bl = block_swap_->Get(key);
+    }
   }
-  return {};
+
+  return bl;
 }
 
 Status BlockService::Delete(const common::Cid& key) noexcept {
@@ -64,6 +68,8 @@ Status BlockService::PutMany(const std::vector<ProtoBlock>& source) noexcept {
       return status_put;
     }
   }
+
+  return Status::OK;
 }
 
 std::vector<linked_data::ProtoBlock> BlockService::GetMany(
@@ -73,6 +79,7 @@ std::vector<linked_data::ProtoBlock> BlockService::GetMany(
     ProtoBlock value = Get(key);
     result.push_back(value);
   }
+
   return result;
 }
 
@@ -84,6 +91,8 @@ Status BlockService::DeleteMany(
       return status_put;
     }
   }
+
+  return Status::OK;
 }
 
 }  // namespace exchange

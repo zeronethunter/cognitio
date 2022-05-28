@@ -40,7 +40,9 @@ Status Core::RunDaemon(std::vector<rpc::server::ServiceInfo> &vec) noexcept {
     logger_->info("Server is running...");
 
     block_swap_->Run();
+    block_service_->SetDaemonStatus(true);
     logger_->info("Block swap is running");
+
   } else {
     return Status(StatusCode::FAILED, "Server wasn't initialized");
   }
