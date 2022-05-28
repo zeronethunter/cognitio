@@ -29,6 +29,7 @@ Multihash::Data::Data(std::span<uint8_t> &hash) {
     if (hash_type != 0) {
       byte |= 0x80;
     }
+
     bytes_.push_back(byte);
   } while (hash_type > 0);
 

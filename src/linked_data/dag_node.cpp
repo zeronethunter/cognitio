@@ -5,6 +5,7 @@
 
 #include "linked_data/dag_node.hpp"
 
+#include <cstdint>
 #include <span>
 
 namespace cognitio {
@@ -34,13 +35,14 @@ common::Cid DagNode::GetCid() const {
   if (!data_.GetData().empty()) {
     return common::Cid(data_.GetData());
   }
-  std::vector<uint8_t> concatenated_cid;
+
+  std::string conc_cid;
   for (const auto &child : children_) {
-    concatenated_cid.insert(concatenated_cid.end(),
-                            child.first.GetBytes().begin(),
-                            child.first.GetBytes().end());
+    conc_cid += child.first.ToString();
   }
-  return common::Cid(concatenated_cid);
+
+  std::vector<uint8_t> conc_cid_vec (conc_cid.begin(), conc_cid.end());
+  return common::Cid(conc_cid_vec);
 }
 
 Status DagNode::DecodeProtoNode(const Node &node) {
