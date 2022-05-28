@@ -5,6 +5,7 @@
 
 #include "multiformats/multihash.hpp"
 
+#include <cassert>
 #include <memory>
 #include <string>
 
@@ -49,47 +50,16 @@ std::span<uint8_t> Multihash::ToHash(const std::span<uint8_t> &bytes) {
 }
 
 Status Multihash::CreateFromBytes(std::span<uint8_t> &bytes) {
-  //  hash_bytes = ToHash(bytes);
-
   SHA256 sha;
   std::string bytes_str(bytes.begin(), bytes.end());
   sha.update(bytes_str);
 
   uint8_t *digest = sha.digest();
   std::span<uint8_t> hash_bytes(digest, HASH_LENGTH);
-
   bytes = hash_bytes;
 
-  if (bytes.empty()) {
-    return Status::FAILED;
-  }
-
-  if (hash_bytes.size() < min_hash_length_) {
-    return Status(StatusCode::CANCELLED, "Hash size is short");
-  }
-
-  PrefixReader reader;
-  if (reader.consume(hash_bytes) != readyState) {
-    return Status(CANCELLED, "Hash size is too short");
-  }
-
-  if (hash_bytes.empty()) {
-    return Status(CANCELLED, "Hash size is too short");
-  }
-
-  uint8_t length = *hash_bytes.data();
-  std::span<uint8_t> hash = hash_bytes.subspan(1);
-
-  if (length == 0) {
-    return Status(CANCELLED, "Zero input length");
-  }
-
-  //  if (hash.size() != length) {
-  //    return Status(CANCELLED, "Inconsistent length");
-  //  }
-
-  //  Multihash(hash);
-  data_ = std::make_shared<Data>(hash);
+  assert(bytes.size() == 32);
+  data_ = std::make_shared<Data>(hash_bytes);
 
   delete[] digest;
   return Status::OK;
