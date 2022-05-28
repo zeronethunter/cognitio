@@ -157,7 +157,12 @@ Status Repo<StoreValue>::addByKey(const common::Cid& cid,
     return is_opened;
   }
 
+  logger_->info("Adding block with cid: {}", cid.ToString());
   Status is_added = block.Put(cid, data);
+
+  if (is_added.ok()) {
+    logger_->debug("Successfully added cid: {}", cid.ToString());
+  }
 
   return is_added;
 }
@@ -181,7 +186,12 @@ Status Repo<StoreValue>::deleteByKey(const common::Cid& cid) noexcept {
       return is_opened;
     }
 
+    logger_->info("Deleting block with cid: {}", cid.ToString());
     Status is_deleted = block.Delete(cid);
+
+    if (is_deleted.ok()) {
+      logger_->debug("Successfully deleted cid: {}", cid.ToString());
+    }
 
     return is_deleted;
   }
@@ -201,6 +211,8 @@ std::vector<uint8_t> Repo<StoreValue>::getByKey(
     }
 
     blockstorage::Blockstorage block(blocks_->Root() / name_of_shard);
+
+    logger_->info("Getting block with cid: {}", cid.ToString());
     std::pair<Status, std::vector<uint8_t>> result = block.Get(cid);
 
     if (!result.first.ok()) {
@@ -208,7 +220,7 @@ std::vector<uint8_t> Repo<StoreValue>::getByKey(
       return {};
     }
 
-    return block.Get(cid).second;
+    return result.second;
   }
 
   logger_->error("Repo is closed");
