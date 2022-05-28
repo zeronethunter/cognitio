@@ -28,7 +28,6 @@ DagNode::DagNode(const std::vector<DagNode> &children) {
 }
 
 std::vector<uint8_t> DagNode::GetContent() const { return data_.GetData(); }
-
 size_t DagNode::Count() const { return children_.size(); }
 
 common::Cid DagNode::GetCid() const {
@@ -38,10 +37,12 @@ common::Cid DagNode::GetCid() const {
 
   std::string conc_cid;
   for (const auto &child : children_) {
+    std::cout << "CID: " << child.first.ToString() << std::endl;
+    std::cout << "CID size: " << child.first.ToString().size() << std::endl;
     conc_cid += child.first.ToString();
   }
 
-  std::vector<uint8_t> conc_cid_vec (conc_cid.begin(), conc_cid.end());
+  std::vector<uint8_t> conc_cid_vec(conc_cid.begin(), conc_cid.end());
   return common::Cid(conc_cid_vec);
 }
 

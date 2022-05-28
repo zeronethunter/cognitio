@@ -32,11 +32,7 @@ class Multihash {
     return *this;
   }
 
-  Multihash(Multihash &&other) noexcept
-      : max_hash_length_(other.max_hash_length_),
-        min_hash_length_(other.max_hash_length_),
-        data_(std::move(other.data_)) {}
-
+  Multihash(Multihash &&other) noexcept : data_(std::move(other.data_)) {}
   Multihash &operator=(Multihash &&other) noexcept {
     data_ = std::move(other.data_);
     return *this;
@@ -65,9 +61,6 @@ class Multihash {
   bool operator<(const Multihash &other);
 
  private:
-  const uint8_t max_hash_length_ = 127;
-  const uint8_t min_hash_length_ = 4;
-
   struct Data {
     std::vector<uint8_t> bytes_;
     uint8_t hash_offset_;  //! size of non-hash data from the beginning
