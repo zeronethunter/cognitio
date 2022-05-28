@@ -22,7 +22,7 @@ DagNode::DagNode(std::vector<uint8_t> &bytes,
 DagNode::DagNode(const std::vector<DagNode> &children) {
   for (const auto &node : children) {
     children_.push_back(std::make_pair<common::Cid, std::shared_ptr<DagNode>>(
-        GetCid(), std::make_shared<DagNode>(node)));
+        node.GetCid(), std::make_shared<DagNode>(node)));
   }
 }
 
@@ -31,9 +31,18 @@ std::vector<uint8_t> DagNode::GetContent() const { return data_.GetData(); }
 size_t DagNode::Count() const { return children_.size(); }
 
 common::Cid DagNode::GetCid() const {
-  auto content = GetContent();
-  return common::Cid(content);
+  if (!data_.GetData().empty()) {
+    return common::Cid(data_.GetData());
+  }
+  std::vector<uint8_t> concatenated_cid;
+  for (const auto &child : children_) {
+    concatenated_cid.insert(concatenated_cid.end(),
+                            child.first.GetBytes().begin(),
+                            child.first.GetBytes().end());
+  }
+  return common::Cid(concatenated_cid);
 }
+
 Status DagNode::DecodeProtoNode(const Node &node) {
   files::unixfs::UnixFS unixfs_data;
   unixfs_data.DecodeMessage(node.data());

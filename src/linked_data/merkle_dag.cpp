@@ -133,75 +133,68 @@ std::vector<DagNode> MerkleDag::getSubNodes(const DagNode &root) const {
 
 std::vector<DagNode> MerkleDag::CollectNodes(const DagNode &root_node) const {
   std::vector<DagNode> result_vec;
-  std::stack<DagNode> node_st;
-  DagNode current_node = root_node;
 
-  //  result_vec.push_back(root_node);
+  std::queue<DagNode> node_queue;
+  //  result_vec.emplace_back(root_node.GetCid(), root_node);
 
   if (root_node.GetChildren().empty()) {
     return result_vec;
   }
 
+  /* pushing all nodes from first layer in stack */
+  std::for_each(root_node.GetChildren().rbegin(),
+                root_node.GetChildren().rend(),
+                [&](const auto &node) { node_queue.push(*node.second); });
+
   do {
+    /* taking top of queue */
+    DagNode current_node = node_queue.front();
+
+    /* pushing this node in proto block */
+    result_vec.push_back(current_node);
+
+    /* watching for children of current node */
     for (const auto &node : current_node.GetChildren()) {
-      result_vec.push_back(*node.second);
-      node_st.push(*node.second);
+      node_queue.push(*node.second);
     }
-    current_node = node_st.top();
-    node_st.pop();
-  } while (!node_st.empty());
+    /* popping current node from queue */
+    node_queue.pop();
+  } while (!node_queue.empty());
 
   return result_vec;
-
-  // if (root_node.GetChildren().empty()) {
-  //   return {};
-  // }
-
-  // std::vector<common::Cid> result_vec;
-  // for (const auto &node : root_node.GetChildren()) {
-  //   result_vec.push_back(node.first);
-  // }
-
-  // std::vector<DagNode> nodes;
-  // for (const auto &cid : result_vec) {
-  //   auto ret = GetNode(cid);
-  //   if (!ret.first.ok()) {
-  //     logger_->warn("Unable to find file");
-  //   }
-
-  //   nodes.push_back(ret.second);
-  // }
-
-  // std::stack<DagNode> node_st;
-  // DagNode current_node = root_node;
-
-  // do {
-  //   current_node = node_st.top();
-  //   node_st.pop();
-  // } while (!node_st.empty());
-
-  // return nodes;
 }
 
 std::vector<ProtoBlock> MerkleDag::CollectBlocks(
     const DagNode &root_node) const {
   std::vector<ProtoBlock> result_vec;
-  std::queue<DagNode> node_queue;
-  DagNode current_node = root_node;
-
-  result_vec.emplace_back(root_node.GetCid(), root_node);
+  std::queue<std::pair<common::Cid, DagNode>> node_queue;
+  //  result_vec.emplace_back(root_node.GetCid(), root_node);
 
   if (root_node.GetChildren().empty()) {
     return result_vec;
   }
 
+  std::vector<std::pair<common::Cid, std::shared_ptr<DagNode>>>
+      first_layer_vec = root_node.GetChildren()[0].second->GetChildren();
+
+  /* pushing all nodes from first layer in stack */
+  std::for_each(first_layer_vec.begin(), first_layer_vec.end(),
+                [&](const auto &node) {
+                  node_queue.push(std::make_pair(node.first, *node.second));
+                });
+
   do {
-    for (const auto &node : current_node.GetChildren()) {
-      //      result_vec.push_back(*node.second);
-      result_vec.emplace_back(node.second->GetCid(), *node.second);
-      node_queue.push(*node.second);
+    /* taking top of queue */
+    std::pair<common::Cid, DagNode> current_node = node_queue.front();
+
+    /* pushing this node in proto block */
+    result_vec.emplace_back(current_node.first, current_node.second);
+
+    /* watching for children of current node */
+    for (const auto &node : current_node.second.GetChildren()) {
+      node_queue.push(std::make_pair(node.first, *node.second));
     }
-    current_node = node_queue.front();
+    /* popping current node from queue */
     node_queue.pop();
   } while (!node_queue.empty());
 
@@ -241,16 +234,17 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
   do {
     for (const auto &chunk_block : previous_layer_vec) {
       DagNode parent_node(chunk_block);
-      std::vector<uint8_t> concatenated_data;
+      //      std::vector<uint8_t> concatenated_data;
       auto children = parent_node.GetChildren();
 
-      for (auto &child : children) {
-        std::vector<uint8_t> content = child.second->GetContent();
-        concatenated_data.insert(concatenated_data.end(), content.begin(),
-                                 content.end());
-      }
-
-      parent_node.SetData(concatenated_data);
+      //      for (auto &child : children) {
+      //        std::vector<uint8_t> content = child.second->GetContent();
+      //        concatenated_data.insert(concatenated_data.end(),
+      //        content.begin(),
+      //                                 content.end());
+      //      }
+      //
+      //      parent_node.SetData(concatenated_data);
 
       layer_vec[blck_cnt].push_back(parent_node);
       if (layer_vec[blck_cnt].size() == CHUNK_SIZE) {
@@ -269,17 +263,19 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
     blck_cnt = 0;
   } while (previous_layer_vec.size() != 1);
 
-  std::vector<uint8_t> concatenated_bytes;
-  for (auto &child : previous_layer_vec[0]) {
-    std::vector<uint8_t> content = child.GetContent();
-    concatenated_bytes.insert(concatenated_bytes.end(), content.begin(),
-                              content.end());
-  }
+  DagNode parent_root(previous_layer_vec[0]);
 
-  merkle_root_ =
-      std::make_unique<DagNode>(concatenated_bytes, previous_layer_vec[0]);
+  //  std::vector<uint8_t> concatenated_bytes;
+  //  for (auto &child : previous_layer_vec[0]) {
+  //    std::vector<uint8_t> content = child.GetContent();
+  //    concatenated_bytes.insert(concatenated_bytes.end(), content.begin(),
+  //                              content.end());
+  //  }
 
-  return std::make_unique<DagNode>(concatenated_bytes, previous_layer_vec[0]);
+  //  merkle_root_ = std::make_unique<DagNode>(exchange::BlockService(),
+  //  previous_layer_vec[0]);
+
+  return std::make_unique<DagNode>(parent_root);
 }
 
 }  // namespace linked_data
