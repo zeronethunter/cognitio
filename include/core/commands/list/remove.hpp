@@ -6,6 +6,7 @@
 #ifndef CGNT_CORE_COMMANDS_LIST_REMOVE_HPP_
 #define CGNT_CORE_COMMANDS_LIST_REMOVE_HPP_
 
+#include <cassert>
 #include "cli/commands/command.hpp"
 #include "multiformats/cid.hpp"
 #include "core/context/context.hpp"
@@ -28,6 +29,7 @@ class RmCmd : public Command<Context> {
 
   void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
+    assert(ctx.GetCore()->IsInit());
     common::Cid cid(env.option);
     auto api = ctx.GetAPI();
     api->Remove(cid, re);

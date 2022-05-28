@@ -7,6 +7,7 @@
 
 #include <csignal>
 #include <memory>
+#include <ostream>
 
 #include "common/status.hpp"
 #include "common/status_code.hpp"
@@ -16,6 +17,45 @@ namespace core {
 
 static std::atomic<bool> shutdown = false;
 void signal_handler([[maybe_unused]] int signal) { shutdown = true; }
+
+Core::Core(const std::string& repo_path)
+    : dag_(nullptr),
+      dht_(nullptr),
+      repo_(nullptr),
+      server_(nullptr),
+      block_swap_(nullptr),
+      repo_path_(repo_path),
+      block_service_(nullptr) {
+  logger_ = common::logger::createLogger("core");
+}
+
+void Core::Init() noexcept {
+  repo_ = std::make_shared<repo::Repo<std::string>>(repo_path_);
+
+  kademlia::ConnectionInfo info;
+  auto dht_addr = repo_->GetConfig().Get("dht_address");
+  if (!dht_addr.empty()) {
+    logger_->debug(
+        "Dht wasn't properly initilized. "
+        "Ignore this message if 'init' command lanched");
+
+    info.InitWithString(kademlia::Identifier(rand()),
+                        repo_->GetConfig().Get("dht_address"));
+  }
+
+  dht_ = std::make_shared<kademlia::Kademlia>(info);
+
+  block_swap_ = std::make_shared<exchange::BlockSwap>(repo_, dht_, info.id());
+  block_service_ = std::make_shared<exchange::BlockService>(repo_, block_swap_);
+
+  dag_ = std::make_shared<linked_data::MerkleDag>(block_service_);
+  server_ = std::make_unique<rpc::server::Server>();
+}
+
+bool Core::IsInit() const noexcept {
+  return dag_ && dht_ && repo_ && server_ && block_swap_ &&
+         !repo_path_.empty() && block_service_;
+}
 
 void Core::listen_shutdown() {
   while (true) {
@@ -28,7 +68,7 @@ void Core::listen_shutdown() {
   }
 }
 
-Status Core::RunDaemon(std::vector<rpc::server::ServiceInfo> &vec) noexcept {
+Status Core::RunDaemon(std::vector<rpc::server::ServiceInfo>& vec) noexcept {
   if (server_) {
     logger_->info("Starting daemon...");
     auto err = server_->Run(vec);

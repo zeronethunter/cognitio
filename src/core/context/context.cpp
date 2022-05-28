@@ -6,6 +6,7 @@
 #include "core/context/context.hpp"
 
 #include <algorithm>
+#include <cassert>
 #include <cstdlib>
 #include <filesystem>
 #include <mutex>
@@ -29,10 +30,12 @@ Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
   repo_path_ = getRepoPath(env);
   logger_->debug("Checking repo path: {}", repo_path_);
 
+  core_ = std::make_shared<Core>(repo_path_);
   config_.SetRepoPath(repo_path_);
-  auto err = config_.TryInit();
 
+  auto err = config_.TryInit();
   if (meta.GetName() != "init") {
+    // Checking if config was initilized correctly
     if (!err.ok()) {
       logger_->error("Repo is not initialized. Use 'cognitio init'");
       return Status::FAILED;
@@ -41,11 +44,11 @@ Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
     if (config_.Get("repo_path").empty()) {
       config_.SetRepoPath(repo_path_);
     }
+
+    core_->Init();
   }
 
-  core_ = std::make_shared<Core>(repo_path_);
   err = resolveApi(meta, env);
-
   if (!err.ok() || !core_api_) {
     return err;
   }
@@ -90,7 +93,7 @@ Status Context::resolveApi(CmdMeta& meta,
     std::string api_addr = resolveAddr(env);
     if (!api_addr.empty()) {
       auto temp_api = std::make_shared<RemoteAPI>(api_addr);
-      logger_->info("Trying to connect to daemon with address {}", api_addr);
+      logger_->debug("Trying to connect to daemon with address {}", api_addr);
       auto err = temp_api->TryPing();
       if (err.ok()) {
         logger_->info("Using remote executor");
@@ -98,12 +101,13 @@ Status Context::resolveApi(CmdMeta& meta,
         return Status::OK;
       }
 
-      logger_->warn("Failed to connect. Falling back to local executor");
+      logger_->debug("Failed to connect. Falling back to local executor");
     }
   }
 
   // Now we just run it locally
   core_api_ = std::make_shared<LocalAPI>(core_);
+  logger_->info("Using local executor");
   return Status::OK;
 }
 
