@@ -68,8 +68,7 @@ std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
 
 std::pair<Status, DagNode> MerkleDag::GetNode(
     const cognitio::common::Cid &cid) const {
-  std::vector<uint8_t> bytes = block_service_->Get(cid).GetNode().GetContent();
-  DagNode node(std::move(bytes));
+  DagNode node = block_service_->Get(cid).GetNode();
   if (!node.GetCid().ToString().empty()) {
     return std::pair<Status, DagNode>(Status(), std::move(node));
   }
@@ -101,6 +100,8 @@ std::vector<DagNode> MerkleDag::getSubNodes(const DagNode &root) const {
   std::vector<DagNode> collected_nodes = CollectNodes(root);
   std::stack<DagNode> dag_st;
 
+  dag_st.push(root);
+
   std::for_each(collected_nodes.rbegin(), collected_nodes.rend(),
                 [&](const DagNode &node) { dag_st.push(node); });
 
@@ -128,7 +129,7 @@ std::vector<DagNode> MerkleDag::CollectNodes(const DagNode &root_node) const {
   std::stack<DagNode> node_st;
   DagNode current_node = root_node;
 
-  result_vec.push_back(root_node);
+//  result_vec.push_back(root_node);
 
   if (root_node.GetChildren().empty()) {
     return result_vec;
