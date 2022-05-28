@@ -6,6 +6,7 @@
 #ifndef CGNT_CORE_COMMANDS_COMMAND_ROOT_HPP_
 #define CGNT_CORE_COMMANDS_COMMAND_ROOT_HPP_
 
+#include <cassert>
 #include "cli/commands/command.hpp"
 #include "core/context/context.hpp"
 #include "common/status.hpp"
@@ -27,6 +28,7 @@ class RootCmd : public Command<Context> {
   void PrintHelp([[maybe_unused]] std::ostream& out) override {}
   void Run([[maybe_unused]] Context& ctx, [[maybe_unused]] CmdEnv& env,
            [[maybe_unused]] ResponseEmitter& re) override {
+    assert(false);
     // It's not supposed to be ran
     re.SetStatus(StatusCode::FAILED, "I'm not supposed to be ran");
   }

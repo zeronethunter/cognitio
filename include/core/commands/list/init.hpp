@@ -6,9 +6,11 @@
 #ifndef CGNT_CORE_COMMANDS_LIST_INIT_HPP_
 #define CGNT_CORE_COMMANDS_LIST_INIT_HPP_
 
+#include <cassert>
 #include "cli/commands/command.hpp"
 #include "core/context/context.hpp"
 #include "core/core_api/local_api.hpp"
+#include "repo/repo.hpp"
 
 namespace cognitio {
 namespace core {
@@ -28,7 +30,9 @@ class InitCmd : public Command<Context> {
 
   void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
-    auto err = ctx.GetCore()->GetRepo()->Init();
+    assert(!ctx.GetCore()->IsInit());
+    repo::Repo<std::string> repo(ctx.GetRepoPath());
+    auto err = repo.Init();
     re.SetStatus(err);
   }
 };
