@@ -28,6 +28,7 @@ class AddCmd : public Command<Context> {
 
   void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
+    assert(ctx.GetCore()->IsInit());
     auto api = ctx.GetAPI();
     api->Add(env.option, re);
   }

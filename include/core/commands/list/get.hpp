@@ -28,6 +28,7 @@ class GetCmd : public Command<Context> {
 
   void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
+    assert(ctx.GetCore()->IsInit());
     common::Cid cid (env.option.c_str());
     auto api = ctx.GetAPI();
     api->Get(cid, re);
