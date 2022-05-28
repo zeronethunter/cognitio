@@ -8,6 +8,7 @@
 
 #include <grpc++/grpc++.h>
 
+#include "common/logger/logger.hpp"
 #include "exchange/block_swap/block_swap.hpp"
 #include "kademlia/kademlia.hpp"
 #include "proto/kademlia.grpc.pb.h"
@@ -20,7 +21,10 @@ class KademliaServiceImpl final : public KademliaService::Service {
  public:
   typedef std::shared_ptr<Kademlia> KadPtr;
 
-  KademliaServiceImpl(KadPtr kad) : dht_(kad) {}
+  KademliaServiceImpl(KadPtr kad) : dht_(kad) {
+    logger_ = common::logger::createLogger("kademlia_service");
+  }
+
   ~KademliaServiceImpl() = default;
 
   grpc::Status Ping(::grpc::ServerContext* context, const PingRequest* request,
@@ -38,6 +42,7 @@ class KademliaServiceImpl final : public KademliaService::Service {
                    GetResponse* response) override;
 
  private:
+  common::logger::Logger logger_;
   KadPtr dht_;
 };
 

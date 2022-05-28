@@ -6,8 +6,10 @@
 #ifndef CGNT_KADEMLIA_RPC_CLIENT_HPP_
 #define CGNT_KADEMLIA_RPC_CLIENT_HPP_
 
+#include <google/protobuf/stubs/logging.h>
 #include <grpc++/grpc++.h>
 
+#include "common/logger/logger.hpp"
 #include "grpc_wrapper/client/client.hpp"
 #include "proto/kademlia.grpc.pb.h"
 #include "proto/kademlia.pb.h"
@@ -17,7 +19,9 @@ namespace kademlia {
 
 class KademliaClient {
  public:
-  KademliaClient(std::string address) : client_(address) {}
+  KademliaClient(std::string address) : client_(address) {
+    logger_ = common::logger::createLogger("kademlia_client");
+  }
 
   bool Ping(PingRequest query);
   class FindNodeAnswer FindNode(FindNodeRequest query);
@@ -25,6 +29,7 @@ class KademliaClient {
   std::string Get(GetRequest query);
 
  private:
+  common::logger::Logger logger_;
   rpc::client::Client<KademliaService> client_;
 };
 

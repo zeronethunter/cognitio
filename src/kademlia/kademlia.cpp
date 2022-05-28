@@ -44,6 +44,7 @@ RoutingTable& Kademlia::GetRoutingTable() noexcept { return routing_table_; }
 bool Kademlia::IsAlive() const noexcept { return alive_; }
 
 void Kademlia::Run() noexcept {
+  alive_ = true;
   main_thread_ = std::thread(&Kademlia::mainThread, this);
 }
 
@@ -55,13 +56,14 @@ void Kademlia::pingAndUpdate(std::vector<ConnectionInfo>& targets) noexcept {
     auto proto = info_.GetProto();
     pingQuery.set_magic(utils::generate_magic());
     pingQuery.set_allocated_caller(&proto);
-    [[maybe_unused]] auto v = pingQuery.release_caller();
 
     if (client.Ping(pingQuery)) {
       routing_table_.update(peer);
     } else {
       routing_table_.remove(peer);
     }
+
+    [[maybe_unused]] auto v = pingQuery.release_caller();
   }
 }
 
@@ -159,6 +161,10 @@ void Kademlia::Bootstrap(ConnectionInfo bootstrap_node) {
 }
 
 std::string Kademlia::Get(std::string key) {
+  if (repo_.contains(key)) {
+    return repo_.get(key);
+  }
+
   Identifier keyHash =
       utils::hash_key(key, GUID_SPACE).convert_to<Identifier::numeric_type>();
 
@@ -171,12 +177,15 @@ std::string Kademlia::Get(std::string key) {
 
   ConnectionInfo peer = findResult.getNodes()[0];
   KademliaClient client(peer.GetAddress());
+
   GetRequest getQuery;
   auto proto = info_.GetProto();
   getQuery.set_key(key);
   getQuery.set_magic(utils::generate_magic());
   getQuery.set_allocated_caller(&proto);
+
   auto to_ret = client.Get(getQuery);
+
   [[maybe_unused]] auto v = getQuery.release_caller();
   return to_ret;
 }

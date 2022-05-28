@@ -81,3 +81,6 @@ html_docs
 *.pb.*
 
 .DS_Store
+
+# Misc
+examples/*/blocks/*

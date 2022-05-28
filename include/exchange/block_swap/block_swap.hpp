@@ -24,8 +24,8 @@ class BlockSwap {
   typedef std::shared_ptr<kademlia::Kademlia> KademliaPtr;
 
   explicit BlockSwap(RepoPtr ptr) : repo_(ptr), dht_(nullptr), id_(rand()) {}
-  explicit BlockSwap(RepoPtr ptr, KademliaPtr kad)
-      : repo_(ptr), dht_(kad), id_(rand()) {}
+  explicit BlockSwap(RepoPtr ptr, KademliaPtr kad, kademlia::Identifier id)
+      : repo_(ptr), dht_(kad), id_(id) {}
 
   ~BlockSwap() { Shutdown(); }
 

@@ -10,6 +10,7 @@
 #include <grpcpp/server_context.h>
 #include <grpcpp/support/status.h>
 
+#include "common/logger/logger.hpp"
 #include "proto/ProtoData.grpc.pb.h"
 #include "proto/ProtoData.pb.h"
 #include "repo/repo.hpp"
@@ -21,7 +22,10 @@ class BlockSwapServiceImpl final : public BlockSwapService::Service {
  public:
   typedef std::shared_ptr<repo::Repo<std::string>> RepoPtr;
 
-  BlockSwapServiceImpl(RepoPtr repo) : repo_(repo) {}
+  BlockSwapServiceImpl(RepoPtr repo) : repo_(repo) {
+    logger_ = common::logger::createLogger("block_swap_service");
+  }
+
   ~BlockSwapServiceImpl() = default;
 
   grpc::Status GetBlock(::grpc::ServerContext* context,
@@ -30,6 +34,7 @@ class BlockSwapServiceImpl final : public BlockSwapService::Service {
 
  private:
   RepoPtr repo_;
+  common::logger::Logger logger_;
 };
 
 }  // namespace exchange

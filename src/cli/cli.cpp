@@ -140,7 +140,7 @@ Status Cli<Context>::parseArguments(T& args, CmdPtr& cmd,
   std::string prefix = root_->GetArgsPrefix();
   for (size_t i = 0; i < args.size(); ++i) {
     if (args.size() && args[0].compare(0, prefix.size(), prefix) == 0) {
-      if (args.size() > 2) {
+      if (args.size() > 1) {
         arguments.insert({args[0], args[1]});
         args.erase(args.begin(), args.begin() + 2);
       }

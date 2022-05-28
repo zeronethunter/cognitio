@@ -26,6 +26,8 @@ namespace kademlia {
 ::grpc::Status KademliaServiceImpl::FindNode(
     [[maybe_unused]] ::grpc::ServerContext* context,
     const FindNodeRequest* request, FindNodeResponse* response) {
+  logger_->debug("Recieved FindNode request");
+
   try {
     FindNodeAnswer result = dht_->GetRoutingTable().findClosest(
         Identifier::FromString(request->destination()));
@@ -47,6 +49,7 @@ namespace kademlia {
 ::grpc::Status KademliaServiceImpl::Store(
     [[maybe_unused]] ::grpc::ServerContext* context,
     const StoreRequest* request, StoreResponse* response) {
+  logger_->debug("Recieved Store request");
   response->set_magic(request->magic());
   dht_->StoreRequested(request->key(), request->value());
   return ::grpc::Status::OK;
@@ -55,11 +58,14 @@ namespace kademlia {
 ::grpc::Status KademliaServiceImpl::Get(
     [[maybe_unused]] ::grpc::ServerContext* context, const GetRequest* request,
     GetResponse* response) {
+  logger_->debug("Recieved get request");
+
   try {
     response->set_magic(request->magic());
     response->set_value(dht_->GetRequested(request->key()));
 
   } catch (...) {
+    logger_->info("Not found requested key");
     return ::grpc::Status(grpc::StatusCode::NOT_FOUND, "Key not found");
   }
 

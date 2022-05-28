@@ -16,14 +16,19 @@ namespace exchange {
 grpc::Status BlockSwapServiceImpl::GetBlock(
     [[maybe_unused]] ::grpc::ServerContext *context, const GetBlockRequest *req,
     GetBlockResponse *resp) {
+  logger_->debug("Recieved get block request");
   linked_data::ProtoBlock block;
-  auto cid = common::Cid(req->cid());
 
-  if (repo_->Has(cid)) {
-    block = repo_->Get(common::Cid(cid));
-    *resp->mutable_block() = *block.ToProtoMessage().get();
+  auto cid = common::Cid(req->cid());
+  block = repo_->Get(common::Cid(cid));
+  if (block.IsInitialized()) {
+    logger_->debug("Found needed block");
+    auto proto = block.ToProtoMessage();
+    resp->set_allocated_block(proto.get());
     resp->set_ok(true);
+    [[maybe_unused]] auto v = proto.release();
   } else {
+    logger_->debug("Needed block not found");
     resp->set_ok(false);
   }
 

@@ -22,12 +22,6 @@ namespace cognitio {
 namespace exchange {
 
 void BlockSwap::Run() noexcept {
-  kademlia::ConnectionInfo info;
-  info.InitWithString(id_, repo_->GetConfig().Get("dht_address"));
-
-  if (!dht_) {
-    dht_ = std::make_shared<kademlia::Kademlia>(info);
-  }
 
   dht_->Run();
   kademlia::ConnectionInfo boostrap;
@@ -56,8 +50,7 @@ Status BlockSwap::Add(const common::Cid& cid) noexcept {
     my_address = repo_->GetConfig().Get("dht_address");
   }
 
-  dht_->Add(cid.ToString(), my_address);
-  return Status::OK;
+  return dht_->Add(cid.ToString(), my_address);
 }
 
 }  // namespace exchange

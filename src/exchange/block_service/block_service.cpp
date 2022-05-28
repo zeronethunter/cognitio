@@ -31,7 +31,10 @@ std::filesystem::path BlockService::Root() const noexcept {
 
 Status BlockService::Put(const ProtoBlock& block) noexcept {
   if (is_daemon_opened_) {
-    block_swap_->Add(block.GetCid());
+    logger_->debug("Adding block to dht");
+    if (!block_swap_->Add(block.GetCid()).ok()) {
+      logger_->warn("Failed to put block to dht");
+    }
   }
 
   return repo_->Add(block);

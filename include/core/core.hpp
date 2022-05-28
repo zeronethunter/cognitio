@@ -13,6 +13,8 @@
 #include "exchange/block_service/block_service.hpp"
 #include "exchange/block_swap/block_swap.hpp"
 #include "grpc_wrapper/server/server.hpp"
+#include "kademlia/identifier.hpp"
+#include "kademlia/kademlia.hpp"
 #include "linked_data/merkle_dag.hpp"
 #include "repo/repo.hpp"
 
@@ -29,10 +31,17 @@ class Core {
   typedef std::shared_ptr<linked_data::MerkleDag> DagPtr;
   typedef std::shared_ptr<exchange::BlockSwap> BsPtr;
   typedef std::shared_ptr<exchange::BlockService> BlockServicePtr;
+  typedef std::shared_ptr<kademlia::Kademlia> DhtPtr;
 
   explicit Core(const std::string& repo_path) {
     repo_ = std::make_shared<repo::Repo<std::string>>(repo_path);
-    block_swap_ = std::make_shared<exchange::BlockSwap>(repo_);
+
+    kademlia::ConnectionInfo info;
+    info.InitWithString(kademlia::Identifier(rand()),
+                        repo_->GetConfig().Get("dht_address"));
+    dht_ = std::make_shared<kademlia::Kademlia>(info);
+
+    block_swap_ = std::make_shared<exchange::BlockSwap>(repo_, dht_, info.id());
     block_service_ =
         std::make_shared<exchange::BlockService>(repo_, block_swap_);
 
@@ -44,12 +53,14 @@ class Core {
   DagPtr GetDag() noexcept { return dag_; }
   RepoPtr GetRepo() noexcept { return repo_; }
   BsPtr GetBlockSwap() noexcept { return block_swap_; }
+  DhtPtr GetDht() noexcept { return dht_; }
   Status RunDaemon(std::vector<rpc::server::ServiceInfo>& vec) noexcept;
   void Shutdown() noexcept;
 
  private:
   void listen_shutdown();
 
+  DhtPtr dht_;
   BlockServicePtr block_service_;
   BsPtr block_swap_;
   ServerPtr server_;

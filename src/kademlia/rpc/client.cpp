@@ -66,7 +66,8 @@ std::string KademliaClient::Get(GetRequest query) {
 
   grpc::Status result = stub->Get(&context, query, &reply);
   if (!result.ok()) {
-    throw result.error_message();
+    logger_->error("Dht cannot find needed key");
+    return "";
   }
 
   return reply.value();

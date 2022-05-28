@@ -49,10 +49,9 @@ class DaemonCmd : public Command<Context> {
 
     std::string dht_addr = ctx.GetConfig().Get("dht_address");
 
+    auto dht_service = kademlia::KademliaServiceImpl(ctx.GetCore()->GetDht());
     auto block_swap_service =
         exchange::BlockSwapServiceImpl(ctx.GetCore()->GetRepo());
-    auto dht_service =
-        kademlia::KademliaServiceImpl(ctx.GetCore()->GetBlockSwap()->GetDht());
 
     std::vector<rpc::server::ServiceInfo> services(
         {{api_addr, &api_service},
