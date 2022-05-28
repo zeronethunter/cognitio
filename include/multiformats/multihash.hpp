@@ -45,9 +45,7 @@ class Multihash {
   ~Multihash() = default;
 
   Status CreateFromHex(std::string_view &hex);
-
   Status CreateFromBytes(std::span<uint8_t> &bytes);
-
   std::span<uint8_t> ToHash(const std::span<uint8_t> &bytes);
 
   //! \return info about hash type

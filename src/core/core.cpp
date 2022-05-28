@@ -35,12 +35,12 @@ void Core::Init() noexcept {
   kademlia::ConnectionInfo info;
   auto dht_addr = repo_->GetConfig().Get("dht_address");
   if (!dht_addr.empty()) {
+    info.InitWithString(kademlia::Identifier(rand()),
+                        repo_->GetConfig().Get("dht_address"));
+  } else {
     logger_->debug(
         "Dht wasn't properly initilized. "
         "Ignore this message if 'init' command lanched");
-
-    info.InitWithString(kademlia::Identifier(rand()),
-                        repo_->GetConfig().Get("dht_address"));
   }
 
   dht_ = std::make_shared<kademlia::Kademlia>(info);
