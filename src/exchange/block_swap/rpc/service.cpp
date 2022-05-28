@@ -21,6 +21,7 @@ grpc::Status BlockSwapServiceImpl::GetBlock(
 
   auto cid = common::Cid(req->cid());
   block = repo_->Get(common::Cid(cid));
+
   if (block.IsInitialized()) {
     logger_->debug("Found needed block");
     auto proto = block.ToProtoMessage();

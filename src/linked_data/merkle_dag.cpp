@@ -132,24 +132,45 @@ std::vector<DagNode> MerkleDag::getSubNodes(const DagNode &root) const {
 }
 
 std::vector<DagNode> MerkleDag::CollectNodes(const DagNode &root_node) const {
+  std::vector<DagNode> result_vec;
+  std::stack<DagNode> node_st;
+  DagNode current_node = root_node;
+
+  //  result_vec.push_back(root_node);
+
   if (root_node.GetChildren().empty()) {
-    return {};
+    return result_vec;
   }
 
-  std::vector<common::Cid> result_vec;
-  for (const auto &node : root_node.GetChildren()) {
-    result_vec.push_back(node.first);
-  }
-
-  std::vector<DagNode> nodes;
-  for (const auto &cid : result_vec) {
-    auto ret = GetNode(cid);
-    if (!ret.first.ok()) {
-      logger_->warn("Unable to find file");
+  do {
+    for (const auto &node : current_node.GetChildren()) {
+      result_vec.push_back(*node.second);
+      node_st.push(*node.second);
     }
+    current_node = node_st.top();
+    node_st.pop();
+  } while (!node_st.empty());
 
-    nodes.push_back(ret.second);
-  }
+  return result_vec;
+
+  // if (root_node.GetChildren().empty()) {
+  //   return {};
+  // }
+
+  // std::vector<common::Cid> result_vec;
+  // for (const auto &node : root_node.GetChildren()) {
+  //   result_vec.push_back(node.first);
+  // }
+
+  // std::vector<DagNode> nodes;
+  // for (const auto &cid : result_vec) {
+  //   auto ret = GetNode(cid);
+  //   if (!ret.first.ok()) {
+  //     logger_->warn("Unable to find file");
+  //   }
+
+  //   nodes.push_back(ret.second);
+  // }
 
   // std::stack<DagNode> node_st;
   // DagNode current_node = root_node;
@@ -159,7 +180,7 @@ std::vector<DagNode> MerkleDag::CollectNodes(const DagNode &root_node) const {
   //   node_st.pop();
   // } while (!node_st.empty());
 
-  return nodes;
+  // return nodes;
 }
 
 std::vector<ProtoBlock> MerkleDag::CollectBlocks(
