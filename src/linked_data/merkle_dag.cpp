@@ -7,6 +7,10 @@
 
 #include <queue>
 #include <stack>
+#include <vector>
+
+#include "linked_data/dag_node.hpp"
+#include "multiformats/cid.hpp"
 
 namespace cognitio {
 namespace linked_data {
@@ -50,10 +54,9 @@ std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
     return std::pair<Status, std::vector<uint8_t>>(StatusCode::FAILED,
                                                    std::vector<uint8_t>());
   }
+
   logger_->debug("Found node successfully.");
-
   std::vector<DagNode> collected_nodes = getSubNodes(root_getter.second);
-
   std::vector<uint8_t> concatenated_bytes;
 
   for (const DagNode &node : collected_nodes) {
@@ -97,19 +100,22 @@ Status MerkleDag::RemoveNode(const common::Cid &cid, bool is_recursive) {
 }
 
 std::vector<DagNode> MerkleDag::getSubNodes(const DagNode &root) const {
-  std::vector<DagNode> collected_nodes = CollectNodes(root);
-  std::stack<DagNode> dag_st;
+  // std::vector<DagNode> collected_nodes = CollectNodes(root);
 
-  dag_st.push(root);
+  std::vector<DagNode> collected_nodes({root});
+  std::stack<DagNode> dag_st({root});
 
-  std::for_each(collected_nodes.rbegin(), collected_nodes.rend(),
-                [&](const DagNode &node) { dag_st.push(node); });
+  // dag_st.push(root);
+
+  // std::for_each(collected_nodes.rbegin(), collected_nodes.rend(),
+  //               [&](const DagNode &node) { dag_st.push(node); });
 
   do {
     DagNode current_node = dag_st.top();
     dag_st.pop();
-    std::vector<DagNode> children_vec =
-        CollectNodes(GetNode(current_node.GetCid()).second);
+
+    //auto got_node = GetNode(current_node.GetCid());
+    std::vector<DagNode> children_vec = CollectNodes(got_node.second);
 
     /* push children in stack */
     std::for_each(children_vec.rbegin(), children_vec.rend(),
@@ -125,24 +131,34 @@ std::vector<DagNode> MerkleDag::getSubNodes(const DagNode &root) const {
 }
 
 std::vector<DagNode> MerkleDag::CollectNodes(const DagNode &root_node) const {
-  std::vector<DagNode> result_vec;
-  std::stack<DagNode> node_st;
-  DagNode current_node = root_node;
-
   if (root_node.GetChildren().empty()) {
-    return result_vec;
+    return {};
   }
 
-  do {
-    for (const auto &node : current_node.GetChildren()) {
-      result_vec.push_back(*node.second);
-      node_st.push(*node.second);
-    }
-    current_node = node_st.top();
-    node_st.pop();
-  } while (!node_st.empty());
+  std::vector<common::Cid> result_vec;
+  for (const auto &node : root_node.GetChildren()) {
+    result_vec.push_back(node.first);
+  }
 
-  return result_vec;
+  std::vector<DagNode> nodes;
+  for (const auto &cid : result_vec) {
+    auto ret = GetNode(cid);
+    if (!ret.first.ok()) {
+      logger_->warn("Unable to find file");
+    }
+
+    nodes.push_back(ret.second);
+  }
+
+  // std::stack<DagNode> node_st;
+  // DagNode current_node = root_node;
+
+  // do {
+  //   current_node = node_st.top();
+  //   node_st.pop();
+  // } while (!node_st.empty());
+
+  return nodes;
 }
 
 std::vector<ProtoBlock> MerkleDag::CollectBlocks(

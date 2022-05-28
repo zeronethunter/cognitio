@@ -53,6 +53,7 @@ class MerkleDag {
 
   /// \brief Getting array of Nodes by Directed Traversal Dag
   std::vector<DagNode> CollectNodes(const DagNode &root_node) const;
+  //std::vector<common::Cid> CollectNodes(const DagNode &root_node) const;
 
  private:
   common::logger::Logger logger_;
