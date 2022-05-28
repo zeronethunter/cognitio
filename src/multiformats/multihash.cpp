@@ -11,9 +11,6 @@
 
 #include "SHA256.h"
 #include "common/status.hpp"
-#include "common/utils/prefix_reader.hpp"
-
-// using cognitio::multiformats::multihash::HashType;
 
 namespace cognitio {
 namespace common {
