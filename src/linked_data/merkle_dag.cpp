@@ -129,8 +129,6 @@ std::vector<DagNode> MerkleDag::CollectNodes(const DagNode &root_node) const {
   std::stack<DagNode> node_st;
   DagNode current_node = root_node;
 
-//  result_vec.push_back(root_node);
-
   if (root_node.GetChildren().empty()) {
     return result_vec;
   }
