@@ -174,8 +174,14 @@ std::vector<ProtoBlock> MerkleDag::CollectBlocks(
     return result_vec;
   }
 
+  /* inserting root block to result vec */
+  result_vec.insert(result_vec.begin(),
+                    ProtoBlock(root_node.GetChildren()[0].first,
+                               *root_node.GetChildren()[0].second));
+
+  /* initializing first layer after root */
   std::vector<std::pair<common::Cid, std::shared_ptr<DagNode>>>
-      first_layer_vec = root_node.GetChildren()[0].second->GetChildren();
+      first_layer_vec = root_node.GetChildren();
 
   /* pushing all nodes from first layer in stack */
   std::for_each(first_layer_vec.begin(), first_layer_vec.end(),
@@ -231,7 +237,7 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
       std::move(bottom_lay_vec);
   size_t blck_cnt = 0;
 
-  do {
+  while (previous_layer_vec.size() != 1) {
     for (const auto &chunk_block : previous_layer_vec) {
       DagNode parent_node(chunk_block);
       //      std::vector<uint8_t> concatenated_data;
@@ -261,7 +267,7 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
                            : previous_layer_vec.size() + 1);
     }
     blck_cnt = 0;
-  } while (previous_layer_vec.size() != 1);
+  }
 
   DagNode parent_root(previous_layer_vec[0]);
 
