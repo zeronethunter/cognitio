@@ -150,8 +150,7 @@ Status Repo<StoreValue>::addByKey(const common::Cid& cid,
                                   const std::vector<uint8_t>& data) noexcept {
   std::string name_of_shard = shard(cid);
 
-  blockstorage::Blockstorage block(blocks_->Root() / name_of_shard /
-                                   cid.ToString());
+  blockstorage::Blockstorage block(blocks_->Root() / name_of_shard);
   Status is_opened = block.Open();
 
   if (!is_opened.ok()) {

@@ -56,14 +56,15 @@ std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
   }
 
   logger_->debug("Found node successfully.");
-  std::vector<DagNode> collected_nodes = getSubNodes(root_getter.second);
-  std::vector<uint8_t> concatenated_bytes;
-
-  for (const DagNode &node : collected_nodes) {
-    concatenated_bytes.insert(concatenated_bytes.end(),
-                              node.GetContent().begin(),
-                              node.GetContent().end());
-  }
+  //  std::vector<DagNode> collected_nodes = getSubNodes(root_getter.second);
+  //  std::vector<uint8_t> concatenated_bytes;
+  //
+  //  for (const DagNode &node : collected_nodes) {
+  //    concatenated_bytes.insert(concatenated_bytes.end(),
+  //                              node.GetContent().begin(),
+  //                              node.GetContent().end());
+  //  }
+  std::vector<uint8_t> concatenated_bytes(root_getter.second.GetContent());
 
   return std::pair<Status, std::vector<uint8_t>>(Status::OK,
                                                  concatenated_bytes);
@@ -114,8 +115,8 @@ std::vector<DagNode> MerkleDag::getSubNodes(const DagNode &root) const {
     DagNode current_node = dag_st.top();
     dag_st.pop();
 
-    //auto got_node = GetNode(current_node.GetCid());
-    std::vector<DagNode> children_vec = CollectNodes(got_node.second);
+    // auto got_node = GetNode(current_node.GetCid());
+    std::vector<DagNode> children_vec = CollectNodes(current_node);
 
     /* push children in stack */
     std::for_each(children_vec.rbegin(), children_vec.rend(),
@@ -202,7 +203,8 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
   int offset_cnt = 0;
   int vec_indx = 0;
   for (auto chunk : chunks) {
-    bottom_lay_vec[vec_indx].push_back(DagNode(std::move(chunk)));
+    bottom_lay_vec[static_cast<unsigned long>(vec_indx)].push_back(
+        DagNode(std::move(chunk)));
     if (++offset_cnt == CHUNK_SIZE) {
       offset_cnt = 0;
       ++vec_indx;
