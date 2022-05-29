@@ -6,13 +6,18 @@
 #ifndef CGNT_COMMON_UTILS_REPO_HPP_
 #define CGNT_COMMON_UTILS_REPO_HPP_
 
+#include <chrono>
 #include <cstdlib>
 #include <string>
+
+#include "common/status.hpp"
 
 namespace cognitio {
 namespace common {
 namespace utils {
-
+std::pair<int, Status> ToBytes(const std::string &size) noexcept;
+[[nodiscard]] std::pair<std::chrono::duration<int64_t>, Status> ToTime(
+    const std::string &time) noexcept;
 std::string GetDefaultRepoPath();
 
 }  // namespace utils

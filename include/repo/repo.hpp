@@ -6,15 +6,17 @@
 #ifndef CGNT_REPO_REPO_HPP_
 #define CGNT_REPO_REPO_HPP_
 
+#include <chrono>
+#include <exception>
 #include <filesystem>
 #include <memory>
+#include <thread>
 
 #include "block_storage/block_storage.hpp"
 #include "common/logger/logger.hpp"
 #include "common/utils/repo.hpp"
 #include "config/config.hpp"
 #include "linked_data/proto_block.hpp"
-#include "repo/gc/gc.hpp"
 #include "repo/pinner/pin-manager.hpp"
 
 namespace cognitio {
@@ -79,7 +81,7 @@ class Repo {
    *  @param cid the key that will be used to put value.
    *  @param data block of bytes.
    */
-  Status Add(const ProtoBlock &block)
+  Status Add(const ProtoBlock &block, bool is_pinned = true)
 
       noexcept;
 
@@ -91,6 +93,7 @@ class Repo {
   Status Delete(const common::Cid &cid)
 
       noexcept {
+    pinner_->UnPin(cid);
     return deleteByKey(cid);
   }
 
@@ -130,6 +133,20 @@ class Repo {
     return root_->Root();
   }
 
+  void RunGc() {
+    is_running_ = true;
+    gc_ = std::thread(&repo::Repo<StoreValue>::startGarbageCollector, this);
+    logger_->debug("Gc started.");
+  }
+
+  void Shutdown() {
+    is_running_ = false;
+    if (gc_.joinable()) {
+      logger_->debug("Gc shutdown.");
+      gc_.join();
+    }
+  }
+
   config::Config &GetConfig() noexcept { return config_; }
   std::shared_ptr<config::Config> GetForkedConfig() noexcept {
     return config_.getForkedInstance();
@@ -153,11 +170,28 @@ class Repo {
   [[nodiscard]] std::vector<uint8_t> getByKey(
       const common::Cid &cid) const noexcept;
 
+  /**
+   *  @brief  Delete Unpinned blocks in block_storage.
+   *
+   *  @return status.
+   */
+  Status deleteUnmarkedBlock() noexcept;
+
+  /**
+   *  @brief  Garbage collector starting.
+   */
+  void startGarbageCollector() noexcept;
+
   bool closed_ = true;
 
   config::Config &config_;
   std::unique_ptr<datastore::Filesystem<StoreValue>> root_;
   std::unique_ptr<blockstorage::Blockstorage> blocks_;
+  std::unique_ptr<pinner::PinManager> pinner_;
+  std::thread gc_;
+  std::atomic_bool is_running_;
+  std::mutex mutex_;
+
   common::logger::Logger logger_;
 };
 

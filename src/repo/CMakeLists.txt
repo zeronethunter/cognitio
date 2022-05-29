@@ -1,6 +1,5 @@
 add_subdirectory(block_storage)
 add_subdirectory(pinner)
-add_subdirectory(gc)
 
 set(SUBMODULE_NAME ${CMAKE_PROJECT_NAME}_repo)
 set(${SUBMODULE_NAME}_SOURCES repo.cpp repo_templ.cpp)
@@ -11,6 +10,7 @@ target_link_libraries(
         ${CMAKE_PROJECT_NAME}_block_storage
         ${CMAKE_PROJECT_NAME}_common
         ${CMAKE_PROJECT_NAME}_linked_data
+        ${CMAKE_PROJECT_NAME}_pin-manager
 )
 
 if (ENABLE_TESTING MATCHES ON)

@@ -54,7 +54,7 @@ class Datastore {
    *
    *  @return pair of ErrCode and Value types.
    */
-  virtual std::pair<ErrCode, Value> Get(const Key& key) const noexcept = 0;
+  virtual std::pair<ErrCode, Value> Get(const Key& key) noexcept = 0;
   /**
    *  @brief  Delete value by key in storage.
    *
@@ -80,7 +80,7 @@ class Datastore {
    *  @param source set of keys of values to get from storage.
    */
   virtual std::pair<ErrCode, std::set<Value>> GetMany(
-      const std::set<Key>& source) const noexcept = 0;
+      const std::set<Key>& source) noexcept = 0;
   /**
    *  @brief  Delete set of values by keys from storage.
    *

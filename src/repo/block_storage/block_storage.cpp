@@ -9,38 +9,41 @@ namespace cognitio {
 namespace repo {
 namespace blockstorage {
 
-Status blockstorage::Blockstorage::Open(const std::filesystem::path& path) {
+Status blockstorage::Blockstorage::Open(
+    const std::filesystem::path& path) noexcept {
   return storage_->Open(path);
 }
 
 Status blockstorage::Blockstorage::Close() { return storage_->Close(); }
 
-Status blockstorage::Blockstorage::Put(const common::Cid& key,
-                                       const std::vector<uint8_t>& value) {
+Status blockstorage::Blockstorage::Put(
+    const common::Cid& key, const std::vector<uint8_t>& value) noexcept {
   return storage_->Put(key, value);
 }
 
 std::pair<Status, std::vector<uint8_t>> blockstorage::Blockstorage::Get(
-    const common::Cid& key) {
+    const common::Cid& key) noexcept {
   return storage_->Get(key);
 }
 
-Status blockstorage::Blockstorage::Delete(const common::Cid& key) {
+Status blockstorage::Blockstorage::Delete(const common::Cid& key) noexcept {
   return storage_->Delete(key);
 }
 
 Status blockstorage::Blockstorage::PutMany(
-    const std::set<std::pair<common::Cid, std::vector<uint8_t>>>& source) {
+    const std::set<std::pair<common::Cid, std::vector<uint8_t>>>&
+        source) noexcept {
   return storage_->PutMany(source);
 }
 
 std::pair<Status, std::set<std::vector<uint8_t>>>
-blockstorage::Blockstorage::GetMany(const std::set<common::Cid>& source) {
+blockstorage::Blockstorage::GetMany(
+    const std::set<common::Cid>& source) noexcept {
   return storage_->GetMany(source);
 }
 
 Status blockstorage::Blockstorage::DeleteMany(
-    const std::set<common::Cid>& source) {
+    const std::set<common::Cid>& source) noexcept {
   return storage_->DeleteMany(source);
 }
 }  // namespace blockstorage

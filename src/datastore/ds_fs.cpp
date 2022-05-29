@@ -14,6 +14,7 @@ namespace datastore {
 
 template <typename Value>
 Status Filesystem<Value>::Open(const std::filesystem::path &path) noexcept {
+  const std::lock_guard<std::mutex> lock(mutex_);
   path_ = path;
   if (!std::filesystem::exists(path)) {
     if (std::filesystem::create_directory(path_)) {
@@ -31,6 +32,7 @@ Status Filesystem<Value>::Close() noexcept {}
 template <typename Value>
 Status Filesystem<Value>::Put(const common::Cid &key,
                               const Value &value) noexcept {
+  const std::lock_guard<std::mutex> lock(mutex_);
   std::string filename = key.ToString();
   if (std::filesystem::exists(path_ / filename)) {
     return {StatusCode::ALREADY_EXISTS, " already exists"};
@@ -53,7 +55,8 @@ Status Filesystem<Value>::Put(const common::Cid &key,
 
 template <typename Value>
 std::pair<Status, Value> Filesystem<Value>::Get(
-    const common::Cid &key) const noexcept {
+    const common::Cid &key) noexcept {
+  const std::lock_guard<std::mutex> lock(mutex_);
   std::string filename = key.ToString();
   if (!std::filesystem::exists(path_ / filename)) {
     return std::pair<Status, Value>({StatusCode::NOT_FOUND, " not found"},
@@ -84,6 +87,7 @@ template <typename Value>
 Status Filesystem<Value>::Delete(const common::Cid &key)
 
     noexcept {
+  const std::lock_guard<std::mutex> lock(mutex_);
   std::string filename = key.ToString();
   if (std::filesystem::remove(path_ / filename)) {
     return Status::OK;
@@ -105,7 +109,7 @@ Status Filesystem<Value>::PutMany(
 
 template <typename Value>
 std::pair<Status, std::set<Value>> Filesystem<Value>::GetMany(
-    const std::set<common::Cid> &source) const noexcept {
+    const std::set<common::Cid> &source) noexcept {
   std::set<Value> result;
   for (const auto &key : source) {
     std::pair<Status, Value> it = Get(key);

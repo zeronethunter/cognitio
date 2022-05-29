@@ -20,10 +20,12 @@ Config::Config(std::string repo_path) noexcept
   logger_ = common::logger::createLogger("Config logger");
 }
 
-Status Config::createConfig(
-    const std::string &repo_path, const std::string &api_address,
-    const std::string &dht_address,
-    const std::string &bootstrap_node_address) const noexcept {
+Status Config::createConfig(const std::string &repo_path,
+                            const std::string &api_address,
+                            const std::string &dht_address,
+                            const std::string &bootstrap_node_address,
+                            const std::string &gc_time,
+                            const std::string &gc_size) const noexcept {
   logger_->debug("Making config.");
   std::filesystem::path config_path(repo_path);
   config_path /= "config";
@@ -35,6 +37,8 @@ Status Config::createConfig(
   config.set_api_address(api_address);
   config.set_dht_address(dht_address);
   config.set_bootstrap_node_address(bootstrap_node_address);
+  config.set_gc_time(gc_time);
+  config.set_gc_size(gc_size);
 
   std::fstream config_file(config_path.string(), std::ios::out);
 
@@ -76,6 +80,8 @@ Status Config::getExistedConfig(const std::string &path) noexcept {
   api_address_ = config.api_address();
   dht_address_ = config.dht_address();
   bootstrap_node_address_ = config.bootstrap_node_address();
+  gc_size_ = config.gc_size();
+  gc_time_ = config.gc_time();
 
   logger_->debug("Successfully got config");
   return Status::OK;
@@ -124,6 +130,14 @@ std::string Config::Get(const std::string &field) const noexcept {
 
   if (field == "bootstrap_node_address") {
     return bootstrap_node_address_;
+  }
+
+  if (field == "gc_time") {
+    return gc_time_;
+  }
+
+  if (field == "gc_size") {
+    return gc_size_;
   }
 
   return {};

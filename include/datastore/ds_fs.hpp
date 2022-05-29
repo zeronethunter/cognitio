@@ -7,12 +7,12 @@
 #define CGNT_DATASTORE_DS_FS_HPP_
 
 #include <filesystem>
-#include <utility>
 #include <set>
+#include <utility>
 
-#include "multiformats/cid.hpp"
 #include "common/status.hpp"
 #include "datastore/datastore.hpp"
+#include "multiformats/cid.hpp"
 
 namespace cognitio {
 namespace datastore {
@@ -64,7 +64,7 @@ class Filesystem : Datastore<common::Cid, Value, Status> {
 
   Status Put(const common::Cid& key, const Value& value) noexcept override;
 
-  std::pair<Status, Value> Get(const common::Cid& key) const noexcept override;
+  std::pair<Status, Value> Get(const common::Cid& key) noexcept override;
 
   Status Delete(const common::Cid& key) noexcept override;
 
@@ -76,13 +76,14 @@ class Filesystem : Datastore<common::Cid, Value, Status> {
       const std::set<std::pair<common::Cid, Value>>& source) noexcept override;
 
   std::pair<Status, std::set<Value>> GetMany(
-      const std::set<common::Cid>& source) const noexcept override;
+      const std::set<common::Cid>& source) noexcept override;
 
   Status DeleteMany(const std::set<common::Cid>& source) noexcept override;
 
  private:
   char* makeCharFromData(const Value& value) const noexcept;
   std::filesystem::path path_;
+  std::mutex mutex_;
 };
 
 }  // namespace datastore

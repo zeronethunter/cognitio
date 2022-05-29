@@ -10,8 +10,7 @@ namespace exchange {
 using namespace datastore;
 
 Status BlockService::Open(const std::filesystem::path& path) noexcept {
-  repo_ =
-      std::make_shared<repo::Repo<std::string>>(repo::Repo<std::string>(path));
+  repo_ = std::make_shared<repo::Repo<std::string>>(path);
 
   auto status_open = repo_->Init();
   if (status_open.ok()) {

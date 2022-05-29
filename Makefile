@@ -122,11 +122,12 @@ DATA_PROTO_SRC_DIR=proto/data
 CONFIG_PROTO_SRC_DIR=proto/config
 KADEMLIA_PROTO_SRC_DIR=proto/kademlia
 API_PROTO_SRC_DIR=proto/api
+PINNER_PROTO_SRC_DIR=proto/pinner
 
 PROTO_OUT_SRC_DIR=src/proto
 PROTO_OUT_HEADER_DIR=include/proto
 
-proto: data-proto config-proto api-proto kademlia-proto
+proto: data-proto config-proto api-proto kademlia-proto pinner-proto
 
 data-proto:
 	protoc --experimental_allow_proto3_optional -I ${DATA_PROTO_SRC_DIR} --cpp_out=${DATA_PROTO_SRC_DIR} ${DATA_PROTO_SRC_DIR}/*.proto
@@ -172,6 +173,12 @@ api-proto:
 	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
 	mv ${API_PROTO_SRC_DIR}/*grpc.pb.h ${PROTO_OUT_HEADER_DIR}
 	mv ${API_PROTO_SRC_DIR}/*grpc.pb.cc ${PROTO_OUT_SRC_DIR}
+
+pinner-proto:
+	protoc --experimental_allow_proto3_optional -I ${PINNER_PROTO_SRC_DIR} --cpp_out=${PINNER_PROTO_SRC_DIR} ${PINNER_PROTO_SRC_DIR}/*.proto
+	mkdir -p ${PROTO_OUT_HEADER_DIR} ${PROTO_OUT_SRC_DIR}
+	mv ${PINNER_PROTO_SRC_DIR}/*.pb.h ${PROTO_OUT_HEADER_DIR}
+	mv ${PINNER_PROTO_SRC_DIR}/*.pb.cc ${PROTO_OUT_SRC_DIR}
 
 clean:
 	rm -rf ${BUILD_DIR}

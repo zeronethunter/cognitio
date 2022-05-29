@@ -5,4 +5,6 @@ message ProtoConfig {
   string api_address = 2;
   string dht_address = 3;
   string bootstrap_node_address = 4;
+  string gc_size = 5;
+  string gc_time = 6;
 }

@@ -25,6 +25,56 @@ std::string GetDefaultRepoPath() {
   return repo_home;
 }
 
+[[nodiscard]] std::pair<int, Status> ToBytes(const std::string &size) noexcept {
+  std::string postfix = size.substr(size.length() - 2, 2);
+  std::string prefix = size.substr(0, size.length() - 2);
+
+  if (postfix == "Mb" || postfix == "mb") {
+    return {std::stoi(prefix) * 1024 * 1024, Status::OK};
+  }
+  if (postfix == "Kb" || postfix == "kb") {
+    return {std::stoi(prefix) * 1024, Status::OK};
+  }
+  int result;
+  try {
+    result = std::stoi(size);
+  } catch (std::exception &e) {
+    Status status(StatusCode::FAILED, "Wrong format of GC size:" + size +
+                                          ". Only Gb, gb, Kb, kb or empty "
+                                          "available.");
+    return {result, status};
+  }
+  return {result, Status::OK};
+}
+
+[[nodiscard]] std::pair<std::chrono::duration<int64_t>, Status> ToTime(
+    const std::string &time) noexcept {
+  char postfix = time[time.length() - 1];
+  std::string prefix = time.substr(0, time.length() - 1);
+  int result;
+
+  try {
+    result = std::stoi(prefix);
+  } catch (std::exception &e) {
+    Status status(StatusCode::FAILED, "Wrong format of GC time:" + time +
+                                          ". Only s, m, h available.");
+    return {std::chrono::duration<int64_t>(), status};
+  }
+
+  switch (postfix) {
+    case 's':
+      return {std::chrono::seconds(result), Status::OK};
+    case 'm':
+      return {std::chrono::minutes(result), Status::OK};
+    case 'h':
+      return {std::chrono::hours(result), Status::OK};
+    default:
+      Status status(StatusCode::FAILED, "Wrong format of GC time:" + time +
+                                            ". Only s, m, h available.");
+      return {std::chrono::duration<int64_t>(), status};
+  }
+}
+
 }  // namespace utils
 }  // namespace common
 }  // namespace cognitio

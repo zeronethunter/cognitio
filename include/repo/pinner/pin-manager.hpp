@@ -14,6 +14,7 @@
 
 #include "common/logger/logger.hpp"
 #include "datastore/ds_fs.hpp"
+#include "proto/ProtoPinner.pb.h"
 #include "repo/block_storage/block_storage.hpp"
 
 namespace cognitio {
@@ -25,24 +26,22 @@ namespace pinner {
  *  Pins and Unpins blocks, so the Garbage Collector doesn't remove them
  */
 class PinManager {
-  typedef std::set<std::string> Pins;
-  typedef std::filesystem::path PinStore;
+  typedef std::filesystem::path Root;
 
  public:
   PinManager() = delete;
 
-  explicit PinManager(PinStore& pinstore, const Pins& pins = Pins()) noexcept
-      : pinstore_(std::move(pinstore)),
-        logger_(common::logger::createLogger("pinner")) {
-    if (!pins.empty()) {
-      pins_ = pins;
-    } else {
-      getPinsSet();
-    }
-  }
+  explicit PinManager(Root root) noexcept
+      : root_(std::move(root)),
+        logger_(common::logger::createLogger("pinner")) {}
 
   PinManager(const PinManager& pin_manager) = delete;
   PinManager& operator=(const PinManager& pin_manager) = delete;
+
+  PinManager& operator=(PinManager&& pin_manager) noexcept {
+    pins_ = std::move(pin_manager.pins_);
+    root_ = std::move(pin_manager.root_);
+  }
 
   /**
    *  @brief  Put key to pinstore directly.
@@ -50,6 +49,7 @@ class PinManager {
    *  @param cid key to pin.
    */
   void Pin(const common::Cid& cid) noexcept;
+
   /**
    *  @brief  Delete key in pinstore.
    *
@@ -57,17 +57,31 @@ class PinManager {
    */
   void UnPin(const common::Cid& cid) noexcept;
 
+  /**
+   *  @brief  Check if pinstore exists.
+   *
+   *  @param cid key to unpin.
+   */
+  [[nodiscard]] bool Exists() const noexcept {
+    return std::filesystem::exists(root_);
+  }
+
+  [[nodiscard]] Pins PinSet() noexcept {
+    if (!get()) {
+      logger_->warn("Failed to get pins.");
+    }
+    return pins_;
+  }
+
+  bool IsPinned(const common::Cid& cid) noexcept;
+
  private:
-  std::string getPins() noexcept;
+  ssize_t getIndex(const common::Cid& cid) const noexcept;
+  bool dump() const noexcept;
+  bool get() noexcept;
 
-  void getPinsSet() noexcept;
-
-  void clearFile() noexcept;
-
-  void addPins(const std::string& str_cid) noexcept;
-
-  PinStore pinstore_;
-  Pins pins_;
+  Root root_;
+  Pins pins_ = Pins();
 
   common::logger::Logger logger_;
 };

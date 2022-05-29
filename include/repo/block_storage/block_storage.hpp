@@ -58,15 +58,17 @@ class Blockstorage {
    *
    *  @param path where to open.
    */
-  Status Open(const std::filesystem::path& path);
+  Status Open(const std::filesystem::path& path) noexcept;
   /**
    *  @brief  Open Blockstorage.
    */
-  Status Open() { return storage_->Open(); }
+  Status Open() noexcept { return storage_->Open(); }
   /**
    *  @brief  Get root of Blockstorage.
    */
-  std::filesystem::path Root() { return storage_->Root(); }
+  [[nodiscard]] std::filesystem::path Root() const noexcept {
+    return storage_->Root();
+  }
   /**
    *  @brief  Close Blockstorage.
    */
@@ -74,33 +76,36 @@ class Blockstorage {
   /**
    *  @brief  Put Value by CID in storage.
    */
-  Status Put(const common::Cid& key, const std::vector<uint8_t>& value);
+  Status Put(const common::Cid& key,
+             const std::vector<uint8_t>& value) noexcept;
   /**
    *  @brief  Get Value by CID from storage.
    */
-  std::pair<Status, std::vector<uint8_t>> Get(const common::Cid& key);
+  std::pair<Status, std::vector<uint8_t>> Get(const common::Cid& key) noexcept;
   /**
    *  @brief  Delete Value by CID from storage.
    */
-  Status Delete(const common::Cid& key);
+  Status Delete(const common::Cid& key) noexcept;
   /**
    *  @brief  Check if key is in storage.
    */
-  bool Has(const common::Cid& key) { return storage_->Has(key); }
+  [[nodiscard]] bool Has(const common::Cid& key) const noexcept {
+    return storage_->Has(key);
+  }
   /**
    *  @brief  Put many Values by their CIDs in storage.
    */
-  Status PutMany(
-      const std::set<std::pair<common::Cid, std::vector<uint8_t>>>& source);
+  Status PutMany(const std::set<std::pair<common::Cid, std::vector<uint8_t>>>&
+                     source) noexcept;
   /**
    *  @brief  Get many Value by their CIDs from storage.
    */
   std::pair<Status, std::set<std::vector<uint8_t>>> GetMany(
-      const std::set<common::Cid>& source);
+      const std::set<common::Cid>& source) noexcept;
   /**
    *  @brief  Delete many Values by their CIDs in storage.
    */
-  Status DeleteMany(const std::set<common::Cid>& source);
+  Status DeleteMany(const std::set<common::Cid>& source) noexcept;
 
  private:
   std::unique_ptr<datastore::Filesystem<std::vector<uint8_t>>> storage_;

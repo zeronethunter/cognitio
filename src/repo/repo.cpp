@@ -14,7 +14,6 @@
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
 #include "config/config.hpp"
-#include "repo/gc/gc.hpp"
 
 namespace cognitio {
 namespace repo {
@@ -27,6 +26,8 @@ void Repo<StoreValue>::initRepoStorage(
 
   blockstorage::Blockstorage blocks(path / "blocks");
   blocks_ = std::make_unique<blockstorage::Blockstorage>(std::move(blocks));
+
+  pinner_ = std::make_unique<pinner::PinManager>(path);
 
   if (Exists()) {
     closed_ = false;
@@ -57,6 +58,7 @@ Repo<StoreValue>::Repo(const std::filesystem::path& path) noexcept
     : config_(config::Config::GetInstance()) {
   initRepoStorage(path);
   logger_ = common::logger::createLogger("repo");
+  is_running_ = false;
 }
 
 template <typename StoreValue>
@@ -64,6 +66,7 @@ Repo<StoreValue>::Repo(const std::string& name) noexcept
     : config_(config::Config::GetInstance()) {
   initRepoStorage(std::filesystem::path(name));
   logger_ = common::logger::createLogger("repo");
+  is_running_ = false;
 }
 
 template <typename StoreValue>
@@ -73,7 +76,6 @@ Status Repo<StoreValue>::Init() noexcept {
     logger_->error("I don't know where to init repository.");
     return Status::FAILED;
   }
-
   logger_->debug("Repo initializing");
 
   if (!Exists()) {
@@ -100,7 +102,9 @@ std::string Repo<StoreValue>::shard(const cognitio::common::Cid& cid,
 }
 
 template <typename StoreValue>
-Status Repo<StoreValue>::Add(const ProtoBlock& block) noexcept {
+Status Repo<StoreValue>::Add(const ProtoBlock& block, bool is_pinned) noexcept {
+  is_pinned ? pinner_->Pin(block.GetCid()) : pinner_->UnPin(block.GetCid());
+
   logger_->debug("Adding block to repo.");
   std::unique_ptr<Block> proto_block = block.ToProtoMessage();
 
@@ -249,6 +253,54 @@ template <typename StoreValue>
 bool Repo<StoreValue>::Exists() noexcept {
   return std::filesystem::exists(root_->Root()) &&
          std::filesystem::exists(root_->Root() / "blocks");
+}
+
+template <typename StoreValue>
+Status Repo<StoreValue>::deleteUnmarkedBlock() noexcept {
+  const std::lock_guard<std::mutex> lock(mutex_);
+  if (!pinner_->Exists()) {
+    return Status::FAILED;
+  }
+  Pins pins_set = pinner_->PinSet();
+  if (pins_set.mutable_cids()->empty()) {
+    return Status::FAILED;
+  }
+  for (auto const& element :
+       std::filesystem::recursive_directory_iterator(blocks_->Root())) {
+    std::filesystem::path path = element.path();
+    if (element.is_directory()) {
+      if (is_empty(path)) {
+        std::filesystem::remove(path);
+      }
+    } else {
+      common::Cid cid(path.filename().string());
+      if (!pinner_->IsPinned(cid)) {
+        Status is_deleted = Delete(cid);
+        if (!is_deleted.ok()) {
+          logger_->error(is_deleted.error_message());
+        }
+        break;
+      }
+    }
+  }
+}
+
+template <typename StoreValue>
+void Repo<StoreValue>::startGarbageCollector() noexcept {
+  if (!pinner_->Exists()) {
+    return;
+  }
+  while (is_running_) {
+    while (common::utils::ToBytes(config_.Get("gc_size")).first <
+           file_size(std::filesystem::path(blocks_->Root()))) {
+      Status status = deleteUnmarkedBlock();
+      if (!status.ok()) {
+        break;
+      }
+    }
+    std::this_thread::sleep_for(
+        common::utils::ToTime(config_.Get("gc_time")).first);
+  }
 }
 
 }  // namespace repo

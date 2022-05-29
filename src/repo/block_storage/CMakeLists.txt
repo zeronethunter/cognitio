@@ -7,7 +7,7 @@ add_library(
 
 target_link_libraries(
         ${SUBMODULE_NAME} PUBLIC
-        ${CMAKE_PROJECT_NAME}_ds_fs
+        ${CMAKE_PROJECT_NAME}_repo
         ${CMAKE_PROJECT_NAME}_multiformats
         ${CMAKE_PROJECT_NAME}_common
 )
