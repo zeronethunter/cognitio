@@ -59,7 +59,8 @@ Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
 std::string Context::getRepoPath(CmdEnv& env) const noexcept {
   // TODO: it's not ok to hard code like that
   if (env.arguments.contains("--repo")) {
-    return env.arguments.at("--repo");
+    auto repo = env.arguments.at("--repo");
+    return std::filesystem::absolute(repo).string();
   }
 
   auto cgnt_home = std::getenv("CGNT_HOME");
