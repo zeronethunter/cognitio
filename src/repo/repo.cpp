@@ -295,6 +295,8 @@ Status Repo<StoreValue>::deleteUnmarkedBlock() noexcept {
         Status is_deleted = Delete(cid);
         if (!is_deleted.ok()) {
           logger_->error(is_deleted.error_message());
+        } else {
+          logger_->info("Deleted block {}", cid.ToString());
         }
         break;
       }
