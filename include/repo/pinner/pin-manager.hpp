@@ -75,6 +75,16 @@ class PinManager {
 
   bool IsPinned(const common::Cid& cid) noexcept;
 
+  void Dump() {
+    if (Exists()) {
+      logger_->info("Pins already exists at {}", root_ / "Pins");
+      get();
+    } else {
+      dump();
+      logger_->info("Pins created {}", root_ / "Pins");
+    }
+  }
+
  private:
   ssize_t getIndex(const common::Cid& cid) const noexcept;
   bool dump() const noexcept;

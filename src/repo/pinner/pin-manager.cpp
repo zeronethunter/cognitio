@@ -14,7 +14,7 @@ void PinManager::Pin(const common::Cid &cid) noexcept {
 
   ssize_t index = getIndex(cid);
 
-  if (index == -1) {
+  if (index != -1) {
     logger_->info("Is already pinned: {}", cid.ToString());
     return;
   }
@@ -27,7 +27,7 @@ void PinManager::Pin(const common::Cid &cid) noexcept {
 
 ssize_t PinManager::getIndex(const common::Cid &cid) const noexcept {
   ssize_t index = 0;
-  for (auto i = pins_.cids().begin(); i < pins_.cids().end(); ++i) {
+  for (auto i = pins_.cids().cbegin(); i < pins_.cids().cend(); ++i) {
     if (*i == cid.ToString()) {
       return index;
     }
@@ -72,7 +72,7 @@ bool PinManager::IsPinned(const common::Cid &cid) noexcept {
 
 bool PinManager::dump() const noexcept {
   std::fstream pinner((root_ / "pins").string(),
-                      std::ios::in | std::ios::trunc);
+                      std::ios::out | std::ios::trunc);
 
   if (!pinner) {
     logger_->error("Failed to open pinner.");
@@ -83,8 +83,8 @@ bool PinManager::dump() const noexcept {
 
   return is_dumped;
 }
-bool PinManager::get() noexcept {
-  std::fstream pinner((root_ / "pins").string(), std::ios::out);
+bool PinManager:: get() noexcept {
+  std::fstream pinner((root_ / "pins").string(), std::ios::in);
 
   if (!pinner) {
     logger_->error("Failed to open pinner.");
