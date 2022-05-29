@@ -96,7 +96,7 @@ Status Repo<StoreValue>::Init() noexcept {
 }
 
 template <typename StoreValue>
-std::string Repo<StoreValue>::shard(const cognitio::common::Cid& cid,
+std::string Repo<StoreValue>::shard(const common::Cid& cid,
                                     size_t name_length) const noexcept {
   std::string str_cid = cid.ToString();
   size_t offset = str_cid.length() - name_length;
@@ -278,19 +278,14 @@ bool Repo<StoreValue>::Exists() noexcept {
 template <typename StoreValue>
 Status Repo<StoreValue>::deleteUnmarkedBlock() noexcept {
   const std::lock_guard<std::mutex> lock(mutex_);
-  if (!pinner_->Exists()) {
-    return Status::FAILED;
-  }
   Pins pins_set = pinner_->PinSet();
-  if (pins_set.mutable_cids()->empty()) {
-    return Status::FAILED;
-  }
+  std::filesystem::path to_delete;
   for (auto const& element :
        std::filesystem::recursive_directory_iterator(blocks_->Root())) {
     std::filesystem::path path = element.path();
     if (element.is_directory()) {
       if (is_empty(path)) {
-        std::filesystem::remove(path);
+        to_delete = path;
       }
     } else {
       common::Cid cid(path.filename().string());
@@ -299,24 +294,22 @@ Status Repo<StoreValue>::deleteUnmarkedBlock() noexcept {
         if (!is_deleted.ok()) {
           logger_->error(is_deleted.error_message());
         }
-        logger_->info(
-            "------------------GC DELETED "
-            "BLOCK----------------\n-------{}-------",
-            cid.ToString());
+        logger_->info("GC DELETED BLOCK {}", cid.ToString());
         break;
       }
     }
   }
+  std::filesystem::remove(to_delete);
 }
 
 template <typename StoreValue>
 size_t Repo<StoreValue>::getDirSize(
     const std::filesystem::path& dir_path) const noexcept {
   size_t size = 0;
-  for (std::filesystem::recursive_directory_iterator it(dir_path);
-       it != std::filesystem::recursive_directory_iterator(); ++it) {
-    if (!std::filesystem::is_directory(*it)) {
-      size += std::filesystem::file_size(*it);
+  for (auto& dir_entry :
+       std::filesystem::recursive_directory_iterator(dir_path)) {
+    if (!dir_entry.is_directory()) {
+      size += dir_entry.file_size();
     }
   }
   return size;
