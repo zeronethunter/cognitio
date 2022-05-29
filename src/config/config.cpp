@@ -40,7 +40,8 @@ Status Config::createConfig(const std::string &repo_path,
   config.set_gc_time(gc_time);
   config.set_gc_size(gc_size);
 
-  std::fstream config_file(config_path.string(), std::ios::out);
+  std::fstream config_file(config_path.string(),
+                           std::ios::out | std::ios::trunc);
 
   if (!config_file.is_open()) {
     return {StatusCode::FAILED, "Failed to open config file."};

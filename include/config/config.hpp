@@ -35,9 +35,17 @@ class Config {
     return *Config::instance_;
   }
 
-  // this one will create a new instalce of Cofnig by
+  void Reset() noexcept {
+    api_address_ = "127.0.0.1:50050";
+    dht_address_ = "127.0.0.1:30050";
+    bootstrap_node_address_ = "127.0.0.1:30051";
+    gc_time_ = "1m";
+    gc_size_ = "15Mb";
+  }
+
+  // this one will create a new instance of Config by
   // copying the state from the old one. The lifetime of the
-  // new instance wil be managed by shared_ptr
+  // new instance will be managed by shared_ptr
   static std::shared_ptr<Config> getForkedInstance() {
     auto s = new Config(Config::GetInstance());
     std::shared_ptr<Config> forked_instance;
@@ -59,7 +67,7 @@ class Config {
       const std::string &dht_address = "127.0.0.1:30050",
       const std::string &bootstrap_node_address = "127.0.0.1:30051",
       const std::string &gc_time = "1m",
-      const std::string &gc_size = "1Kb") const noexcept;
+      const std::string &gc_size = "10Mb") const noexcept;
   [[nodiscard]] bool initialized() const noexcept;
   [[nodiscard]] bool isConfigCreated(const std::string &path) const noexcept;
 

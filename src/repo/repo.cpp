@@ -105,6 +105,7 @@ std::string Repo<StoreValue>::shard(const common::Cid& cid,
 
 template <typename StoreValue>
 Status Repo<StoreValue>::Add(const ProtoBlock& block, bool is_pinned) noexcept {
+  Reset();
   if (is_pinned) {
     pinner_->Pin(block.GetCid());
   }

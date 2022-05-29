@@ -152,6 +152,34 @@ class Repo {
     return config_.getForkedInstance();
   }
 
+  Status Reset() {
+    if (!std::filesystem::exists(root_->Root())) {
+      return {StatusCode::NOT_FOUND, "Repo not fount, nothing to reset."};
+    }
+    if (!std::filesystem::exists(blocks_->Root())) {
+      return {StatusCode::NOT_FOUND, "Blocks not found, nothing to reset."};
+    }
+    if (!config_.IsLocal()) logger_->debug("Deleting blocks...");
+    std::vector<std::filesystem::path> paths_to_delete;
+    for (auto const &element :
+         std::filesystem::recursive_directory_iterator(blocks_->Root())) {
+      paths_to_delete.push_back(element.path());
+    }
+    for (auto const &path : paths_to_delete) {
+      std::filesystem::remove(path);
+    }
+    logger_->debug("Clearing config...");
+
+    config_.GetInstance().Reset();
+
+    if (pinner_->Exists()) {
+      logger_->debug("Clearing pins...");
+      std::fstream pins(root_->Root(), std::ios::trunc);
+      pins.close();
+    }
+    return Status::OK;
+  }
+
  private:
   Status openRepo()
 
