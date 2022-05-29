@@ -54,26 +54,30 @@ std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
   logger_->debug("Found root node successfully.");
 
   std::vector<DagNode> collected_nodes;
-  std::vector<uint8_t> concatenated_bytes;
+  std::string concatenated_bytes;
   std::queue<DagNode> node_queue;
 
-  std::for_each(root_getter.second.GetChildren().begin(),
-                root_getter.second.GetChildren().end(),
-                [&](const auto &node) { node_queue.push(*node.second); });
+  for (const auto &element : root_getter.second.GetChildren()) {
+    node_queue.push(GetNode(element.first).second);
+  }
 
   while (!node_queue.empty()) {
     DagNode current_node = node_queue.front();
     node_queue.pop();
-    node_queue.push(GetNode(current_node.GetCid()).second);
+
+    if (!current_node.GetChildren().empty()) {
+      node_queue.push(GetNode(current_node.GetCid()).second);
+    }
+
     if (!current_node.GetContent().empty()) {
-      concatenated_bytes.insert(concatenated_bytes.end(),
-                                current_node.GetContent().begin(),
-                                current_node.GetContent().end());
+      concatenated_bytes += std::string(current_node.GetContent().begin(),
+                                        current_node.GetContent().end());
     }
   }
 
-  return std::pair<Status, std::vector<uint8_t>>(Status::OK,
-                                                 concatenated_bytes);
+  return std::pair<Status, std::vector<uint8_t>>(
+      Status::OK, std::vector<uint8_t>(concatenated_bytes.begin(),
+                                       concatenated_bytes.end()));
 }
 
 std::pair<Status, DagNode> MerkleDag::GetNode(
@@ -174,8 +178,7 @@ std::vector<ProtoBlock> MerkleDag::CollectBlocks(
 
   /* inserting root block to result vec */
   result_vec.insert(result_vec.begin(),
-                    ProtoBlock(root_node.GetChildren()[0].first,
-                               *root_node.GetChildren()[0].second));
+                    ProtoBlock(root_node.GetCid(), root_node));
 
   /* initializing first layer after root */
   std::vector<std::pair<common::Cid, std::shared_ptr<DagNode>>>
