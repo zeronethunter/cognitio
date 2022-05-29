@@ -66,7 +66,9 @@ std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
     node_queue.pop();
 
     if (!current_node.GetChildren().empty()) {
-      node_queue.push(getNode(current_node.GetCid()).second);
+      for (const auto &child : current_node.GetChildren()) {
+        node_queue.push(getNode(child.first).second);
+      }
     }
 
     if (!current_node.GetContent().empty()) {
