@@ -294,12 +294,14 @@ Status Repo<StoreValue>::deleteUnmarkedBlock() noexcept {
     } else {
       common::Cid cid(path.filename().string());
       if (!pinner_->IsPinned(cid)) {
-        Status is_deleted = Delete(cid);
+        Status is_deleted = deleteByKey(cid);
         if (!is_deleted.ok()) {
           logger_->error(is_deleted.error_message());
-        } else {
-          logger_->info("Deleted block {}", cid.ToString());
         }
+        logger_->info(
+            "------------------GC DELETED "
+            "BLOCK----------------\n-------{}-------",
+            cid.ToString());
         break;
       }
     }
