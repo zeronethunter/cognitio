@@ -37,8 +37,6 @@ common::Cid DagNode::GetCid() const {
 
   std::string conc_cid;
   for (const auto &child : children_) {
-    std::cout << "CID: " << child.first.ToString() << std::endl;
-    std::cout << "CID size: " << child.first.ToString().size() << std::endl;
     conc_cid += child.first.ToString();
   }
 

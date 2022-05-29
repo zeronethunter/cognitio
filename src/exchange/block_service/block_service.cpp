@@ -44,7 +44,7 @@ linked_data::ProtoBlock BlockService::Get(
   linked_data::ProtoBlock bl;
   if (!closed_) {
     bl = repo_->Get(key);
-    if (!bl.IsInitialized()) {
+    if (is_daemon_opened_ && !bl.IsInitialized()) {
       bl = block_swap_->Get(key);
     }
   }
