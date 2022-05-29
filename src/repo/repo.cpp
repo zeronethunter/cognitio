@@ -143,7 +143,9 @@ linked_data::ProtoBlock Repo<StoreValue>::Get(
     std::stringstream data(std::string(content.begin(), content.end()),
                            std::ios_base::in | std::ios_base::binary);
 
-    proto_block->ParseFromIstream(&data);
+    if (!proto_block->ParseFromIstream(&data)) {
+      logger_->debug("Can't find block in repo -> going to blockswap.");
+    }
 
     if (!proto_block->IsInitialized()) {
       logger_->warn("Block is not initialized.");
