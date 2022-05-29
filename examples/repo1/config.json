@@ -1,8 +1,1 @@
-{
-  "repoPath": "../examples/repo1",
-  "apiAddress": "127.0.0.1:50050",
-  "dhtAddress": "127.0.0.1:30050",
-  "bootstrapNodeAddress": "127.0.0.1:30051",
-  "gcSize": "1Kb",
-  "gcTime": "1s"
-}
+{"repoPath":"../examples/repo1","apiAddress":"127.0.0.1:50050","dhtAddress":"127.0.0.1:30050","bootstrapNodeAddress":"127.0.0.1:30051","gcSize":"10Mb","gcTime":"1m"}

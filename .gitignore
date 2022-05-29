@@ -84,3 +84,4 @@ html_docs
 
 # Misc
 examples/*/blocks/*
+examples/*/pins

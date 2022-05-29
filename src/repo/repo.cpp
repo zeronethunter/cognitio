@@ -122,7 +122,6 @@ Status Repo<StoreValue>::Add(const ProtoBlock& block, bool is_pinned) noexcept {
 
   Status status = addByKey(block.GetCid(), {dump_str.begin(), dump_str.end()});
 
-  Reset();
   if (status.ok()) {
     logger_->info("Successfully added {}", block.GetCid().ToString());
     return Status::OK;

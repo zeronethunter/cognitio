@@ -6,13 +6,16 @@
 #include "cli/cli.hpp"
 
 #include <algorithm>
+#include <fstream>
 #include <memory>
+#include <ostream>
 
 #include "cli/commands/command.hpp"
 #include "cli/commands/response_emitter.hpp"
 #include "common/logger/logger.hpp"
 #include "common/status.hpp"
 #include "core/commands/list/root.hpp"
+#include "core/context/context.hpp"
 
 #define HELP_ARG_MSG "--help"
 #define HELP_OPT_MSG "help"
@@ -23,8 +26,7 @@ namespace cli {
 using namespace core::commands;
 
 template <class Context>
-Cli<Context>::Cli(CmdPtr ptr, std::ostream& out)
-    : out_(out), logger_(createLogger("CLI")), root_(ptr) {}
+Cli<Context>::Cli(CmdPtr ptr) : logger_(createLogger("CLI")), root_(ptr) {}
 
 template <class Context>
 template <Container T>
@@ -65,6 +67,25 @@ Status Cli<Context>::Run(T& args) const {
   };
 
   if (re.HaveData()) {
+
+    std::string out_opt("--out");
+    if (request.env.arguments.contains(out_opt)) {
+      auto file_name = request.env.arguments.at(out_opt);
+      std::fstream file(file_name, std::ios::out | std::ios::trunc);
+
+      if (file.is_open()) {
+        logger_->debug("Outputing respons to {}", file_name);
+        re.Emit(file);
+        return err;
+
+      } else {
+        logger_->warn(
+            "Unable to open requested out file. Using cout for response "
+            "emitter");
+      }
+    }
+
+    logger_->debug("Response emmitter output: \n");
     re.Emit(std::cout);
   }
 

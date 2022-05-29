@@ -30,7 +30,7 @@ using namespace commands;
 template <class Context>
 class Cli {
  public:
-  explicit Cli(CmdPtr ptr, std::ostream& out = std::cout);
+  explicit Cli(CmdPtr ptr);
   ~Cli() = default;
 
   template <Container T>
@@ -45,7 +45,6 @@ class Cli {
   Status parseArguments(T& args, CmdPtr &cmd, ArgsArr& arguments) const noexcept;
   Status handleHelp(CmdWrapper<Context>& cmdw) const noexcept;
 
-  std::ostream& out_;
   Logger logger_;
   CmdPtr root_;
 };
