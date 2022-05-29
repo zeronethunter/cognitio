@@ -64,7 +64,7 @@ class PinManager {
    *  @param cid key to unpin.
    */
   [[nodiscard]] bool Exists() const noexcept {
-    return std::filesystem::exists(root_ / "Pins");
+    return std::filesystem::exists(root_ / "pins");
   }
 
   [[nodiscard]] Pins PinSet() noexcept {
@@ -78,11 +78,11 @@ class PinManager {
 
   void Dump() {
     if (Exists()) {
-      logger_->info("Pins already exists at {}", (root_ / "Pins").string());
+      logger_->info("Pins already exists at {}", (root_ / "pins").string());
       get();
     } else {
       dump();
-      logger_->info("Pins created {}", (root_ / "Pins").string());
+      logger_->info("Pins created {}", (root_ / "pins").string());
     }
   }
 
