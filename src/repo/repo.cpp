@@ -119,8 +119,17 @@ Status Repo<StoreValue>::Add(const ProtoBlock& block, bool is_pinned) noexcept {
     logger_->warn("Block is empty.");
   }
 
-  logger_->debug("Successfully added block.");
-  return addByKey(block.GetCid(), {dump_str.begin(), dump_str.end()});
+  Status status = addByKey(block.GetCid(), {dump_str.begin(), dump_str.end()});
+
+  if (status.ok()) {
+    logger_->info("Successfully added {}", block.GetCid().ToString());
+    return Status::OK;
+  }
+  if (status.error_code() == StatusCode::ALREADY_EXISTS) {
+    logger_->info("Already exists {}", block.GetCid().ToString());
+    return Status::OK;
+  }
+  return status;
 }
 
 template <typename StoreValue>
@@ -161,6 +170,12 @@ Status Repo<StoreValue>::addByKey(const common::Cid& cid,
 
   if (!is_opened.ok()) {
     return is_opened;
+  }
+
+  if (block.Has(cid)) {
+    logger_->info("Block is already exists at {}",
+                  (block.Root() / cid.ToString()).string());
+    return {StatusCode::ALREADY_EXISTS};
   }
 
   logger_->info("Adding block with cid: {}", cid.ToString());
