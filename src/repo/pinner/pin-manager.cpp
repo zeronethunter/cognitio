@@ -31,8 +31,10 @@ ssize_t PinManager::getIndex(const common::Cid &cid) const noexcept {
     if (*i == cid.ToString()) {
       return index;
     }
+
     ++index;
   }
+
   return -1;
 }
 
@@ -78,12 +80,12 @@ bool PinManager::dump() const noexcept {
     logger_->error("Failed to open pinner.");
   }
   bool is_dumped = pins_.SerializeToOstream(&pinner);
-
   pinner.close();
 
   return is_dumped;
 }
-bool PinManager:: get() noexcept {
+
+bool PinManager::get() noexcept {
   std::fstream pinner((root_ / "pins").string(), std::ios::in);
 
   if (!pinner) {

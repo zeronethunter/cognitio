@@ -41,6 +41,7 @@ class PinManager {
   PinManager& operator=(PinManager&& pin_manager) noexcept {
     pins_ = std::move(pin_manager.pins_);
     root_ = std::move(pin_manager.root_);
+    return *this;
   }
 
   /**

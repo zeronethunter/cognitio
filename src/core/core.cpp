@@ -87,6 +87,7 @@ Status Core::RunDaemon(std::vector<rpc::server::ServiceInfo>& vec) noexcept {
     return Status(StatusCode::FAILED, "Server wasn't initialized");
   }
 
+  repo_->RunGc();
   logger_->info("Daemon is running");
   std::signal(SIGINT, signal_handler);
   auto shutdown_thread = std::thread(&Core::listen_shutdown, this);
@@ -96,6 +97,8 @@ Status Core::RunDaemon(std::vector<rpc::server::ServiceInfo>& vec) noexcept {
 
 void Core::Shutdown() noexcept {
   logger_->info("Shutting down daemon...");
+  repo_->Shutdown();
+
   if (server_) {
     server_->Shutdown();
   }
