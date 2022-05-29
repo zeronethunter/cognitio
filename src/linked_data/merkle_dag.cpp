@@ -106,10 +106,29 @@ Status MerkleDag::Remove(const common::Cid &cid, bool is_recursive) {
   }
 
   DagNode root_node = getNode(cid).second;
+  std::queue<DagNode> node_queue;
   std::vector<ProtoBlock> to_delete_vec = collectBlocks(root_node);
 
-  for (ProtoBlock node : to_delete_vec) {
-    if (!block_service_->Delete(node.GetCid()).ok()) {
+  for (const auto &element : root_node.GetChildren()) {
+    node_queue.push(getNode(element.first).second);
+  }
+
+  if (!block_service_->Delete(to_delete_vec.begin()->GetCid()).ok()) {
+    return Status(StatusCode::FAILED, "Can't find node with this CID");
+  }
+  to_delete_vec.erase(to_delete_vec.begin());
+
+  while (!node_queue.empty()) {
+    DagNode current_node = node_queue.front();
+    node_queue.pop();
+
+    if (!current_node.GetChildren().empty()) {
+      for (const auto &child : current_node.GetChildren()) {
+        node_queue.push(getNode(child.first).second);
+      }
+    }
+
+    if (!block_service_->Delete(current_node.GetCid()).ok()) {
       return Status(StatusCode::FAILED, "Can't find node with this CID");
     }
   }
