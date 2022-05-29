@@ -170,6 +170,8 @@ class Repo {
   [[nodiscard]] std::vector<uint8_t> getByKey(
       const common::Cid &cid) const noexcept;
 
+  size_t getDirSize(const std::filesystem::path &dir_path) const noexcept;
+
   /**
    *  @brief  Delete Unpinned blocks in block_storage.
    *

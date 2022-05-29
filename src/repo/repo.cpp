@@ -310,13 +310,26 @@ Status Repo<StoreValue>::deleteUnmarkedBlock() noexcept {
 }
 
 template <typename StoreValue>
+size_t Repo<StoreValue>::getDirSize(
+    const std::filesystem::path& dir_path) const noexcept {
+  size_t size = 0;
+  for (std::filesystem::recursive_directory_iterator it(dir_path);
+       it != std::filesystem::recursive_directory_iterator(); ++it) {
+    if (!std::filesystem::is_directory(*it)) {
+      size += std::filesystem::file_size(*it);
+    }
+  }
+  return size;
+}
+
+template <typename StoreValue>
 void Repo<StoreValue>::startGarbageCollector() noexcept {
   if (!pinner_->Exists()) {
     return;
   }
   while (is_running_) {
     while (common::utils::ToBytes(config_.Get("gc_size")).first <
-           file_size(std::filesystem::path(blocks_->Root()))) {
+           getDirSize(std::filesystem::path(blocks_->Root()))) {
       Status status = deleteUnmarkedBlock();
       if (!status.ok()) {
         break;
