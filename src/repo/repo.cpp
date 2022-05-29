@@ -105,7 +105,6 @@ std::string Repo<StoreValue>::shard(const common::Cid& cid,
 
 template <typename StoreValue>
 Status Repo<StoreValue>::Add(const ProtoBlock& block, bool is_pinned) noexcept {
-  Reset();
   if (is_pinned) {
     pinner_->Pin(block.GetCid());
   }
@@ -123,6 +122,7 @@ Status Repo<StoreValue>::Add(const ProtoBlock& block, bool is_pinned) noexcept {
 
   Status status = addByKey(block.GetCid(), {dump_str.begin(), dump_str.end()});
 
+  Reset();
   if (status.ok()) {
     logger_->info("Successfully added {}", block.GetCid().ToString());
     return Status::OK;
@@ -162,6 +162,47 @@ linked_data::ProtoBlock Repo<StoreValue>::Get(
 
   logger_->error("Open repo before getting.");
   return {};
+}
+
+template <typename StoreValue>
+Status Repo<StoreValue>::Reset() {
+  if (!std::filesystem::exists(root_->Root())) {
+    return {StatusCode::NOT_FOUND, "Repo not fount, nothing to reset."};
+  }
+  if (!std::filesystem::exists(blocks_->Root())) {
+    return {StatusCode::NOT_FOUND, "Blocks not found, nothing to reset."};
+  }
+  if (!config_.IsLocal()) logger_->debug("Deleting blocks...");
+  std::vector<std::filesystem::path> paths_to_delete;
+  for (auto const& element :
+       std::filesystem::recursive_directory_iterator(blocks_->Root())) {
+    paths_to_delete.push_back(element.path());
+  }
+  for (auto const& path : paths_to_delete) {
+    if (!is_directory(path)) {
+      std::filesystem::remove(path);
+    }
+  }
+  for (auto const& path : paths_to_delete) {
+    if (is_directory(path)) {
+      std::filesystem::remove(path);
+    }
+  }
+  logger_->debug("Clearing config...");
+
+  config_.GetInstance().Reset();
+  Status status = config_.Dump();
+
+  if (!status.ok()) {
+    logger_->info("Failed to reset config.");
+  }
+
+  if (pinner_->Exists()) {
+    logger_->debug("Clearing pins...");
+    std::fstream pins(root_->Root() / "pins", std::ios::out | std::ios::trunc);
+    pins.close();
+  }
+  return Status::OK;
 }
 
 template <typename StoreValue>
