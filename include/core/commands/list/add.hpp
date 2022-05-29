@@ -6,6 +6,8 @@
 #ifndef CGNT_CORE_COMMANDS_LIST_ADD_HPP_
 #define CGNT_CORE_COMMANDS_LIST_ADD_HPP_
 
+#include <cassert>
+#include <filesystem>
 #include "cli/commands/command.hpp"
 #include "core/context/context.hpp"
 #include "multiformats/cid.hpp"
@@ -29,6 +31,7 @@ class AddCmd : public Command<Context> {
   void Run(Context& ctx, [[maybe_unused]] CmdEnv& env,
            ResponseEmitter& re) override {
     assert(ctx.GetCore()->IsInit());
+    env.option = std::filesystem::absolute(env.option).string();
     auto api = ctx.GetAPI();
     api->Add(env.option, re);
   }
