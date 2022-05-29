@@ -20,7 +20,7 @@ namespace core {
 namespace core_api {
 
 void LocalAPI::Remove(const common::Cid& cid, ResponseEmitter& re) {
-  auto err = core_->GetDag()->RemoveNode(cid);
+  auto err = core_->GetDag()->Remove(cid);
   re.SetStatus(err.error_code());
   if (!err.error_message().empty()) {
     re.Append(err.error_message());

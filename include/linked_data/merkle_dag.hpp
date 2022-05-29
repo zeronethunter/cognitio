@@ -33,23 +33,14 @@ class MerkleDag {
         block_service_(block_service),
         merkle_root_(nullptr){};
 
-  /// \brief Adds new Node in Dag
-  Status AddNode(const DagNode &node);
-
   std::pair<Status, common::Cid> Add(
       const std::vector<std::vector<uint8_t>> &chunks);
-
-  /// \brief Gets Node by Cid
-  std::pair<Status, DagNode> GetNode(const common::Cid &cid) const;
 
   /// \brief gets name of file by Cid
   std::pair<Status, std::vector<uint8_t>> Get(const common::Cid &cid) const;
 
   /// \brief Removes Node from Dag by Cid
-  Status RemoveNode(const common::Cid &cid, bool is_recursive = true);
-
-  /// \brief Getting array of Blocks by Directed Traversal Dag
-  std::vector<ProtoBlock> CollectBlocks(const DagNode &node) const;
+  Status Remove(const common::Cid &cid, bool is_recursive = true);
 
   /// \brief Getting array of Nodes by Directed Traversal Dag
   std::vector<DagNode> CollectNodes(const DagNode &root_node) const;
@@ -65,6 +56,12 @@ class MerkleDag {
       const std::vector<std::vector<uint8_t>> &chunks);
 
   std::vector<DagNode> getSubNodes(const DagNode &root) const;
+
+  /// \brief Getting array of Blocks by Directed Traversal Dag
+  std::vector<ProtoBlock> collectBlocks(const DagNode &node) const;
+
+  /// \brief Gets Node by Cid
+  std::pair<Status, DagNode> getNode(const common::Cid &cid) const;
 };
 
 }  // namespace linked_data
