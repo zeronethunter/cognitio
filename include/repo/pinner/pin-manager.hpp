@@ -81,7 +81,7 @@ class PinManager {
       get();
     } else {
       dump();
-      logger_->info("Pins created {}", root_ / "Pins");
+      logger_->info("Pins created {}", (root_ / "Pins").string());
     }
   }
 
