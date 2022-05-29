@@ -46,6 +46,9 @@ linked_data::ProtoBlock BlockService::Get(
     bl = repo_->Get(key);
     if (is_daemon_opened_ && !bl.IsInitialized()) {
       bl = block_swap_->Get(key);
+
+      // Not pinning cached blocks
+      repo_->Add(bl, false);
     }
   }
 

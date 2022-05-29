@@ -31,6 +31,7 @@ std::pair<Status, common::Cid> MerkleDag::Add(
                       status_code.error_message());
         continue;
       }
+
       return std::pair<Status, common::Cid>(status_code, common::Cid());
     }
   }
@@ -54,7 +55,7 @@ std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
   logger_->debug("Found root node successfully.");
 
   std::vector<DagNode> collected_nodes;
-  std::string concatenated_bytes;
+  std::string concatenated_bytes = "";
   std::queue<DagNode> node_queue;
 
   for (const auto &element : root_getter.second.GetChildren()) {
@@ -72,8 +73,15 @@ std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
     }
 
     if (!current_node.GetContent().empty()) {
-      concatenated_bytes += std::string(current_node.GetContent().begin(),
-                                        current_node.GetContent().end());
+      // Cannot add bytes to string not like that. It's falling
+      // with the exception std::length_error in case of using
+      // insert, append or constructor with iterators
+      for (const auto x : current_node.GetContent()) {
+        concatenated_bytes += static_cast<char>(x);
+      }
+
+      // concatenated_bytes.append(current_node.GetContent().begin(),
+      //                        current_node.GetContent().end());
     }
   }
 
