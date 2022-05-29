@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
   using namespace cognitio;
   using namespace core::commands;
 
-  std::srand(static_cast<uint>(std::time(0)));
+  std::srand(static_cast<uint>(std::time(nullptr)));
 
   // Initial logger configuration
   auto logger = common::logger::createLogger("cognitio");

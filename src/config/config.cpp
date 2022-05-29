@@ -12,7 +12,7 @@ namespace cognitio {
 namespace config {
 
 bool Config::isConfigCreated(const std::string &path) const noexcept {
-  return std::filesystem::exists(std::filesystem::path(path) / "config");
+  return std::filesystem::exists(std::filesystem::path(path) / "config.json");
 }
 
 Config::Config(std::string repo_path) noexcept
@@ -28,7 +28,7 @@ Status Config::createConfig(const std::string &repo_path,
                             const std::string &gc_size) const noexcept {
   logger_->debug("Making config.");
   std::filesystem::path config_path(repo_path);
-  config_path /= "config";
+  config_path /= "config.json";
 
   //  std::filesystem::create_directory(repo_path);
 
@@ -92,7 +92,7 @@ Status Config::TryInit() noexcept {
   logger_->debug("Trying to init config.");
 
   std::filesystem::path config_path(repo_path_);
-  config_path /= "config";
+  config_path /= "config.json";
 
   if (isConfigCreated(repo_path_)) {
     logger_->info("Found config in {}", repo_path_);
