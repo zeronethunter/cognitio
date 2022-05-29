@@ -5,11 +5,15 @@
 
 #include "core/commands/list/root.hpp"
 
+#include <memory>
+
 #include "core/commands/list/add.hpp"
-#include "core/commands/list/get.hpp"
-#include "core/commands/list/init.hpp"
-#include "core/commands/list/remove.hpp"
 #include "core/commands/list/daemon.hpp"
+#include "core/commands/list/get.hpp"
+#include "core/commands/list/remove.hpp"
+#include "core/commands/list/repo/init.hpp"
+#include "core/commands/list/repo/repo.hpp"
+#include "core/commands/list/repo/reset.hpp"
 
 namespace cognitio {
 namespace core {
@@ -17,14 +21,16 @@ namespace commands {
 
 RootCmd MakeCommands() {
   RootCmd cmd;
-  cmd.AddSubCmd(std::make_shared<InitCmd>());
-
-  // Working with local repo
+  // Default commands
+  cmd.AddSubCmd(std::make_shared<DaemonCmd>());
   cmd.AddSubCmd(std::make_shared<GetCmd>());
   cmd.AddSubCmd(std::make_shared<AddCmd>());
   cmd.AddSubCmd(std::make_shared<RmCmd>());
-  cmd.AddSubCmd(std::make_shared<DaemonCmd>());
 
+  // Repo commands
+  cmd.AddSubCmd(std::make_shared<RepoCmd>());
+  cmd.GetSubCmd("repo")->AddSubCmd(std::make_shared<InitCmd>());
+  cmd.GetSubCmd("repo")->AddSubCmd(std::make_shared<ResetCmd>());
   return cmd;
 }
 

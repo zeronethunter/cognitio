@@ -34,7 +34,7 @@ Status Context::Init(CmdMeta& meta, CmdEnv& env) noexcept {
   config_.SetRepoPath(repo_path_);
 
   auto err = config_.TryInit();
-  if (meta.GetName() != "init") {
+  if (meta.IsCoreInitRequired()) {
     // Checking if config was initilized correctly
     if (!err.ok()) {
       logger_->error("Repo is not initialized. Use 'cognitio init'");

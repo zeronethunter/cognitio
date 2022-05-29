@@ -29,14 +29,6 @@ Cli<Context>::Cli(CmdPtr ptr, std::ostream& out)
 template <class Context>
 template <Container T>
 Status Cli<Context>::Run(T& args) const {
-  std::cout <<
-"\n ██████╗ ██████╗  ██████╗ ███╗   ██╗██╗████████╗██╗ ██████╗ \n"
-"██╔════╝██╔═══██╗██╔════╝ ████╗  ██║██║╚══██╔══╝██║██╔═══██╗\n"
-"██║     ██║   ██║██║  ███╗██╔██╗ ██║██║   ██║   ██║██║   ██║\n"
-"██║     ██║   ██║██║   ██║██║╚██╗██║██║   ██║   ██║██║   ██║\n"
-"╚██████╗╚██████╔╝╚██████╔╝██║ ╚████║██║   ██║   ██║╚██████╔╝\n"
-" ╚═════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝ ╚═════╝ \n\n\n";
-
   logger_->debug("Command line interface module is starting...");
 
   CmdWrapper<Context> request;
@@ -116,8 +108,8 @@ Status Cli<Context>::parseCommand(T& args, CmdPtr& cmd) const noexcept {
   cmd = root_;
   bool is_found = false;
 
-  auto cmds_names = cmd->GetSubCmdsNames();
   do {
+    auto cmds_names = cmd->GetSubCmdsNames();
     auto found = std::find(cmds_names.begin(), cmds_names.end(), *args.begin());
     if (found != cmds_names.end()) {
       is_found = true;

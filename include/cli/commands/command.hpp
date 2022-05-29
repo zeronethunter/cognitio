@@ -35,18 +35,20 @@ class CmdMeta {
   ~CmdMeta() = default;
   CmdMeta(std::string&& name, const ArgsArr& args = ArgsArr(),
           bool options_required = false, bool no_remote = false,
-          bool no_local = false)
+          bool no_local = false, bool core_init = true)
       : name_(name),
         possible_arguments_(args),
         options_required_(options_required),
         no_remote_(no_remote),
-        no_local_(no_local) {}
+        no_local_(no_local),
+        is_core_init_required(core_init) {}
 
   std::string GetName() const noexcept { return name_; }
   bool IsNoRemote() const noexcept { return no_remote_; }
   bool IsNoLocal() const noexcept { return no_local_; }
   bool IsRepoRequired() const noexcept { return repo_required; }
   bool AreOptionsRequired() const noexcept { return options_required_; }
+  bool IsCoreInitRequired() const noexcept { return is_core_init_required; }
   const ArgsArr& GetDefaultArgs() const noexcept { return possible_arguments_; }
 
  private:
@@ -56,6 +58,7 @@ class CmdMeta {
   bool repo_required = false;
   bool no_remote_ = false;
   bool no_local_ = false;
+  bool is_core_init_required = true;
 };
 
 // Composite patterns
@@ -68,10 +71,10 @@ class Command {
 
   Command(CmdMeta meta = CmdMeta()) : meta_(meta) {}
 
-  Command(Command<Context> &cmd) = default;
-  Command(Command<Context> &&cmd) = default;
-  Command<Context>& operator=(Command<Context> &cmd) = default;
-  Command<Context>& operator=(Command<Context> &&cmd) = default;
+  Command(Command<Context>& cmd) = default;
+  Command(Command<Context>&& cmd) = default;
+  Command<Context>& operator=(Command<Context>& cmd) = default;
+  Command<Context>& operator=(Command<Context>&& cmd) = default;
 
   virtual ~Command() = default;
 
