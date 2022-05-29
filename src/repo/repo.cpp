@@ -105,8 +105,9 @@ std::string Repo<StoreValue>::shard(const cognitio::common::Cid& cid,
 
 template <typename StoreValue>
 Status Repo<StoreValue>::Add(const ProtoBlock& block, bool is_pinned) noexcept {
-  is_pinned ? pinner_->Pin(block.GetCid()) : pinner_->UnPin(block.GetCid());
-
+  if (is_pinned) {
+    pinner_->Pin(block.GetCid());
+  }
   logger_->debug("Adding block to repo.");
   std::unique_ptr<Block> proto_block = block.ToProtoMessage();
 
