@@ -47,7 +47,8 @@ linked_data::ProtoBlock BlockService::Get(
     if (is_daemon_opened_ && !bl.IsInitialized()) {
       bl = block_swap_->Get(key);
 
-      // Not pinning cached blocks
+      // Now pinning cached blocks
+      logger_->debug("Caching node with CID: {}", bl.GetCid().ToString());
       repo_->Add(bl, false);
     }
   }
