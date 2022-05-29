@@ -1,6 +1,5 @@
 #! /bin/sh
 
-
 GIT_HOME=$(pwd)
 while [ ! -d ".git" ] && [ "$GIT_HOME" != "/" ]; do
   GIT_HOME=$(dirname "$GIT_HOME")
@@ -16,5 +15,6 @@ if [ -d $EXAMPLES_DIR ]; then
   i=1
   while [ -d "$EXAMPLES_DIR/repo$i" ]; do
     touch $EXAMPLES_DIR/repo$i/pins
+    i=$((i+1))
   done
 fi
