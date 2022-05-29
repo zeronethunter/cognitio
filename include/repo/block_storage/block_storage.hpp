@@ -33,9 +33,8 @@ class Blockstorage {
    *  @brief  Construct from path.
    */
   explicit Blockstorage(const std::filesystem::path& path) noexcept {
-    datastore::Filesystem<std::vector<uint8_t>> blocks(path);
     storage_ =
-        std::make_unique<datastore::Filesystem<std::vector<uint8_t>>>(blocks);
+        std::make_unique<datastore::Filesystem<std::vector<uint8_t>>>(path);
   }
 
   Blockstorage(const Blockstorage& blockstorage) = delete;
