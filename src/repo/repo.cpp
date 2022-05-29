@@ -48,7 +48,7 @@ Status Repo<StoreValue>::openRepo() noexcept {
     return status_open;
   }
 
-  pinner_->Exists()
+  pinner_->Dump();
 
   Status status_init = config_.Dump();
 

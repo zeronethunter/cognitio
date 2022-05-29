@@ -77,7 +77,7 @@ class PinManager {
 
   void Dump() {
     if (Exists()) {
-      logger_->info("Pins already exists at {}", root_ / "Pins");
+      logger_->info("Pins already exists at {}", (root_ / "Pins").string());
       get();
     } else {
       dump();
