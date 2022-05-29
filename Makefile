@@ -1,11 +1,11 @@
 ###################################
-##  	   DEFAULT PART 	     ##
+##          DEFAULT PART         ##
 ###################################
 
 ##############################################
 # Try not to change default part's options.  #
 # It looks like CI mostly. Add custom        #
-# commands in the section below 		     #
+# commands in the section below              #
 ##############################################
 
 .PHONY: build static_stage clang-format clang-tidy cpplint cppcheck test coverage default_test
@@ -30,7 +30,11 @@ DEFAULT_CMAKE_CMD = cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_D
 VALGRIND_CMAKE_CMD = cmake -B ${BUILD_DIR} ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_VALGRIND_FLAGS} .
 TSAN_CMAKE_CMD = cmake -B ${BUILD_DIR} $(pwd) ${CMAKE_DEBUG_DEFAULT_FLAGS} ${CMAKE_DEBUG_TESTING_FLAGS} ${CMAKE_TSAN_FLAGS} .
 
-build:
+HOOK_PATH = hooks/post-checkout
+
+build-debug:
+# Using flags specified in the main CMakeLists.txt
+	if [ ! -f .git/${HOOK_PATH} ]]; then  cat .custom_git/${HOOK_PATH} >> .git/${HOOK_PATH}; fi
 	cmake -B ${BUILD_DIR}
 	${MAKE_CMD}
 
