@@ -82,6 +82,9 @@ html_docs
 
 .DS_Store
 
+# TODO change gitignore for pics
 # Misc
 examples/*/blocks/*
 examples/*/pins
+*.jpeg
+*.png

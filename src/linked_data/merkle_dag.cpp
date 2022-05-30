@@ -259,15 +259,17 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
   }
 
   /* build nodes above bottom lay */
-  std::vector<std::vector<DagNode>> layer_vec(1);
+  std::vector<std::vector<DagNode>> layer_vec(
+      (bottom_lay_vec.size() % CHUNK_SIZE == 0)
+          ? bottom_lay_vec.size() / CHUNK_SIZE
+          : bottom_lay_vec.size() / CHUNK_SIZE + 1);
   std::vector<std::vector<DagNode>> previous_layer_vec =
       std::move(bottom_lay_vec);
   size_t blck_cnt = 0;
 
-  while (previous_layer_vec.size() != 1) {
+  while (layer_vec.size() != 1) {
     for (const auto &chunk_block : previous_layer_vec) {
       DagNode parent_node(chunk_block);
-      auto children = parent_node.GetChildren();
 
       layer_vec[blck_cnt].push_back(parent_node);
       if (layer_vec[blck_cnt].size() == CHUNK_SIZE) {
@@ -286,9 +288,11 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
     blck_cnt = 0;
   }
 
-  DagNode parent_root(previous_layer_vec[0]);
+  std::for_each(
+      previous_layer_vec.begin(), previous_layer_vec.end(),
+      [&](const auto &block) { layer_vec[0].push_back(DagNode(block)); });
 
-  return std::make_unique<DagNode>(parent_root);
+  return std::make_unique<DagNode>(layer_vec[0]);
 }
 
 }  // namespace linked_data
