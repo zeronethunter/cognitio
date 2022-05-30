@@ -87,6 +87,7 @@ Status Cli<Context>::Run(T& args) const {
 
     logger_->debug("Response emmitter output: \n");
     re.Emit(std::cout);
+    std::cout << std::endl;
   }
 
   return err;

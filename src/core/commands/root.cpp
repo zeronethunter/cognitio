@@ -15,6 +15,11 @@
 #include "core/commands/list/repo/repo.hpp"
 #include "core/commands/list/repo/reset.hpp"
 
+#ifdef DEBUG_MODE
+#include "core/commands/list/debug/debug.hpp"
+#include "core/commands/list/debug/cid.hpp"
+#endif
+
 namespace cognitio {
 namespace core {
 namespace commands {
@@ -31,6 +36,13 @@ RootCmd MakeCommands() {
   cmd.AddSubCmd(std::make_shared<RepoCmd>());
   cmd.GetSubCmd("repo")->AddSubCmd(std::make_shared<InitCmd>());
   cmd.GetSubCmd("repo")->AddSubCmd(std::make_shared<ResetCmd>());
+
+  // Not for the release version
+  #ifdef DEBUG_MODE
+  cmd.AddSubCmd(std::make_shared<DebugCmd>());
+  cmd.GetSubCmd("debug")->AddSubCmd(std::make_shared<DebugCidCmd>());
+  #endif
+
   return cmd;
 }
 

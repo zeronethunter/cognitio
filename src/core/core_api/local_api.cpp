@@ -5,12 +5,14 @@
 
 #include "core/core_api/local_api.hpp"
 
+#include <cstdint>
 #include <fstream>
 #include <sstream>
 #include <utility>
 
 #include "common/status.hpp"
 #include "common/status_code.hpp"
+#include "common/utils/filesystem.hpp"
 #include "files/chunker/chunker.hpp"
 #include "linked_data/dag_node.hpp"
 #include "multiformats/cid.hpp"
@@ -38,17 +40,15 @@ void LocalAPI::Get(const common::Cid& cid, ResponseEmitter& re) {
     re.Append(std::string(nd.begin(), nd.end()));
   }
 }
-void LocalAPI::Add(const std::string& path, ResponseEmitter& re) {
-  std::ifstream file(path);
-  if (!file.is_open()) {
-    re.SetStatus(StatusCode::FAILED, "Unable to open file");
-    return;
-  }
 
-  std::stringstream buffer_str;
-  buffer_str << file.rdbuf();
-  std::string buf_str = buffer_str.str();
-  std::vector<uint8_t> buffer(buf_str.begin(), buf_str.end());
+void LocalAPI::Add(const std::string& path, ResponseEmitter& re) {
+  std::vector<uint8_t> buffer;
+  Status error;
+
+  std::tie(buffer, error) = common::utils::get_bytes_from(path);
+  if (!error.ok()) {
+    re.SetStatus(error);
+  }
 
   // Chunking
   auto chunked_data = files::chunker::chunk_fixed_raw(buffer, 1024);
@@ -67,6 +67,7 @@ void LocalAPI::Add(const std::string& path, ResponseEmitter& re) {
     re.Append("\nCID: " + cid.ToString());
   }
 }
-}  // namespace core_->pi
+
+}  // namespace core_api
 }  // namespace core
 }  // namespace cognitio

@@ -24,6 +24,8 @@ option(USE_ALT_NAMES "Use alternative names for the project" OFF)
 option(GIT_SUBMODULE "Check submodules during build" ON)
 
 if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+  add_definitions("-DDEBUG_MODE")
+
   # Default options
   option(ENABLE_CHECK_TOOLS "Enable format and code analysis tools" ON)
   option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
