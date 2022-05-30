@@ -5,6 +5,7 @@
 
 #include <functional>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "common/logger/logger.hpp"
@@ -30,9 +31,10 @@ class MerkleDag {
   /// \brief creates new MerkleDag on blocks source
   explicit MerkleDag(std::shared_ptr<exchange::BlockService> block_service)
       : logger_(common::logger::createLogger("Merkle Dag")),
-        block_service_(block_service),
+        block_service_(std::move(block_service)),
         merkle_root_(nullptr){};
 
+  /// \brief adds file in directory
   std::pair<Status, common::Cid> Add(
       const std::vector<std::vector<uint8_t>> &chunks);
 

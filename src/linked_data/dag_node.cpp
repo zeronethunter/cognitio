@@ -27,8 +27,19 @@ DagNode::DagNode(const std::vector<DagNode> &children) {
   }
 }
 
+DagNode &DagNode::operator=(const files::unixfs::UnixFS &file) {
+  if (data_ != file) {
+    data_ = file;
+  }
+}
+
+DagNode &DagNode::operator=(const std::vector<uint8_t> &bytes) {
+  if (data_.GetData() != bytes) {
+    data_.SetData(bytes);
+  }
+}
+
 std::vector<uint8_t> DagNode::GetContent() const { return data_.GetData(); }
-size_t DagNode::Count() const { return children_.size(); }
 
 common::Cid DagNode::GetCid() const {
   if (!data_.GetData().empty()) {

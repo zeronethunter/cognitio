@@ -24,11 +24,11 @@ class DagNode {
   DagNode(const DagNode &other) = default;
   DagNode &operator=(const DagNode &other) = default;
 
-  explicit DagNode(files::unixfs::UnixFS &&file) : data_(std::move(file)){};
-  DagNode &operator=(files::unixfs::UnixFS &&file);
+  explicit DagNode(const files::unixfs::UnixFS &file) : data_(file){};
+  DagNode &operator=(const files::unixfs::UnixFS &file);
 
-  explicit DagNode(std::vector<uint8_t> &&bytes) { data_.SetData(bytes); }
-  DagNode &operator=(std::vector<uint8_t> &&bytes);
+  explicit DagNode(const std::vector<uint8_t> &bytes) { data_.SetData(bytes); }
+  DagNode &operator=(const std::vector<uint8_t> &bytes);
 
   /// \brief Construct new node on children and concatenated data
   DagNode(std::vector<uint8_t> &bytes,
@@ -37,24 +37,17 @@ class DagNode {
   /// \brief Construct Node on children data
   explicit DagNode(const std::vector<DagNode> &children);
 
-  void SetData(const std::vector<uint8_t> &bytes) { data_.SetData(bytes); };
-
   /// \return bytes of node
   std::vector<uint8_t> GetContent() const;
-
-  Status SetChild();
 
   Status DecodeProtoNode(const Node &node);
   std::unique_ptr<Node> EncodeProtoNode() const;
 
-  /// \return size of node's children
-  size_t Count() const;
-
   /// \return cid of current node
   common::Cid GetCid() const;
 
-  std::vector<std::pair<common::Cid, std::shared_ptr<DagNode>>> GetChildren()
-      const {
+  [[nodiscard]] std::vector<std::pair<common::Cid, std::shared_ptr<DagNode>>>
+  GetChildren() const {
     return children_;
   };
 

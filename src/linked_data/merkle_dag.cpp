@@ -58,6 +58,10 @@ std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
   std::string concatenated_bytes = "";
   std::queue<DagNode> node_queue;
 
+  if (root_getter.second.GetChildren().empty()) {
+    return std::make_pair(Status::OK, root_getter.second.GetContent());
+  }
+
   for (const auto &element : root_getter.second.GetChildren()) {
     node_queue.push(getNode(element.first).second);
   }
@@ -134,15 +138,14 @@ std::vector<ProtoBlock> MerkleDag::collectBlocks(
     const DagNode &root_node) const {
   std::vector<ProtoBlock> result_vec;
   std::queue<std::pair<common::Cid, DagNode>> node_queue;
-  //  result_vec.emplace_back(root_node.GetCid(), root_node);
-
-  if (root_node.GetChildren().empty()) {
-    return result_vec;
-  }
 
   /* inserting root block to result vec */
   result_vec.insert(result_vec.begin(),
                     ProtoBlock(root_node.GetCid(), root_node));
+
+  if (root_node.GetChildren().empty()) {
+    return result_vec;
+  }
 
   /* initializing first layer after root */
   std::vector<std::pair<common::Cid, std::shared_ptr<DagNode>>>
@@ -176,7 +179,10 @@ std::unique_ptr<DagNode> MerkleDag::buildGraph(
     const std::vector<std::vector<uint8_t>> &chunks) {
   /* initalizing the bottom lay of chunks */
   size_t vec_size;
-  if (chunks.size() < CHUNK_SIZE) {
+
+  if (chunks.size() == 1) {
+    return std::make_unique<DagNode>(DagNode(chunks[0]));
+  } else if (chunks.size() < CHUNK_SIZE) {
     vec_size = 1;
   } else {
     vec_size = (chunks.size() % CHUNK_SIZE == 0)
