@@ -7,6 +7,7 @@
 #define CGNT_REPO_REPO_HPP_
 
 #include <chrono>
+#include <condition_variable>
 #include <exception>
 #include <filesystem>
 #include <memory>
@@ -140,6 +141,7 @@ class Repo {
   }
 
   void Shutdown() {
+    cv_.notify_all();
     is_running_ = false;
     if (gc_.joinable()) {
       logger_->debug("Gc shutdown.");
@@ -195,6 +197,7 @@ class Repo {
   std::thread gc_;
   std::atomic_bool is_running_;
   std::mutex mutex_;
+  std::condition_variable cv_;
 
   common::logger::Logger logger_;
 };

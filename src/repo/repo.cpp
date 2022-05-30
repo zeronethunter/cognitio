@@ -5,9 +5,12 @@
 
 #include "repo/repo.hpp"
 
+#include <chrono>
 #include <cstdint>
 #include <filesystem>
 #include <ios>
+#include <memory>
+#include <mutex>
 #include <sstream>
 #include <type_traits>
 
@@ -130,6 +133,8 @@ Status Repo<StoreValue>::Add(const ProtoBlock& block, bool is_pinned) noexcept {
     logger_->info("Already exists {}", block.GetCid().ToString());
     return Status::OK;
   }
+
+  cv_.notify_all();
   return status;
 }
 
@@ -358,9 +363,11 @@ size_t Repo<StoreValue>::getDirSize(
 
 template <typename StoreValue>
 void Repo<StoreValue>::startGarbageCollector() noexcept {
+  std::unique_lock<std::mutex> lock_guard(mutex_);
   if (!pinner_->Exists()) {
     return;
   }
+
   while (is_running_) {
     while (common::utils::ToBytes(config_.Get("gc_size")).first <
            getDirSize(std::filesystem::path(blocks_->Root()))) {
@@ -369,8 +376,10 @@ void Repo<StoreValue>::startGarbageCollector() noexcept {
         break;
       }
     }
-    std::this_thread::sleep_for(
-        common::utils::ToTime(config_.Get("gc_time")).first);
+
+    cv_.wait_until(lock_guard,
+                   std::chrono::steady_clock::now() +
+                       common::utils::ToTime(config_.Get("gc_time")).first);
   }
 }
 

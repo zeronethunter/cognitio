@@ -71,6 +71,8 @@ void Server::init(std::vector<ServiceInfo> &services) {
 
     builder_.RegisterService(service.address, service.service);
   }
+
+  builder_.SetMaxMessageSize(-1);
 }
 
 void Server::launch_and_wait() {

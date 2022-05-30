@@ -19,8 +19,11 @@ Client<Service>::Client(const std::string& addr) : host_addr_(addr) {
 
 template <class Service>
 void Client<Service>::ChangeServer(const std::string& address) {
-  stub_ = Service::NewStub(
-      grpc::CreateChannel(address, grpc::InsecureChannelCredentials()));
+  grpc::ChannelArguments ch_args;
+  ch_args.SetMaxReceiveMessageSize(-1);
+
+  stub_ = Service::NewStub(grpc::CreateCustomChannel(
+      address, grpc::InsecureChannelCredentials(), ch_args));
 }
 
 }  // namespace client
