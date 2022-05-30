@@ -17,6 +17,12 @@
 namespace cognitio {
 namespace config {
 
+/**
+ *  @brief Implementation of Config.
+ *
+ *  Based on the singleton pattern, it gives you the ability to manage the
+ * Config file.
+ */
 class Config {
   Config() noexcept = default;
   explicit Config(std::string repo_path) noexcept;
@@ -29,12 +35,20 @@ class Config {
   Config &operator=(const Config &conf) = delete;
 
  public:
+  /**
+   *  @brief Get instance of Config.
+   *
+   *  @return Config instance.
+   */
   static Config &GetInstance() noexcept {
     std::call_once(flag_, []() { Config::instance_.reset(new Config()); });
 
     return *Config::instance_;
   }
 
+  /**
+   *  @brief Reset config to default settings.
+   */
   void Reset() noexcept {
     api_address_ = "127.0.0.1:50050";
     dht_address_ = "127.0.0.1:30050";
@@ -43,9 +57,13 @@ class Config {
     gc_size_ = "15Mb";
   }
 
-  // this one will create a new instance of Config by
-  // copying the state from the old one. The lifetime of the
-  // new instance will be managed by shared_ptr
+  /**
+   *  @brief This one will create a new instance of Config by
+   *  copying the state from the old one. The lifetime of the
+   *  new instance will be managed by shared_ptr.
+   *
+   *  @return shared_ptr to Config.
+   */
   static std::shared_ptr<Config> getForkedInstance() {
     auto s = new Config(Config::GetInstance());
     std::shared_ptr<Config> forked_instance;
@@ -53,8 +71,27 @@ class Config {
     return forked_instance;
   }
 
+  /**
+   *  @brief Try to initialize Config at path.
+   *
+   *  @return Status.
+   */
   Status TryInit() noexcept;
+
+  /**
+   *  @brief Dump config in repo_path.
+   *
+   *  @return Status.
+   */
   [[nodiscard]] Status Dump() const noexcept;
+
+  /**
+   *  @brief Get field of Config at field.
+   *
+   *  @param field of Config.
+   *
+   *  @return what in field.
+   */
   [[nodiscard]] std::string Get(const std::string &field) const noexcept;
   void SetRepoPath(const std::string &repo_path) noexcept;
   bool IsLocal() const noexcept { return true; }

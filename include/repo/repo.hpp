@@ -134,12 +134,18 @@ class Repo {
     return root_->Root();
   }
 
+  /**
+   *  @brief Run Garbage Collector.
+   */
   void RunGc() {
     is_running_ = true;
     gc_ = std::thread(&repo::Repo<StoreValue>::startGarbageCollector, this);
     logger_->debug("Gc started.");
   }
 
+  /**
+   *  @brief Shutdown Garbage Collector.
+   */
   void Shutdown() {
     cv_.notify_all();
     is_running_ = false;
@@ -149,11 +155,21 @@ class Repo {
     }
   }
 
+  /**
+   *  @brief Get forked instance of Config.
+   *
+   *  @return Config.
+   */
   config::Config &GetConfig() noexcept { return config_; }
   std::shared_ptr<config::Config> GetForkedConfig() noexcept {
     return config_.getForkedInstance();
   }
 
+  /**
+   *  @brief Repo resting.
+   *
+   *  @return Status.
+   */
   Status Reset();
 
  private:
@@ -161,6 +177,14 @@ class Repo {
 
       noexcept;
 
+  /**
+   *  @brief  Get name of shard by cid.
+   *
+   *  @param cid cid.
+   *  @param name_length length of future shard.
+   *
+   *  @return status.
+   */
   [[nodiscard]] std::string shard(const cognitio::common::Cid &cid,
                                   size_t name_length = 2) const noexcept;
 
@@ -174,7 +198,8 @@ class Repo {
   [[nodiscard]] std::vector<uint8_t> getByKey(
       const common::Cid &cid) const noexcept;
 
-  size_t getDirSize(const std::filesystem::path &dir_path) const noexcept;
+  [[nodiscard]] size_t getDirSize(
+      const std::filesystem::path &dir_path) const noexcept;
 
   /**
    *  @brief  Delete Unpinned blocks in block_storage.

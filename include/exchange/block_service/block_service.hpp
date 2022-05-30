@@ -16,21 +16,21 @@
 namespace cognitio {
 namespace exchange {
 
+/**
+ *  @brief Responsible for blocks management locally and with opened daemon.
+ */
 class BlockService {
   typedef linked_data::ProtoBlock ProtoBlock;
 
  public:
-  // BlockService() = default;
-
   explicit BlockService(std::shared_ptr<repo::Repo<std::string>> repo,
                         std::shared_ptr<BlockSwap> bs)
-      : block_swap_(bs), repo_(std::move(repo)) {
+      : block_swap_(std::move(bs)), repo_(std::move(repo)) {
     if (repo_->Exists()) {
       closed_ = false;
     }
   }
 
-  // TODO: Переделать логику открытия...
   Status Open(const std::filesystem::path& path =
                   std::filesystem::path(common::utils::GetDefaultRepoPath()) /
                   "blocks") noexcept;

@@ -67,6 +67,11 @@ class PinManager {
     return std::filesystem::exists(root_ / "pins");
   }
 
+  /**
+   *  @brief  Get pins as message.
+   *
+   *  @return Pins.
+   */
   [[nodiscard]] Pins PinSet() noexcept {
     if (!get()) {
       logger_->warn("Failed to get pins.");
@@ -74,8 +79,16 @@ class PinManager {
     return pins_;
   }
 
+  /**
+   *  @brief  Check if cid is pinned.
+   *
+   *  @param cid to check.
+   */
   bool IsPinned(const common::Cid& cid) noexcept;
 
+  /**
+   *  @brief  Dump Pins in storage.
+   */
   void Dump() {
     if (Exists()) {
       logger_->info("Pins already exists at {}", (root_ / "pins").string());
