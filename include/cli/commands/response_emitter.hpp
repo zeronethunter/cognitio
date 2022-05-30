@@ -36,7 +36,7 @@ class ResponseEmitter {
     return Status(code, msg);
   }
 
-  void Emit(std::ostream& out) { out << proto_.data() << std::endl; }
+  void Emit(std::ostream& out) { out << proto_.data(); }
 
  private:
   ProtoResponse proto_;

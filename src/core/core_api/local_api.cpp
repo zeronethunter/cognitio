@@ -51,7 +51,7 @@ void LocalAPI::Add(const std::string& path, ResponseEmitter& re) {
   std::vector<uint8_t> buffer(buf_str.begin(), buf_str.end());
 
   // Chunking
-  auto chunked_data = files::chunker::chunk_fixed_raw(buffer, 1000);
+  auto chunked_data = files::chunker::chunk_fixed_raw(buffer, 1024);
 
   // Adding node
   common::Cid cid;

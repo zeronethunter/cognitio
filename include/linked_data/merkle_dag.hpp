@@ -17,7 +17,7 @@
 #ifndef CGNT_LINKED_DATA_MERKLE_DAG_HPP
 #define CGNT_LINKED_DATA_MERKLE_DAG_HPP
 
-#define CHUNK_SIZE 10
+#define CHUNK_SIZE 44
 
 namespace cognitio {
 namespace linked_data {
@@ -42,10 +42,6 @@ class MerkleDag {
   /// \brief Removes Node from Dag by Cid
   Status Remove(const common::Cid &cid, bool is_recursive = true);
 
-  /// \brief Getting array of Nodes by Directed Traversal Dag
-  std::vector<DagNode> CollectNodes(const DagNode &root_node) const;
-  //std::vector<common::Cid> CollectNodes(const DagNode &root_node) const;
-
  private:
   common::logger::Logger logger_;
 
@@ -54,8 +50,6 @@ class MerkleDag {
 
   std::unique_ptr<DagNode> buildGraph(
       const std::vector<std::vector<uint8_t>> &chunks);
-
-  std::vector<DagNode> getSubNodes(const DagNode &root) const;
 
   /// \brief Getting array of Blocks by Directed Traversal Dag
   std::vector<ProtoBlock> collectBlocks(const DagNode &node) const;

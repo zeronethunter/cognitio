@@ -73,15 +73,9 @@ std::pair<Status, std::vector<uint8_t>> MerkleDag::Get(
     }
 
     if (!current_node.GetContent().empty()) {
-      // Cannot add bytes to string not like that. It's falling
-      // with the exception std::length_error in case of using
-      // insert, append or constructor with iterators
       for (const auto x : current_node.GetContent()) {
         concatenated_bytes += static_cast<char>(x);
       }
-
-      // concatenated_bytes.append(current_node.GetContent().begin(),
-      //                        current_node.GetContent().end());
     }
   }
 
@@ -134,62 +128,6 @@ Status MerkleDag::Remove(const common::Cid &cid, bool is_recursive) {
   }
 
   return Status::OK;
-}
-
-std::vector<DagNode> MerkleDag::getSubNodes(const DagNode &root) const {
-  std::vector<DagNode> collected_nodes({root});
-  std::stack<DagNode> dag_st({root});
-
-  do {
-    DagNode current_node = dag_st.top();
-    dag_st.pop();
-
-    // auto got_node = GetNode(current_node.GetCid());
-    std::vector<DagNode> children_vec = CollectNodes(current_node);
-
-    /* push children in stack */
-    std::for_each(children_vec.rbegin(), children_vec.rend(),
-                  [&](const DagNode &node) { dag_st.push(node); });
-
-    /* push nodes in result vector */
-    std::for_each(
-        children_vec.begin(), children_vec.end(),
-        [&](const DagNode &node) { collected_nodes.push_back(node); });
-  } while (!dag_st.empty());
-
-  return collected_nodes;
-}
-
-std::vector<DagNode> MerkleDag::CollectNodes(const DagNode &root_node) const {
-  std::vector<DagNode> result_vec;
-
-  std::queue<DagNode> node_queue;
-
-  if (root_node.GetChildren().empty()) {
-    return result_vec;
-  }
-
-  /* pushing all nodes from first layer in stack */
-  std::for_each(root_node.GetChildren().rbegin(),
-                root_node.GetChildren().rend(),
-                [&](const auto &node) { node_queue.push(*node.second); });
-
-  do {
-    /* taking top of queue */
-    DagNode current_node = node_queue.front();
-
-    /* pushing this node in proto block */
-    result_vec.push_back(current_node);
-
-    /* watching for children of current node */
-    for (const auto &node : current_node.GetChildren()) {
-      node_queue.push(*node.second);
-    }
-    /* popping current node from queue */
-    node_queue.pop();
-  } while (!node_queue.empty());
-
-  return result_vec;
 }
 
 std::vector<ProtoBlock> MerkleDag::collectBlocks(
