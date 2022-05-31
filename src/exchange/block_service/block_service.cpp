@@ -50,6 +50,7 @@ linked_data::ProtoBlock BlockService::Get(
       // Now pinning cached blocks
       logger_->debug("Caching node with CID: {}", bl.GetCid().ToString());
       repo_->Add(bl, false);
+      block_swap_->Add(bl.GetCid());
     }
   }
 

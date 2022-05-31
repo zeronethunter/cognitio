@@ -48,7 +48,8 @@ class KademliaRepository {
 
   const T& get(const std::string& key) {
     if (!contains(key)) {
-      throw std::runtime_error("No key-value found.");
+      // throw std::runtime_error("No key-value found.");
+      return T();
     }
 
     return keymap_[key];

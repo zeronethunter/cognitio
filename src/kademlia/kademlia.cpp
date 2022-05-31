@@ -137,19 +137,37 @@ Status Kademlia::Add(std::string key, std::string value) {
     return Status::FAILED;
   }
 
-  ConnectionInfo peer = findResult.getNodes()[0];
-  KademliaClient client(peer.GetAddress());
+  // ConnectionInfo peer = findResult.getNodes()[0];
+  // KademliaClient client(peer.GetAddress());
 
-  StoreRequest storeQuery;
-  storeQuery.set_key(key);
-  storeQuery.set_value(value);
-  auto proto = info_.GetProto();
-  storeQuery.set_magic(utils::generate_magic());
-  storeQuery.set_allocated_caller(&proto);
+  // StoreRequest storeQuery;
+  // storeQuery.set_key(key);
+  // storeQuery.set_value(value);
+  // auto proto = info_.GetProto();
+  // storeQuery.set_magic(utils::generate_magic());
+  // storeQuery.set_allocated_caller(&proto);
 
-  auto is_ok = client.Store(storeQuery);
-  [[maybe_unused]] auto v = storeQuery.release_caller();
-  return is_ok ? Status::OK : Status::FAILED;
+  // auto is_ok = client.Store(storeQuery);
+  // [[maybe_unused]] auto v = storeQuery.release_caller();
+  // return is_ok ? Status::OK : Status::FAILED;
+
+  auto peers = findResult.getNodes();
+  for (size_t i = 0; i < KADEMLIA_REPLICATION_NUMBER && i < peers.size(); ++i) {
+    ConnectionInfo peer = findResult.getNodes()[i];
+    KademliaClient client(peer.GetAddress());
+
+    StoreRequest storeQuery;
+    storeQuery.set_key(key);
+    storeQuery.set_value(value);
+    auto proto = info_.GetProto();
+    storeQuery.set_magic(utils::generate_magic());
+    storeQuery.set_allocated_caller(&proto);
+
+    client.Store(storeQuery);
+    [[maybe_unused]] auto v = storeQuery.release_caller();
+  }
+
+  return Status::OK;
 }
 
 void Kademlia::Bootstrap(ConnectionInfo bootstrap_node) {
@@ -172,7 +190,8 @@ std::string Kademlia::Get(std::string key) {
   FindNodeAnswer findResult = this->findNode(info_, info_, keyHash);
 
   if (findResult.size() < 1) {
-    throw std::runtime_error("E_NO_PEERS");
+    // throw std::runtime_error("E_NO_PEERS");
+    return "";
   }
 
   ConnectionInfo peer = findResult.getNodes()[0];
@@ -195,6 +214,7 @@ void Kademlia::StoreRequested(const std::string& key,
   repo_.store(key, value);
 }
 
+// may throw exception
 std::string Kademlia::GetRequested(const std::string& key) {
   return repo_.get(key);
 }

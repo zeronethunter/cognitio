@@ -369,6 +369,10 @@ void Repo<StoreValue>::startGarbageCollector() noexcept {
   }
 
   while (is_running_) {
+    cv_.wait_until(lock_guard,
+                   std::chrono::steady_clock::now() +
+                       common::utils::ToTime(config_.Get("gc_time")).first);
+
     while (common::utils::ToBytes(config_.Get("gc_size")).first <
            getDirSize(std::filesystem::path(blocks_->Root()))) {
       Status status = deleteUnmarkedBlock();
@@ -376,10 +380,6 @@ void Repo<StoreValue>::startGarbageCollector() noexcept {
         break;
       }
     }
-
-    cv_.wait_until(lock_guard,
-                   std::chrono::steady_clock::now() +
-                       common::utils::ToTime(config_.Get("gc_time")).first);
   }
 }
 

@@ -6,6 +6,8 @@
 #ifndef CGNT_KADEMLIA_KADEMLIA_HPP_
 #define CGNT_KADEMLIA_KADEMLIA_HPP_
 
+#define KADEMLIA_REPLICATION_NUMBER 3
+
 #include <cstdint>
 #include <thread>
 

@@ -21,7 +21,7 @@ Data_DataType UnixFS::stringToDatatype(const std::string& type) const noexcept {
   } else if (type == "symlink") {
     return Data_DataType_Symlink;
   } else {
-    logger_->error("Can't decode data message. Wrong type {}.", type);
+    // logger_->error("Can't decode data message. Wrong type {}.", type);
     return Data_DataType_File;
   }
 }

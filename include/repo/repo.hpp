@@ -141,8 +141,9 @@ class Repo {
   }
 
   void Shutdown() {
-    cv_.notify_all();
     is_running_ = false;
+    cv_.notify_all();
+
     if (gc_.joinable()) {
       logger_->debug("Gc shutdown.");
       gc_.join();
